@@ -69,18 +69,28 @@ def diagnose_portfolio(df: pd.DataFrame, terms: ContractTerms | None = None,
     if id_col is None:
         raise DataError("Portfolio files need a building column named one of: " + ", ".join(ID_ALIASES) + ".")
     design_col = _pick(df, DESIGN_ALIASES)
+    n_null = int(df[id_col].isna().sum())
+    if n_null:
+        df = df.assign(**{id_col: df[id_col].fillna("(no building id)")})
     groups = list(df.groupby(id_col, sort=False))
     if len(groups) > MAX_BUILDINGS:
         raise DataError(f"At most {MAX_BUILDINGS} buildings per file; this one has {len(groups)}.")
 
     rows: list[BuildingRow] = []
+    design_notes: list[str] = []
     for bid, g in groups:
         bid = str(bid)
         design = default_design_dt
         if design_col is not None:
             v = pd.to_numeric(g[design_col], errors="coerce").dropna()
             if len(v):
-                design = float(v.iloc[0])
+                design = float(v.median())
+                if v.max() - v.min() > 0.5:
+                    design_notes.append(f"Design delta-T differs within the file for {bid} (from {v.min():.1f} to {v.max():.1f}); the median was used.")
+                else:
+                    pass
+            else:
+                pass
         data = g.drop(columns=[c for c in (id_col, design_col) if c is not None])
         try:
             rep = diagnose_frame(data, terms, design_delta_t_c=design)
@@ -110,7 +120,9 @@ def diagnose_portfolio(df: pd.DataFrame, terms: ContractTerms | None = None,
                          "expected_saving_aed_per_year": float(sav)})
     by_cause.sort(key=lambda d: d["expected_saving_aed_per_year"], reverse=True)
 
-    notes = []
+    notes = list(design_notes)
+    if n_null:
+        notes.append(f"{n_null} rows had no building id and were grouped as '(no building id)'.")
     if skipped:
         notes.append(f"{len(skipped)} building(s) were skipped; see the reason on each row.")
     blind = sum(1 for r in ok if r.mode == "blind")
@@ -128,8 +140,18 @@ def diagnose_portfolio(df: pd.DataFrame, terms: ContractTerms | None = None,
     )
 
 
+def safe_cell(v):
+    """Neutralise spreadsheet formulas: a cell starting with = + - @ tab or CR is prefixed with a quote."""
+    if isinstance(v, str) and v[:1] in ("=", "+", "-", "@", "\t", "\r"):
+        return "'" + v
+    return v
+
+
 def to_csv(rep: PortfolioReport) -> str:
     cols = ["building_id", "status", "reason", "n_days", "delta_t_c", "below_minimum_c",
             "annual_surcharge_aed", "p_any_cause", "top_cause", "top_cause_probability",
             "top_cause_saving_aed", "mode"]
-    return pd.DataFrame(rep.buildings)[cols].to_csv(index=False)
+    frame = pd.DataFrame(rep.buildings)[cols]
+    for c in ("building_id", "reason", "top_cause"):
+        frame[c] = frame[c].map(safe_cell)
+    return frame.to_csv(index=False)

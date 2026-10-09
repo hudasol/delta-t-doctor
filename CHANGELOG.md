@@ -10,6 +10,14 @@ Measured before and after are in `results/metrics.md`. Changes:
 * Reproducibility: bundled model hash checked against the model card; model card records git commit, data hash and sklearn version; lock file; one specific-heat constant; ruff and coverage in CI.
 * Docs: corrected the claim that the two valve faults overlap (measured confusion is 2 to 5%; overflow is the hard cause).
 
+## Unreleased: engineering round 2 (Edge review)
+* Quality gate: flow spikes (above 6x the running 90th percentile), sensor codes, impossible temperatures and delta-T above 30 C, text and formulas in numeric cells, unreadable timestamps and frozen meters are removed or flagged and counted; `reliable` goes false above 2% (48 repeated flow readings for a frozen meter). Verified: a file with 1% of flow readings at 1e9 changed the annual surcharge estimate from 2.1e10 to within 0.1% of the clean value.
+* Model loading fails closed: bundled models must match their recorded sha256 and sklearn minor version; the hashed bytes are the unpickled bytes.
+* Parsing bounds: row, column and unzipped-size caps, zip magic and zip-bomb check, `.xls` refused, C CSV parser with a sniffed delimiter. The CLI portfolio command uses the same reader.
+* Portfolio: null building ids are grouped and reported; inconsistent design delta-T within a building is reported; CSV output neutralises formulas.
+* Operations: JSON audit lines and `X-Request-ID`; Docker image installs from the lock file, no home directory, read-only run documented; benchmark script and measured budget.
+* Not done, listed in docs/SECURITY.md: CSP nonce, SHA-pinned Actions, SBOM and image scan, authentication.
+
 ## v1.0.0
 Examples, one-page proposal, docs checked against a green CI run. 1.0 means the product surface is complete and documented. It does not mean validated on field data; that is what the pilot is for.
 

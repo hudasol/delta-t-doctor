@@ -1,10 +1,15 @@
 """FastAPI app: upload a meter export, get a ranked diagnosis. Nothing is stored."""
 from __future__ import annotations
 
+import contextvars
+import hashlib
+import json
 import logging
 import math
 import os
 import threading
+import time
+import uuid
 
 import numpy as np
 import pandas as pd
@@ -30,9 +35,24 @@ app = FastAPI(title="delta-t-doctor", version=__version__,
                           "Files are analysed in memory and never stored.")
 
 
+_rid: contextvars.ContextVar[str] = contextvars.ContextVar("rid", default="-")
+
+
+def audit(event: str, **kw) -> None:
+    """One JSON log line per event. Never logs file contents, only sizes, hashes and outcomes."""
+    log.info(json.dumps({"event": event, "request_id": _rid.get(), "version": __version__, **kw}, default=str))
+
+
 @app.middleware("http")
 async def security_headers(request, call_next):
+    rid = uuid.uuid4().hex[:12]
+    _rid.set(rid)
+    t0 = time.perf_counter()
     resp = await call_next(request)
+    if request.url.path.startswith("/api/"):
+        audit("request", method=request.method, path=request.url.path, status=resp.status_code,
+              ms=round((time.perf_counter() - t0) * 1000))
+    resp.headers["X-Request-ID"] = rid
     resp.headers.setdefault("X-Content-Type-Options", "nosniff")
     resp.headers.setdefault("X-Frame-Options", "DENY")
     resp.headers.setdefault("Referrer-Policy", "no-referrer")
@@ -98,6 +118,7 @@ def _read_upload(file: UploadFile) -> pd.DataFrame:
     raw = file.file.read(MAX_BYTES + 1)
     if len(raw) > MAX_BYTES:
         raise HTTPException(413, "File is larger than 25 MB.")
+    audit("upload", bytes=len(raw), sha256=hashlib.sha256(raw).hexdigest()[:16], filename=(file.filename or "")[:80])
     try:
         return read_table(raw, file.filename or "")
     except DataError as e:
