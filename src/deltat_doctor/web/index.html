@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>delta-t-doctor</title>
+<meta name="description" content="Find out why a district-cooled building is paying low delta-T surcharges, from meter data alone.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --frost:#edf2f4; --panel:#f8fbfc; --pipe:#11303b; --supply:#2b7ba3; --return:#d9822b;
+  --slate:#5e7682; --alarm:#b23a2c; --alarm-tint:rgba(178,58,44,.12); --line:#cfdbe0;
+  --head:"Bricolage Grotesque","Avenir Next",system-ui,sans-serif;
+  --body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --frost:#0c1d24; --panel:#102832; --pipe:#e3eef2; --supply:#5db4dd; --return:#f0a04d;
+    --slate:#8fa9b4; --alarm:#ff7a66; --alarm-tint:rgba(255,122,102,.16); --line:#24424e;
+  }
+}
+*{box-sizing:border-box}
+html{background:var(--frost)}
+body{margin:0;font:400 16px/1.55 var(--body);color:var(--pipe);background:var(--frost);
+  font-variant-numeric:tabular-nums}
+.shell{display:grid;grid-template-columns:minmax(280px,340px) minmax(0,1fr);gap:0;min-height:100vh}
+.rail{padding:32px 28px;border-right:1px solid var(--line);background:var(--panel);
+  position:sticky;top:0;align-self:start;height:100vh;overflow:auto}
+.main{padding:40px clamp(20px,4vw,56px) 72px;max-width:980px}
+h1{font:700 26px/1.1 var(--head);letter-spacing:-.01em;margin:0 0 6px}
+h2{font:700 22px/1.2 var(--head);letter-spacing:-.005em;margin:0 0 14px}
+p{margin:0 0 12px}
+.sub{color:var(--slate);font-size:14px;max-width:34ch;margin-bottom:28px}
+fieldset{border:0;margin:0 0 22px;padding:0}
+legend{font:600 15px/1.3 var(--body);margin-bottom:10px;padding:0}
+label{display:block;font-size:14px;color:var(--slate);margin:10px 0 4px}
+input[type=number],input[type=file]{width:100%;font:inherit;color:var(--pipe);background:var(--frost);
+  border:1px solid var(--line);border-radius:4px;padding:9px 10px}
+input:focus-visible,button:focus-visible,summary:focus-visible,a:focus-visible{outline:3px solid var(--supply);outline-offset:2px}
+.hint{font-size:13px;color:var(--slate);margin-top:5px}
+button{font:600 15px var(--body);cursor:pointer;border-radius:4px;padding:10px 14px;border:1px solid var(--pipe);
+  background:var(--pipe);color:var(--frost);width:100%}
+button.ghost{background:transparent;color:var(--pipe);border-color:var(--line);text-align:left;width:100%;margin-top:6px;font-weight:500}
+button.ghost:hover{border-color:var(--supply)}
+button:disabled{opacity:.55;cursor:progress}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#status{min-height:22px;font-size:14px;margin-top:10px}
+#status.err{color:var(--alarm);font-weight:600}
+.empty{max-width:52ch;padding-top:12vh}
+.empty h2{font-size:34px;line-height:1.08}
+.empty p{color:var(--slate)}
+.verdict{font:700 clamp(26px,3.6vw,38px)/1.12 var(--head);letter-spacing:-.015em;max-width:24ch;margin:0 0 10px}
+.verdict .gap{color:var(--alarm)}
+.honest{font-size:14px;color:var(--slate);max-width:62ch;margin-bottom:26px}
+.chartwrap{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px 14px 8px;margin-bottom:34px}
+svg{display:block;width:100%;height:auto}
+svg text{font-family:var(--body);fill:var(--slate);font-size:12px}
+svg .strong{fill:var(--pipe);font-weight:600}
+.curve{fill:none;stroke:var(--supply);stroke-width:3;stroke-linejoin:round;stroke-linecap:round}
+.drawn{stroke-dasharray:var(--len);stroke-dashoffset:var(--len);animation:draw .9s ease-out forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion:reduce){.drawn{animation:none;stroke-dashoffset:0}}
+.finding{padding:18px 0;border-top:1px solid var(--line)}
+.finding:first-of-type{border-top:0}
+.fhead{display:flex;justify-content:space-between;gap:16px;align-items:baseline;flex-wrap:wrap}
+.fname{font:600 17px/1.3 var(--body);max-width:44ch}
+.fmoney{font:700 20px var(--head);white-space:nowrap}
+.bar{height:8px;background:var(--line);border-radius:4px;margin:10px 0 6px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--supply);border-radius:4px}
+.fmeta{font-size:14px;color:var(--slate)}
+details{margin-top:8px}
+summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--supply)}
+details ul{margin:8px 0 0;padding-left:20px;font-size:14px}
+details li{margin:4px 0;max-width:68ch}
+.note{border-left:4px solid var(--return);padding:8px 14px;background:var(--panel);margin:12px 0;font-size:14px;max-width:68ch}
+table{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+th{font-weight:600;color:var(--slate)}
+td.n,th.n{text-align:right}
+.demo-truth{font-size:14px;margin:0 0 18px;color:var(--slate)}
+.foot{font-size:13px;color:var(--slate);margin-top:34px;max-width:70ch}
+@media (max-width:820px){
+  .shell{grid-template-columns:1fr}
+  .rail{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}
+  .empty{padding-top:4vh}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="rail">
+    <h1>delta-t-doctor</h1>
+    <p class="sub">Find out why a district-cooled building returns water that is too cool, and what to fix first.</p>
+
+    <form id="form" novalidate>
+      <fieldset>
+        <legend>Your meter export</legend>
+        <label for="file">CSV with timestamp, flow, and either temperatures or energy</label>
+        <input id="file" type="file" accept=".csv,text/csv">
+        <p class="hint">At least 14 days. A full year works best. The file is analysed in memory and not stored.</p>
+      </fieldset>
+      <fieldset>
+        <legend>Your contract</legend>
+        <div class="row2">
+          <div><label for="mindt">Minimum delta-T (&deg;C)</label><input id="mindt" type="number" step="0.1" value="8.9"></div>
+          <div><label for="pct">Surcharge per &deg;C below</label><input id="pct" type="number" step="0.01" value="0.10"></div>
+        </div>
+        <label for="rate">Rate (AED per RT-hr)</label>
+        <input id="rate" type="number" step="0.01" value="0.40">
+        <p class="hint">The default rate is a placeholder. Enter the rate from your contract to get real dirham figures.</p>
+      </fieldset>
+      <button id="go" type="submit">Diagnose this file</button>
+    </form>
+
+    <fieldset style="margin-top:26px">
+      <legend>No file yet? Try a simulated building</legend>
+      <div id="demos"></div>
+    </fieldset>
+    <div id="status" role="status" aria-live="polite"></div>
+  </aside>
+
+  <main class="main" id="main">
+    <section class="empty" id="empty">
+      <h2>Upload a meter export to see where the penalty comes from.</h2>
+      <p>The tool reads how your building's delta-T behaves as load rises and falls, then ranks the likely causes by the dirhams they cost you each year.</p>
+      <p>Pick a simulated building on the left to see a worked example first.</p>
+    </section>
+    <div id="result" hidden></div>
+  </main>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const DEMO_LABELS = {
+  healthy:"Healthy building", fouled_coils:"Fouled coils", idle_coils_leaking:"Leaking idle coils",
+  three_way_valves:"3-way valves", excess_pressure:"Excess pressure", mixed_problems:"Fouling and leaks"
+};
+const fmt0 = n => Math.round(n).toLocaleString("en-US");
+const status = (msg, err=false) => { const s=$("#status"); s.textContent=msg; s.className = err?"err":""; };
+
+(async function init(){
+  try{
+    const r = await fetch("/api/demos"); const d = await r.json();
+    d.demos.forEach(name=>{
+      const b=document.createElement("button"); b.type="button"; b.className="ghost";
+      b.textContent=DEMO_LABELS[name]||name; b.addEventListener("click",()=>runDemo(name));
+      $("#demos").appendChild(b);
+    });
+  }catch(e){ status("Could not reach the server.", true); }
+})();
+
+function terms(){
+  return {min_dt:$("#mindt").value, pct:$("#pct").value, rate:$("#rate").value};
+}
+function busy(on){ document.querySelectorAll("button").forEach(b=>b.disabled=on); }
+
+async function runDemo(name){
+  busy(true); status("Simulating and diagnosing a building…");
+  try{
+    const q=new URLSearchParams(terms());
+    const r=await fetch(`/api/demo/${name}?`+q); const j=await r.json();
+    if(!r.ok) throw new Error(j.detail||"Request failed");
+    render(j, name);
+    status("");
+  }catch(e){ status(e.message, true); }
+  busy(false);
+}
+
+$("#form").addEventListener("submit", async ev=>{
+  ev.preventDefault();
+  const f=$("#file").files[0];
+  if(!f){ status("Choose a CSV file first.", true); return; }
+  busy(true); status("Reading your file…");
+  const fd=new FormData(); fd.append("file", f);
+  const t=terms(); Object.keys(t).forEach(k=>fd.append(k,t[k]));
+  try{
+    const r=await fetch("/api/diagnose",{method:"POST",body:fd});
+    const j=await r.json();
+    if(!r.ok) throw new Error(typeof j.detail==="string"?j.detail:"The file could not be read.");
+    render(j, null); status("");
+  }catch(e){ status(e.message, true); }
+  busy(false);
+});
+
+function el(tag, attrs={}, text){
+  const e=document.createElement(tag);
+  Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v));
+  if(text!==undefined) e.textContent=text; return e;
+}
+
+function chart(sig, minDt){
+  const W=860,H=380,L=52,R=20,T=18,B=48;
+  const xmax=110, ymax=Math.max(16, Math.ceil(Math.max(...sig.map(s=>s.dt_c),minDt)+1));
+  const X=v=>L+(v/xmax)*(W-L-R), Y=v=>H-B-(v/ymax)*(H-T-B);
+  const ns="http://www.w3.org/2000/svg";
+  const svg=document.createElementNS(ns,"svg"); svg.setAttribute("viewBox",`0 0 ${W} ${H}`);
+  svg.setAttribute("role","img");
+  svg.setAttribute("aria-label","Delta-T by load band compared with the contract minimum");
+  const add=(tag,a,t)=>{const n=document.createElementNS(ns,tag);Object.entries(a).forEach(([k,v])=>n.setAttribute(k,v));if(t!==undefined)n.textContent=t;svg.appendChild(n);return n;};
+  for(let y=0;y<=ymax;y+=2){
+    add("line",{x1:L,x2:W-R,y1:Y(y),y2:Y(y),stroke:"var(--line)","stroke-width":1});
+    add("text",{x:L-8,y:Y(y)+4,"text-anchor":"end"},y);
+  }
+  for(let x=0;x<=100;x+=20) add("text",{x:X(x),y:H-B+20,"text-anchor":"middle"},x+"%");
+  add("text",{x:(L+W-R)/2,y:H-8,"text-anchor":"middle"},"Cooling load, as a share of this building's peak");
+  add("text",{x:14,y:T+4,"text-anchor":"start",class:"strong"},"Delta-T (°C)");
+  // shortfall area
+  const pts=sig.map(s=>[X(s.load_pct),Y(s.dt_c)]);
+  if(pts.length>1){
+    let d=`M ${pts[0][0]} ${Y(minDt)}`;
+    sig.forEach((s,i)=>{ d+=` L ${pts[i][0]} ${Math.min(Y(s.dt_c),Y(minDt)+0)>Y(minDt)?Y(minDt):Y(s.dt_c)}`; });
+    sig.forEach((s,i)=>{});
+    const below=[]; sig.forEach((s,i)=>{ if(s.dt_c<minDt) below.push(i); });
+    if(below.length){
+      let a=`M ${pts[0][0]} ${Y(minDt)}`;
+      sig.forEach((s,i)=>{ a+=` L ${pts[i][0]} ${s.dt_c<minDt?Y(s.dt_c):Y(minDt)}`; });
+      a+=` L ${pts[pts.length-1][0]} ${Y(minDt)} Z`;
+      add("path",{d:a,fill:"var(--alarm-tint)"});
+    }
+  }
+  add("line",{x1:L,x2:W-R,y1:Y(minDt),y2:Y(minDt),stroke:"var(--alarm)","stroke-width":2,"stroke-dasharray":"7 5"});
+  add("text",{x:W-R,y:Y(minDt)-8,"text-anchor":"end",fill:"var(--alarm)",style:"fill:var(--alarm);font-weight:600"},
+      `Contract minimum ${minDt.toFixed(1)} °C`);
+  const line=add("path",{d:pts.map((p,i)=>(i?"L":"M")+p[0]+" "+p[1]).join(" "),class:"curve drawn"});
+  line.style.setProperty("--len", Math.ceil(line.getTotalLength?line.getTotalLength():2000));
+  const maxShare=Math.max(...sig.map(s=>s.flow_share),0.01);
+  sig.forEach(s=>{
+    const r=4+11*Math.sqrt(s.flow_share/maxShare);
+    const c=add("circle",{cx:X(s.load_pct),cy:Y(s.dt_c),r:r,fill:"var(--supply)","fill-opacity":.28,stroke:"var(--supply)","stroke-width":1.5});
+    const t=document.createElementNS(ns,"title"); t.textContent=`${s.load_pct.toFixed(0)}% load: ${s.dt_c.toFixed(1)} °C, ${(100*s.flow_share).toFixed(0)}% of the water`; c.appendChild(t);
+  });
+  return svg;
+}
+
+function render(d, demoName){
+  $("#empty").hidden=true;
+  const root=$("#result"); root.hidden=false; root.replaceChildren();
+
+  const shortfall=d.min_delta_t_c-d.delta_t_c;
+  const v=el("p",{class:"verdict"});
+  if(d.below_minimum){
+    v.append(`This building returns ${d.delta_t_c.toFixed(1)} °C, `);
+    v.append(el("span",{class:"gap"},`${shortfall.toFixed(1)} °C under`));
+    v.append(` the ${d.min_delta_t_c.toFixed(1)} °C minimum.`);
+  }else{
+    v.append(`This building returns ${d.delta_t_c.toFixed(1)} °C, at or above the ${d.min_delta_t_c.toFixed(1)} °C minimum.`);
+  }
+  root.append(v);
+
+  if(demoName){
+    root.append(el("p",{class:"demo-truth"},
+      `Simulated building. The fault that was actually built in: ${d.truth_for_demo.join(" + ").replaceAll("_"," ")}. `+
+      `The tool saw only the meter data.`));
+  }
+  root.append(el("p",{class:"honest"},
+    `Estimated surcharge over a year: AED ${fmt0(d.annual_surcharge_aed_estimate)} at the rate you entered. `+
+    `The diagnosis comes from a model trained on simulated buildings, not on UAE field data, so treat it as a ranked inspection list.`));
+
+  const cw=el("div",{class:"chartwrap"}); cw.append(chart(d.signature, d.min_delta_t_c));
+  cw.append(el("p",{class:"hint",style:"padding:0 6px"},"Each dot is a load band. Larger dots carry more of your water. The shaded area is where the building falls short of the contract."));
+  root.append(cw);
+
+  root.append(el("h2",{},"Where to look first"));
+  d.notes.forEach(n=>root.append(el("div",{class:"note"},n)));
+  d.findings.forEach(f=>{
+    const box=el("div",{class:"finding"});
+    const head=el("div",{class:"fhead"});
+    head.append(el("div",{class:"fname"},f.label));
+    head.append(el("div",{class:"fmoney"},`AED ${fmt0(f.expected_saving_aed_per_year)} a year`));
+    box.append(head);
+    const bar=el("div",{class:"bar",role:"img","aria-label":`Likelihood ${Math.round(100*f.probability)} percent`});
+    const i=el("i"); i.style.width=Math.max(2,Math.round(100*f.probability))+"%"; bar.append(i); box.append(bar);
+    box.append(el("div",{class:"fmeta"},`${Math.round(100*f.probability)}% likely · fixing it would recover about ${f.expected_dt_gain_c.toFixed(1)} °C`));
+    const det=el("details"); det.append(el("summary",{},"What to check"));
+    const ul=el("ul"); f.checks.forEach(c=>ul.append(el("li",{},c))); det.append(ul); box.append(det);
+    root.append(box);
+  });
+
+  if(d.monthly.length){
+    root.append(el("h2",{style:"margin-top:36px"},"Month by month"));
+    const t=el("table"); const th=el("thead"); const hr=el("tr");
+    [["Month",""],["Delta-T (°C)","n"],["Below minimum (°C)","n"],["Surcharge (AED)","n"]].forEach(([h,c])=>hr.append(el("th",c?{class:c}:{},h)));
+    th.append(hr); t.append(th);
+    const tb=el("tbody");
+    d.monthly.forEach(m=>{
+      const r=el("tr");
+      r.append(el("td",{},m.month));
+      r.append(el("td",{class:"n"},m.delta_t_c.toFixed(2)));
+      r.append(el("td",{class:"n"},m.shortfall_c.toFixed(2)));
+      r.append(el("td",{class:"n"},fmt0(m.surcharge_aed)));
+      tb.append(r);
+    });
+    t.append(tb); root.append(t);
+  }
+  root.append(el("p",{class:"foot"},d.disclaimer));
+  root.scrollIntoView({block:"start"});
+}
+</script>
+</body>
+</html>

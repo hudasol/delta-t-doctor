@@ -1,0 +1,1122 @@
+{
+  "cv_grouped_by_building": {
+    "ours_gbdt": {
+      "n": 4000,
+      "prevalence": {
+        "fouling": 0.252,
+        "passing_valves": 0.235,
+        "constant_flow": 0.26725,
+        "overflow": 0.228
+      },
+      "per_cause": {
+        "fouling": {
+          "auroc": 0.9915112588596046,
+          "avg_precision": 0.9784497623417865,
+          "f1_at_0.5": 0.923469387755102,
+          "brier": 0.027180207801800502,
+          "gain_mae_c": 0.10500146043143889,
+          "gain_mae_c_when_present": 0.3190671610254292
+        },
+        "passing_valves": {
+          "auroc": 0.9564516409400641,
+          "avg_precision": 0.889278222999861,
+          "f1_at_0.5": 0.7876312718786465,
+          "brier": 0.06661453704543878,
+          "gain_mae_c": 0.13130728497683533,
+          "gain_mae_c_when_present": 0.3150634471789375
+        },
+        "constant_flow": {
+          "auroc": 0.996372603558171,
+          "avg_precision": 0.9914284429479685,
+          "f1_at_0.5": 0.9647058823529412,
+          "brier": 0.015356199001810145,
+          "gain_mae_c": 0.23344691436896306,
+          "gain_mae_c_when_present": 0.7820269173581491
+        },
+        "overflow": {
+          "auroc": 0.9531305037610218,
+          "avg_precision": 0.884372463747967,
+          "f1_at_0.5": 0.7741545893719807,
+          "brier": 0.06777174651315165,
+          "gain_mae_c": 0.14884737260276226,
+          "gain_mae_c_when_present": 0.3725129533689073
+        }
+      },
+      "any_fault_auroc": 0.9977842165998527,
+      "macro_auroc": 0.9743665017797154,
+      "macro_f1": 0.8624902828396677,
+      "exact_match": 0.80425,
+      "top1_fix_accuracy": 0.949134581419993,
+      "top1_fix_gain_captured": 0.9910720683423365,
+      "top1_fix_gain_captured_blind": 0.9733569145054884,
+      "top1_saving_captured": 0.9864799402622478
+    },
+    "logistic": {
+      "n": 4000,
+      "prevalence": {
+        "fouling": 0.252,
+        "passing_valves": 0.235,
+        "constant_flow": 0.26725,
+        "overflow": 0.228
+      },
+      "per_cause": {
+        "fouling": {
+          "auroc": 0.9848401955479161,
+          "avg_precision": 0.9701095858951548,
+          "f1_at_0.5": 0.9109518935516888,
+          "brier": 0.033365786249206816,
+          "gain_mae_c": 0.19287259716157165,
+          "gain_mae_c_when_present": 0.3882953322223289
+        },
+        "passing_valves": {
+          "auroc": 0.9212779863718537,
+          "avg_precision": 0.8054219085314546,
+          "f1_at_0.5": 0.6781883194278904,
+          "brier": 0.09191730885490024,
+          "gain_mae_c": 0.278797521228718,
+          "gain_mae_c_when_present": 0.6254902429275276
+        },
+        "constant_flow": {
+          "auroc": 0.9947070746917168,
+          "avg_precision": 0.9877397743754027,
+          "f1_at_0.5": 0.9486692015209125,
+          "brier": 0.020562395837308203,
+          "gain_mae_c": 0.32178904723411084,
+          "gain_mae_c_when_present": 0.8209026374596116
+        },
+        "overflow": {
+          "auroc": 0.8808627482728844,
+          "avg_precision": 0.7300372203283697,
+          "f1_at_0.5": 0.6268277177368087,
+          "brier": 0.10672324001652618,
+          "gain_mae_c": 0.2966803648867262,
+          "gain_mae_c_when_present": 0.6006520365656255
+        }
+      },
+      "any_fault_auroc": 0.9914408454121679,
+      "macro_auroc": 0.9454220012210928,
+      "macro_f1": 0.7911592830593251,
+      "exact_match": 0.70125,
+      "top1_fix_accuracy": 0.935005298481102,
+      "top1_fix_gain_captured": 0.9861859171672916,
+      "top1_fix_gain_captured_blind": 0.9211517535622777,
+      "top1_saving_captured": 0.9686063699377434
+    },
+    "expert_rules": {
+      "n": 4000,
+      "prevalence": {
+        "fouling": 0.252,
+        "passing_valves": 0.235,
+        "constant_flow": 0.26725,
+        "overflow": 0.228
+      },
+      "per_cause": {
+        "fouling": {
+          "auroc": 0.6826961845344198,
+          "avg_precision": 0.5216693121693121,
+          "f1_at_0.5": 0.5350686912509038,
+          "brier": 0.16075,
+          "gain_mae_c": 0.29860419497471724,
+          "gain_mae_c_when_present": 1.1749813647929972
+        },
+        "passing_valves": {
+          "auroc": 0.49010916423306916,
+          "avg_precision": 0.23178275255486683,
+          "f1_at_0.5": 0.17142857142857143,
+          "brier": 0.32625,
+          "gain_mae_c": 0.8562237097585701,
+          "gain_mae_c_when_present": 1.36088560989997
+        },
+        "constant_flow": {
+          "auroc": 0.6970374746388642,
+          "avg_precision": 0.3939124936567306,
+          "f1_at_0.5": 0.5505226480836237,
+          "brier": 0.3225,
+          "gain_mae_c": 0.5379705356958825,
+          "gain_mae_c_when_present": 1.6123158051866822
+        },
+        "overflow": {
+          "auroc": 0.5346388964639578,
+          "avg_precision": 0.24866367623604466,
+          "f1_at_0.5": 0.19508196721311474,
+          "brier": 0.2455,
+          "gain_mae_c": 0.35702227242047685,
+          "gain_mae_c_when_present": 1.1611592799471282
+        }
+      },
+      "any_fault_auroc": 0.6848518736861443,
+      "macro_auroc": 0.6011204299675778,
+      "macro_f1": 0.3630254694940534,
+      "exact_match": 0.304,
+      "top1_fix_accuracy": 0.8474037442599788,
+      "top1_fix_gain_captured": 0.9240954376063147,
+      "top1_fix_gain_captured_blind": 0.3886459653475767,
+      "top1_saving_captured": 0.3930656301256089
+    },
+    "prior": {
+      "n": 4000,
+      "prevalence": {
+        "fouling": 0.252,
+        "passing_valves": 0.235,
+        "constant_flow": 0.26725,
+        "overflow": 0.228
+      },
+      "per_cause": {
+        "fouling": {
+          "auroc": 0.47108691961633137,
+          "avg_precision": 0.23922418568121692,
+          "f1_at_0.5": 0.0,
+          "brier": 0.18870679687499997,
+          "gain_mae_c": 0.6474858341424737,
+          "gain_mae_c_when_present": 1.2968202663379818
+        },
+        "passing_valves": {
+          "auroc": 0.48581560283687947,
+          "avg_precision": 0.2289392730496454,
+          "f1_at_0.5": 0.0,
+          "brier": 0.17982914062499997,
+          "gain_mae_c": 0.44775802605269677,
+          "gain_mae_c_when_present": 0.95647586057769
+        },
+        "constant_flow": {
+          "auroc": 0.47191404805059556,
+          "avg_precision": 0.2553976847521048,
+          "f1_at_0.5": 0.0,
+          "brier": 0.19609546875,
+          "gain_mae_c": 1.3648896349722568,
+          "gain_mae_c_when_present": 2.586325301251327
+        },
+        "overflow": {
+          "auroc": 0.48664894100536316,
+          "avg_precision": 0.22264450840643274,
+          "f1_at_0.5": 0.0,
+          "brier": 0.17605769531249998,
+          "gain_mae_c": 0.38174591498114047,
+          "gain_mae_c_when_present": 0.8381101300067926
+        }
+      },
+      "any_fault_auroc": 0.48211177181389353,
+      "macro_auroc": 0.47886637787729236,
+      "macro_f1": 0.0,
+      "exact_match": 0.29225,
+      "top1_fix_accuracy": 0.8993288590604027,
+      "top1_fix_gain_captured": 0.9685208618071625,
+      "top1_fix_gain_captured_blind": 0.5358872976202655,
+      "top1_saving_captured": 0.707425973149682
+    }
+  },
+  "cv_confusion_single_cause": {
+    "none": {
+      "n": 1149,
+      "fouling": 0.02133665263368627,
+      "passing_valves": 0.011497159853352307,
+      "constant_flow": 0.0005036572208668438,
+      "overflow": 0.011410745345288395
+    },
+    "fouling": {
+      "n": 406,
+      "fouling": 0.9622006712688703,
+      "passing_valves": 0.0351454712796858,
+      "constant_flow": 0.004148909623372691,
+      "overflow": 0.10294069884823939
+    },
+    "passing_valves": {
+      "n": 404,
+      "fouling": 0.02340833952864764,
+      "passing_valves": 0.8302000074591561,
+      "constant_flow": 0.03641890083564396,
+      "overflow": 0.1979398061457401
+    },
+    "constant_flow": {
+      "n": 384,
+      "fouling": 0.06934885156798666,
+      "passing_valves": 0.1766918794900911,
+      "constant_flow": 0.9513461906398032,
+      "overflow": 0.11129359915560276
+    },
+    "overflow": {
+      "n": 398,
+      "fouling": 0.017788530959642914,
+      "passing_valves": 0.14792467041302979,
+      "constant_flow": 0.004229550538340673,
+      "overflow": 0.8719614644027295
+    }
+  },
+  "cv_constant_flow_subtypes": {
+    "three_way": {
+      "n": 161,
+      "mean_prob": 0.9510655670501493,
+      "recall_at_0.5": 0.9565217391304348
+    },
+    "stuck_open": {
+      "n": 132,
+      "mean_prob": 0.8686154183522724,
+      "recall_at_0.5": 0.9015151515151515
+    },
+    "mixed": {
+      "n": 776,
+      "mean_prob": 0.9528709982908009,
+      "recall_at_0.5": 0.9690721649484536
+    }
+  },
+  "reliability": {
+    "pred": [
+      0.011787348712128009,
+      0.14579676769814987,
+      0.24595536343104152,
+      0.3480231040347533,
+      0.44921871968023974,
+      0.548186188524861,
+      0.6479811614078459,
+      0.7498765062246447,
+      0.8503315537890025,
+      0.9773619818240228
+    ],
+    "obs": [
+      0.00986350503138388,
+      0.140625,
+      0.22807017543859648,
+      0.3419354838709677,
+      0.42990654205607476,
+      0.5708661417322834,
+      0.6826086956521739,
+      0.7962962962962963,
+      0.894927536231884,
+      0.9848156182212582
+    ],
+    "n": [
+      10037,
+      1024,
+      627,
+      465,
+      321,
+      254,
+      230,
+      216,
+      276,
+      1383
+    ]
+  },
+  "stress": {
+    "fresh": {
+      "n": 480,
+      "prevalence": {
+        "fouling": 0.22083333333333333,
+        "passing_valves": 0.225,
+        "constant_flow": 0.24583333333333332,
+        "overflow": 0.21458333333333332
+      },
+      "per_cause": {
+        "fouling": {
+          "auroc": 0.9951316718797296,
+          "avg_precision": 0.9890331811750421,
+          "f1_at_0.5": 0.9611650485436893,
+          "brier": 0.016423622228684005,
+          "gain_mae_c": 0.09291440517284554,
+          "gain_mae_c_when_present": 0.3604901713912144
+        },
+        "passing_valves": {
+          "auroc": 0.9712639386698526,
+          "avg_precision": 0.9233221273023431,
+          "f1_at_0.5": 0.81,
+          "brier": 0.055299103649484184,
+          "gain_mae_c": 0.11901574092163018,
+          "gain_mae_c_when_present": 0.2975171118490451
+        },
+        "constant_flow": {
+          "auroc": 0.9957158910010301,
+          "avg_precision": 0.9874627978005672,
+          "f1_at_0.5": 0.9473684210526315,
+          "brier": 0.01898481966882159,
+          "gain_mae_c": 0.1984264694405183,
+          "gain_mae_c_when_present": 0.715123715481261
+        },
+        "overflow": {
+          "auroc": 0.9640493420205505,
+          "avg_precision": 0.8901301682964275,
+          "f1_at_0.5": 0.7878787878787878,
+          "brier": 0.061701124873688076,
+          "gain_mae_c": 0.13831344214799204,
+          "gain_mae_c_when_present": 0.35783691909289356
+        }
+      },
+      "any_fault_auroc": 0.9993554593554593,
+      "macro_auroc": 0.9815402108927906,
+      "macro_f1": 0.8766030643687772,
+      "exact_match": 0.84375,
+      "top1_fix_accuracy": 0.9619047619047619,
+      "top1_fix_gain_captured": 0.9922632493537887,
+      "top1_fix_gain_captured_blind": 0.9746118706768448,
+      "top1_saving_captured": 0.9859194210492582
+    },
+    "noise_x3": {
+      "n": 480,
+      "prevalence": {
+        "fouling": 0.22708333333333333,
+        "passing_valves": 0.1875,
+        "constant_flow": 0.23541666666666666,
+        "overflow": 0.2520833333333333
+      },
+      "per_cause": {
+        "fouling": {
+          "auroc": 0.9745048097133955,
+          "avg_precision": 0.9403640296874248,
+          "f1_at_0.5": 0.7228070175438597,
+          "brier": 0.11739542271182397,
+          "gain_mae_c": 0.24309700917554167,
+          "gain_mae_c_when_present": 0.3839725124236948
+        },
+        "passing_valves": {
+          "auroc": 0.9357834757834758,
+          "avg_precision": 0.807325133428127,
+          "f1_at_0.5": 0.6376811594202898,
+          "brier": 0.07664417905121383,
+          "gain_mae_c": 0.15884466102174213,
+          "gain_mae_c_when_present": 0.5134758115750351
+        },
+        "constant_flow": {
+          "auroc": 0.9983964698222855,
+          "avg_precision": 0.9938172633679885,
+          "f1_at_0.5": 0.9112903225806451,
+          "brier": 0.0310693693280188,
+          "gain_mae_c": 0.25540084484458925,
+          "gain_mae_c_when_present": 0.8340394115566723
+        },
+        "overflow": {
+          "auroc": 0.9131195469508966,
+          "avg_precision": 0.8475067456937935,
+          "f1_at_0.5": 0.7592592592592593,
+          "brier": 0.08751124776677983,
+          "gain_mae_c": 0.20439049138696525,
+          "gain_mae_c_when_present": 0.4110686849463295
+        }
+      },
+      "any_fault_auroc": 0.9823761423761422,
+      "macro_auroc": 0.9554510755675133,
+      "macro_f1": 0.7577594397010134,
+      "exact_match": 0.6645833333333333,
+      "top1_fix_accuracy": 0.9555555555555556,
+      "top1_fix_gain_captured": 0.9932758115884109,
+      "top1_fix_gain_captured_blind": 0.928985917037259,
+      "top1_saving_captured": 0.9788764726285286
+    },
+    "res_2h": {
+      "n": 480,
+      "prevalence": {
+        "fouling": 0.24166666666666667,
+        "passing_valves": 0.23958333333333334,
+        "constant_flow": 0.24791666666666667,
+        "overflow": 0.19583333333333333
+      },
+      "per_cause": {
+        "fouling": {
+          "auroc": 0.9927647783251232,
+          "avg_precision": 0.9861969138525524,
+          "f1_at_0.5": 0.9367088607594937,
+          "brier": 0.026669143807903313,
+          "gain_mae_c": 0.1688898060129479,
+          "gain_mae_c_when_present": 0.46432125858706474
+        },
+        "passing_valves": {
+          "auroc": 0.949112567004169,
+          "avg_precision": 0.8841002397648368,
+          "f1_at_0.5": 0.7623762376237624,
+          "brier": 0.0718366760082285,
+          "gain_mae_c": 0.15036367880008986,
+          "gain_mae_c_when_present": 0.4134796439610421
+        },
+        "constant_flow": {
+          "auroc": 0.9919574477990643,
+          "avg_precision": 0.9859059111606863,
+          "f1_at_0.5": 0.9620253164556962,
+          "brier": 0.019693336921550213,
+          "gain_mae_c": 0.4490342334907456,
+          "gain_mae_c_when_present": 0.9513213807346319
+        },
+        "overflow": {
+          "auroc": 0.8529241538970345,
+          "avg_precision": 0.6511476968358207,
+          "f1_at_0.5": 0.5615763546798029,
+          "brier": 0.13291120809773202,
+          "gain_mae_c": 0.33222190614026226,
+          "gain_mae_c_when_present": 0.49920315347876476
+        }
+      },
+      "any_fault_auroc": 0.9691684249965491,
+      "macro_auroc": 0.9466897367563477,
+      "macro_f1": 0.8056716923796888,
+      "exact_match": 0.7020833333333333,
+      "top1_fix_accuracy": 0.934984520123839,
+      "top1_fix_gain_captured": 0.988127003294295,
+      "top1_fix_gain_captured_blind": 0.9387111697271084,
+      "top1_saving_captured": 0.9674629317768153
+    },
+    "climate_p3": {
+      "n": 480,
+      "prevalence": {
+        "fouling": 0.22708333333333333,
+        "passing_valves": 0.1875,
+        "constant_flow": 0.2791666666666667,
+        "overflow": 0.20625
+      },
+      "per_cause": {
+        "fouling": {
+          "auroc": 0.9931996340166671,
+          "avg_precision": 0.9785356983384894,
+          "f1_at_0.5": 0.9357798165137615,
+          "brier": 0.0231053599841724,
+          "gain_mae_c": 0.10752012220381871,
+          "gain_mae_c_when_present": 0.30545531078833305
+        },
+        "passing_valves": {
+          "auroc": 0.9618518518518518,
+          "avg_precision": 0.8960857891535009,
+          "f1_at_0.5": 0.8143712574850299,
+          "brier": 0.054834739902420285,
+          "gain_mae_c": 0.11718935594643375,
+          "gain_mae_c_when_present": 0.2692389601805148
+        },
+        "constant_flow": {
+          "auroc": 0.9978431541713397,
+          "avg_precision": 0.9951008077520567,
+          "f1_at_0.5": 0.973384030418251,
+          "brier": 0.014386325218022088,
+          "gain_mae_c": 0.22191671405380559,
+          "gain_mae_c_when_present": 0.7485338507324357
+        },
+        "overflow": {
+          "auroc": 0.9516954320103926,
+          "avg_precision": 0.8734821202951031,
+          "f1_at_0.5": 0.7675675675675676,
+          "brier": 0.0641116812934154,
+          "gain_mae_c": 0.12444125292491456,
+          "gain_mae_c_when_present": 0.3132675208427738
+        }
+      },
+      "any_fault_auroc": 0.9954348635357276,
+      "macro_auroc": 0.9761475180125628,
+      "macro_f1": 0.8727756679961525,
+      "exact_match": 0.8291666666666667,
+      "top1_fix_accuracy": 0.9657320872274143,
+      "top1_fix_gain_captured": 0.9963874401769605,
+      "top1_fix_gain_captured_blind": 0.9822790739728307,
+      "top1_saving_captured": 0.9911526204926507
+    },
+    "climate_m3": {
+      "n": 480,
+      "prevalence": {
+        "fouling": 0.23958333333333334,
+        "passing_valves": 0.24375,
+        "constant_flow": 0.26875,
+        "overflow": 0.19375
+      },
+      "per_cause": {
+        "fouling": {
+          "auroc": 0.9902918403811793,
+          "avg_precision": 0.9781936910142512,
+          "f1_at_0.5": 0.9285714285714286,
+          "brier": 0.02569442383957458,
+          "gain_mae_c": 0.09066002357460916,
+          "gain_mae_c_when_present": 0.30438760447345414
+        },
+        "passing_valves": {
+          "auroc": 0.9632455087000542,
+          "avg_precision": 0.8870726494557497,
+          "f1_at_0.5": 0.8018433179723502,
+          "brier": 0.06460982467805083,
+          "gain_mae_c": 0.13709529509338025,
+          "gain_mae_c_when_present": 0.3437249672379057
+        },
+        "constant_flow": {
+          "auroc": 0.9956933677863911,
+          "avg_precision": 0.9910238543707005,
+          "f1_at_0.5": 0.9575289575289575,
+          "brier": 0.018017247169795744,
+          "gain_mae_c": 0.2565519567266166,
+          "gain_mae_c_when_present": 0.8207940719836532
+        },
+        "overflow": {
+          "auroc": 0.9773276652496458,
+          "avg_precision": 0.9346698669917808,
+          "f1_at_0.5": 0.8488372093023255,
+          "brier": 0.04307146757651587,
+          "gain_mae_c": 0.1384063026241397,
+          "gain_mae_c_when_present": 0.41303115268680246
+        }
+      },
+      "any_fault_auroc": 0.9994360593880732,
+      "macro_auroc": 0.9816395955293177,
+      "macro_f1": 0.8841952283437655,
+      "exact_match": 0.85,
+      "top1_fix_accuracy": 0.9550898203592815,
+      "top1_fix_gain_captured": 0.9920649788676719,
+      "top1_fix_gain_captured_blind": 0.9770339623635246,
+      "top1_saving_captured": 0.981015399998298
+    },
+    "severity_x05": {
+      "n": 480,
+      "prevalence": {
+        "fouling": 0.18333333333333332,
+        "passing_valves": 0.225,
+        "constant_flow": 0.25,
+        "overflow": 0.23333333333333334
+      },
+      "per_cause": {
+        "fouling": {
+          "auroc": 0.9522553339517623,
+          "avg_precision": 0.9137059475120471,
+          "f1_at_0.5": 0.8387096774193549,
+          "brier": 0.04213575796117079,
+          "gain_mae_c": 0.09186545653929595,
+          "gain_mae_c_when_present": 0.3892808689683551
+        },
+        "passing_valves": {
+          "auroc": 0.9603619076065312,
+          "avg_precision": 0.8860124818290565,
+          "f1_at_0.5": 0.746268656716418,
+          "brier": 0.06838709718816159,
+          "gain_mae_c": 0.09648378375161393,
+          "gain_mae_c_when_present": 0.1882442540197191
+        },
+        "constant_flow": {
+          "auroc": 0.9999421296296296,
+          "avg_precision": 0.9997967479674796,
+          "f1_at_0.5": 0.9915966386554622,
+          "brier": 0.00410812577051781,
+          "gain_mae_c": 0.16475410377988714,
+          "gain_mae_c_when_present": 0.6387290966894028
+        },
+        "overflow": {
+          "auroc": 0.8973456909937888,
+          "avg_precision": 0.76088941733399,
+          "f1_at_0.5": 0.6057142857142858,
+          "brier": 0.1109196088752412,
+          "gain_mae_c": 0.13988754915028595,
+          "gain_mae_c_when_present": 0.3309382131791465
+        }
+      },
+      "any_fault_auroc": 0.9956173780487805,
+      "macro_auroc": 0.952476265545428,
+      "macro_f1": 0.7955723146263802,
+      "exact_match": 0.7645833333333333,
+      "top1_fix_accuracy": 0.9542682926829268,
+      "top1_fix_gain_captured": 0.9946508550543482,
+      "top1_fix_gain_captured_blind": 0.9611980311982583,
+      "top1_saving_captured": 0.9941157599161555
+    },
+    "severity_x15": {
+      "n": 480,
+      "prevalence": {
+        "fouling": 0.26875,
+        "passing_valves": 0.23125,
+        "constant_flow": 0.22916666666666666,
+        "overflow": 0.27291666666666664
+      },
+      "per_cause": {
+        "fouling": {
+          "auroc": 0.9973718500850284,
+          "avg_precision": 0.9946260303801565,
+          "f1_at_0.5": 0.9689922480620154,
+          "brier": 0.012106620398213879,
+          "gain_mae_c": 0.15204098100080762,
+          "gain_mae_c_when_present": 0.499714017511107
+        },
+        "passing_valves": {
+          "auroc": 0.9421738811982714,
+          "avg_precision": 0.8641874619876455,
+          "f1_at_0.5": 0.7437185929648241,
+          "brier": 0.07517553616378794,
+          "gain_mae_c": 0.19216484560253086,
+          "gain_mae_c_when_present": 0.5936731615613254
+        },
+        "constant_flow": {
+          "auroc": 0.9945823095823095,
+          "avg_precision": 0.9844847363736453,
+          "f1_at_0.5": 0.9043478260869565,
+          "brier": 0.026798715470156078,
+          "gain_mae_c": 0.2495798625212829,
+          "gain_mae_c_when_present": 0.8605160876029284
+        },
+        "overflow": {
+          "auroc": 0.9462149215862115,
+          "avg_precision": 0.8694004271647695,
+          "f1_at_0.5": 0.7734375,
+          "brier": 0.08555184902107264,
+          "gain_mae_c": 0.2248581934450512,
+          "gain_mae_c_when_present": 0.5548033024627137
+        }
+      },
+      "any_fault_auroc": 0.9999799422336328,
+      "macro_auroc": 0.9700857406129553,
+      "macro_f1": 0.8476240417784491,
+      "exact_match": 0.775,
+      "top1_fix_accuracy": 0.9390243902439024,
+      "top1_fix_gain_captured": 0.9885700903989316,
+      "top1_fix_gain_captured_blind": 0.9674730986464387,
+      "top1_saving_captured": 0.9826151950012796
+    },
+    "no_outdoor": {
+      "n": 480,
+      "prevalence": {
+        "fouling": 0.25416666666666665,
+        "passing_valves": 0.22708333333333333,
+        "constant_flow": 0.23125,
+        "overflow": 0.24166666666666667
+      },
+      "per_cause": {
+        "fouling": {
+          "auroc": 0.987624782489239,
+          "avg_precision": 0.9783179214265549,
+          "f1_at_0.5": 0.9137931034482759,
+          "brier": 0.028751989857135327,
+          "gain_mae_c": 0.14026123357914416,
+          "gain_mae_c_when_present": 0.3232223561560055
+        },
+        "passing_valves": {
+          "auroc": 0.9342342787902767,
+          "avg_precision": 0.8424302605369828,
+          "f1_at_0.5": 0.7291666666666666,
+          "brier": 0.08049303804386317,
+          "gain_mae_c": 0.146293763714025,
+          "gain_mae_c_when_present": 0.3385827193816385
+        },
+        "constant_flow": {
+          "auroc": 0.9943113845552869,
+          "avg_precision": 0.986771302312211,
+          "f1_at_0.5": 0.9511111111111111,
+          "brier": 0.018029297208563954,
+          "gain_mae_c": 0.3414035409221861,
+          "gain_mae_c_when_present": 1.386505834764635
+        },
+        "overflow": {
+          "auroc": 0.8934492231906025,
+          "avg_precision": 0.7764802171576277,
+          "f1_at_0.5": 0.5875706214689266,
+          "brier": 0.10825925504047948,
+          "gain_mae_c": 0.27221892250671975,
+          "gain_mae_c_when_present": 0.814625465358116
+        }
+      },
+      "any_fault_auroc": 0.9926215277777778,
+      "macro_auroc": 0.9524049172563512,
+      "macro_f1": 0.7954103756737451,
+      "exact_match": 0.7375,
+      "top1_fix_accuracy": 0.9375,
+      "top1_fix_gain_captured": 0.9849542193943209,
+      "top1_fix_gain_captured_blind": 0.9258759237562413,
+      "top1_saving_captured": 0.976755551950284
+    },
+    "window_21d": {
+      "n": 480,
+      "prevalence": {
+        "fouling": 0.2708333333333333,
+        "passing_valves": 0.22708333333333333,
+        "constant_flow": 0.275,
+        "overflow": 0.17708333333333334
+      },
+      "per_cause": {
+        "fouling": {
+          "auroc": 0.9918131868131868,
+          "avg_precision": 0.9833160913813257,
+          "f1_at_0.5": 0.937984496124031,
+          "brier": 0.025536854415561402,
+          "gain_mae_c": 0.10273342719040172,
+          "gain_mae_c_when_present": 0.2815427636087636
+        },
+        "passing_valves": {
+          "auroc": 0.9485892331660032,
+          "avg_precision": 0.8617311947781936,
+          "f1_at_0.5": 0.7628865979381443,
+          "brier": 0.07233823684155176,
+          "gain_mae_c": 0.14216899557542254,
+          "gain_mae_c_when_present": 0.36641007940678005
+        },
+        "constant_flow": {
+          "auroc": 0.9969305120167189,
+          "avg_precision": 0.9933489203224145,
+          "f1_at_0.5": 0.96875,
+          "brier": 0.0156348902876299,
+          "gain_mae_c": 0.23401661133500737,
+          "gain_mae_c_when_present": 0.773463287987629
+        },
+        "overflow": {
+          "auroc": 0.9423380491437081,
+          "avg_precision": 0.8129443090682099,
+          "f1_at_0.5": 0.7052023121387283,
+          "brier": 0.07419187032147176,
+          "gain_mae_c": 0.15170350457746543,
+          "gain_mae_c_when_present": 0.35704355641122437
+        }
+      },
+      "any_fault_auroc": 0.9997384882528924,
+      "macro_auroc": 0.9699177452849042,
+      "macro_f1": 0.8437058515502258,
+      "exact_match": 0.8020833333333334,
+      "top1_fix_accuracy": 0.967551622418879,
+      "top1_fix_gain_captured": 0.9940733384837457,
+      "top1_fix_gain_captured_blind": 0.9723967706342452,
+      "top1_saving_captured": 0.9911700951180208
+    },
+    "energy_only": {
+      "n": 480,
+      "prevalence": {
+        "fouling": 0.23958333333333334,
+        "passing_valves": 0.21666666666666667,
+        "constant_flow": 0.2625,
+        "overflow": 0.21666666666666667
+      },
+      "per_cause": {
+        "fouling": {
+          "auroc": 0.9902680166765931,
+          "avg_precision": 0.9754739575649556,
+          "f1_at_0.5": 0.918918918918919,
+          "brier": 0.0286832872872574,
+          "gain_mae_c": 0.10541070133772174,
+          "gain_mae_c_when_present": 0.3562439163691742
+        },
+        "passing_valves": {
+          "auroc": 0.9495064443535188,
+          "avg_precision": 0.8616860950615362,
+          "f1_at_0.5": 0.7159090909090909,
+          "brier": 0.07174801888555096,
+          "gain_mae_c": 0.13508947120933884,
+          "gain_mae_c_when_present": 0.3748977621848186
+        },
+        "constant_flow": {
+          "auroc": 0.9978925656891758,
+          "avg_precision": 0.9946484351204825,
+          "f1_at_0.5": 0.959349593495935,
+          "brier": 0.015236583374414749,
+          "gain_mae_c": 0.22530794559194092,
+          "gain_mae_c_when_present": 0.783648674292916
+        },
+        "overflow": {
+          "auroc": 0.9474350450081833,
+          "avg_precision": 0.8810405095887937,
+          "f1_at_0.5": 0.7878787878787878,
+          "brier": 0.06584753309982831,
+          "gain_mae_c": 0.15292718422194426,
+          "gain_mae_c_when_present": 0.3880263856826376
+        }
+      },
+      "any_fault_auroc": 0.9994829578864128,
+      "macro_auroc": 0.9712755179318678,
+      "macro_f1": 0.8455140978006832,
+      "exact_match": 0.7979166666666667,
+      "top1_fix_accuracy": 0.9637462235649547,
+      "top1_fix_gain_captured": 0.9946033400228297,
+      "top1_fix_gain_captured_blind": 0.9626592417283047,
+      "top1_saving_captured": 0.9901010404747481
+    }
+  },
+  "leave_one_type_out": {
+    "hotel": {
+      "n": 1040,
+      "prevalence": {
+        "fouling": 0.25096153846153846,
+        "passing_valves": 0.24519230769230768,
+        "constant_flow": 0.2423076923076923,
+        "overflow": 0.24326923076923077
+      },
+      "per_cause": {
+        "fouling": {
+          "auroc": 0.9867941510631076,
+          "avg_precision": 0.9718252440175158,
+          "f1_at_0.5": 0.9129593810444874,
+          "brier": 0.03379949237171361,
+          "gain_mae_c": 0.16017615954569286,
+          "gain_mae_c_when_present": 0.34259019950651837
+        },
+        "passing_valves": {
+          "auroc": 0.8370251030348446,
+          "avg_precision": 0.6681265207884871,
+          "f1_at_0.5": 0.4659090909090909,
+          "brier": 0.129853918692178,
+          "gain_mae_c": 0.19315033920284114,
+          "gain_mae_c_when_present": 0.5015498359698074
+        },
+        "constant_flow": {
+          "auroc": 0.9915347272580775,
+          "avg_precision": 0.9776339479221391,
+          "f1_at_0.5": 0.9056603773584906,
+          "brier": 0.03320714632026587,
+          "gain_mae_c": 0.2242328125857744,
+          "gain_mae_c_when_present": 0.8524634228771886
+        },
+        "overflow": {
+          "auroc": 0.9094700945703653,
+          "avg_precision": 0.7608099628643263,
+          "f1_at_0.5": 0.7034990791896869,
+          "brier": 0.10787551156328715,
+          "gain_mae_c": 0.22574555534759666,
+          "gain_mae_c_when_present": 0.4187550693009693
+        }
+      },
+      "any_fault_auroc": 0.9920820439261728,
+      "macro_auroc": 0.9312060189815987,
+      "macro_f1": 0.7470069821254388,
+      "exact_match": 0.6759615384615385,
+      "top1_fix_accuracy": 0.9370725034199726,
+      "top1_fix_gain_captured": 0.9850290722100739,
+      "top1_fix_gain_captured_blind": 0.9067697224953145,
+      "top1_saving_captured": 0.9672815141734535
+    },
+    "mall": {
+      "n": 1160,
+      "prevalence": {
+        "fouling": 0.24913793103448276,
+        "passing_valves": 0.22844827586206898,
+        "constant_flow": 0.27844827586206894,
+        "overflow": 0.21637931034482757
+      },
+      "per_cause": {
+        "fouling": {
+          "auroc": 0.981940179326948,
+          "avg_precision": 0.9612300421601989,
+          "f1_at_0.5": 0.8775894538606404,
+          "brier": 0.04196886348667885,
+          "gain_mae_c": 0.23881589985807194,
+          "gain_mae_c_when_present": 0.7902715284047308
+        },
+        "passing_valves": {
+          "auroc": 0.9754674818172235,
+          "avg_precision": 0.925032244974024,
+          "f1_at_0.5": 0.8771929824561403,
+          "brier": 0.045916595347529746,
+          "gain_mae_c": 0.17234283180572285,
+          "gain_mae_c_when_present": 0.4033567295452948
+        },
+        "constant_flow": {
+          "auroc": 0.9885593173319128,
+          "avg_precision": 0.9746232933853625,
+          "f1_at_0.5": 0.9179331306990881,
+          "brier": 0.037834232180295156,
+          "gain_mae_c": 0.4948243479015595,
+          "gain_mae_c_when_present": 1.124629641221422
+        },
+        "overflow": {
+          "auroc": 0.9506922803834168,
+          "avg_precision": 0.8770833081128816,
+          "f1_at_0.5": 0.7745664739884393,
+          "brier": 0.07776757086809818,
+          "gain_mae_c": 0.22165788627666416,
+          "gain_mae_c_when_present": 0.46761959301818457
+        }
+      },
+      "any_fault_auroc": 0.9934299872861765,
+      "macro_auroc": 0.9741648147148754,
+      "macro_f1": 0.861820510251077,
+      "exact_match": 0.7844827586206896,
+      "top1_fix_accuracy": 0.9065533980582524,
+      "top1_fix_gain_captured": 0.9700520332369742,
+      "top1_fix_gain_captured_blind": 0.9278386997258179,
+      "top1_saving_captured": 0.938605904513828
+    },
+    "office": {
+      "n": 970,
+      "prevalence": {
+        "fouling": 0.2618556701030928,
+        "passing_valves": 0.21237113402061855,
+        "constant_flow": 0.27319587628865977,
+        "overflow": 0.20824742268041238
+      },
+      "per_cause": {
+        "fouling": {
+          "auroc": 0.9498058989134738,
+          "avg_precision": 0.7931096622911744,
+          "f1_at_0.5": 0.7936,
+          "brier": 0.11179749478342847,
+          "gain_mae_c": 0.20313384405807502,
+          "gain_mae_c_when_present": 0.3715417089183039
+        },
+        "passing_valves": {
+          "auroc": 0.9802457683118996,
+          "avg_precision": 0.9392111774075609,
+          "f1_at_0.5": 0.8717948717948718,
+          "brier": 0.04120164727996733,
+          "gain_mae_c": 0.19320195967416276,
+          "gain_mae_c_when_present": 0.47852683226646037
+        },
+        "constant_flow": {
+          "auroc": 0.9982791382309648,
+          "avg_precision": 0.9960209630986943,
+          "f1_at_0.5": 0.9629629629629629,
+          "brier": 0.014374287712759842,
+          "gain_mae_c": 0.44140011556101016,
+          "gain_mae_c_when_present": 1.0607129405575262
+        },
+        "overflow": {
+          "auroc": 0.9572407436056105,
+          "avg_precision": 0.897735935670178,
+          "f1_at_0.5": 0.7910863509749304,
+          "brier": 0.0574892076895035,
+          "gain_mae_c": 0.26830441180502035,
+          "gain_mae_c_when_present": 0.6043302033651728
+        }
+      },
+      "any_fault_auroc": 0.9921245249133359,
+      "macro_auroc": 0.9713928872654871,
+      "macro_f1": 0.8548610464331913,
+      "exact_match": 0.7515463917525773,
+      "top1_fix_accuracy": 0.9654178674351584,
+      "top1_fix_gain_captured": 0.994975730268428,
+      "top1_fix_gain_captured_blind": 0.9798448504450414,
+      "top1_saving_captured": 0.9801895803663164
+    },
+    "residential": {
+      "n": 830,
+      "prevalence": {
+        "fouling": 0.2457831325301205,
+        "passing_valves": 0.25783132530120484,
+        "constant_flow": 0.27590361445783135,
+        "overflow": 0.24819277108433735
+      },
+      "per_cause": {
+        "fouling": {
+          "auroc": 0.9807053811940112,
+          "avg_precision": 0.9569375916801464,
+          "f1_at_0.5": 0.8724489795918368,
+          "brier": 0.04315241385432025,
+          "gain_mae_c": 0.0909218315970638,
+          "gain_mae_c_when_present": 0.2842824564087885
+        },
+        "passing_valves": {
+          "auroc": 0.8939533013715257,
+          "avg_precision": 0.7825603627075506,
+          "f1_at_0.5": 0.659217877094972,
+          "brier": 0.1096522050169708,
+          "gain_mae_c": 0.2042303038186189,
+          "gain_mae_c_when_present": 0.41034271159955266
+        },
+        "constant_flow": {
+          "auroc": 0.9945542000595804,
+          "avg_precision": 0.9814010530918654,
+          "f1_at_0.5": 0.9381663113006397,
+          "brier": 0.024497079182821395,
+          "gain_mae_c": 0.2697591954096612,
+          "gain_mae_c_when_present": 0.851483544728477
+        },
+        "overflow": {
+          "auroc": 0.9209531366691561,
+          "avg_precision": 0.799973050214951,
+          "f1_at_0.5": 0.5714285714285714,
+          "brier": 0.10523673245377124,
+          "gain_mae_c": 0.20607536498465864,
+          "gain_mae_c_when_present": 0.5172326250544712
+        }
+      },
+      "any_fault_auroc": 0.9990196485977164,
+      "macro_auroc": 0.9475415048235682,
+      "macro_f1": 0.7603154348540049,
+      "exact_match": 0.6867469879518072,
+      "top1_fix_accuracy": 0.9089347079037801,
+      "top1_fix_gain_captured": 0.9790302543271946,
+      "top1_fix_gain_captured_blind": 0.9368390433374176,
+      "top1_saving_captured": 0.9805031331285141
+    }
+  },
+  "held_out_season": {
+    "summer_JJA": {
+      "n": 995,
+      "prevalence": {
+        "fouling": 0.2693467336683417,
+        "passing_valves": 0.21407035175879396,
+        "constant_flow": 0.23316582914572864,
+        "overflow": 0.26733668341708544
+      },
+      "per_cause": {
+        "fouling": {
+          "auroc": 0.9842200620008623,
+          "avg_precision": 0.9590836653865336,
+          "f1_at_0.5": 0.8877005347593583,
+          "brier": 0.049365284852013094,
+          "gain_mae_c": 0.2282516381825144,
+          "gain_mae_c_when_present": 0.516128730801522
+        },
+        "passing_valves": {
+          "auroc": 0.9270559417888405,
+          "avg_precision": 0.828219171104307,
+          "f1_at_0.5": 0.7135416666666666,
+          "brier": 0.08126244745759025,
+          "gain_mae_c": 0.13662636904668105,
+          "gain_mae_c_when_present": 0.2522762118563753
+        },
+        "constant_flow": {
+          "auroc": 0.993602273240837,
+          "avg_precision": 0.9753324032653854,
+          "f1_at_0.5": 0.9311064718162839,
+          "brier": 0.02522900939503522,
+          "gain_mae_c": 0.17967058830460886,
+          "gain_mae_c_when_present": 0.625548935206448
+        },
+        "overflow": {
+          "auroc": 0.9321735408480047,
+          "avg_precision": 0.8454917838604071,
+          "f1_at_0.5": 0.7160493827160493,
+          "brier": 0.09181719112702678,
+          "gain_mae_c": 0.1599000428592829,
+          "gain_mae_c_when_present": 0.3218510852020619
+        }
+      },
+      "any_fault_auroc": 0.9907916903416171,
+      "macro_auroc": 0.9592629544696362,
+      "macro_f1": 0.8120995139895896,
+      "exact_match": 0.7115577889447237,
+      "top1_fix_accuracy": 0.9565826330532213,
+      "top1_fix_gain_captured": 0.9896826054645411,
+      "top1_fix_gain_captured_blind": 0.9529317182696786,
+      "top1_saving_captured": 0.9706122856669835
+    },
+    "winter_DJF": {
+      "n": 1019,
+      "prevalence": {
+        "fouling": 0.23748773307163887,
+        "passing_valves": 0.22865554465161925,
+        "constant_flow": 0.30029440628066734,
+        "overflow": 0.19627085377821393
+      },
+      "per_cause": {
+        "fouling": {
+          "auroc": 0.9716886307795399,
+          "avg_precision": 0.9529616728110811,
+          "f1_at_0.5": 0.8752834467120182,
+          "brier": 0.0413820420980201,
+          "gain_mae_c": 0.07806807954850001,
+          "gain_mae_c_when_present": 0.25529391596718803
+        },
+        "passing_valves": {
+          "auroc": 0.9583428889689742,
+          "avg_precision": 0.892220734813752,
+          "f1_at_0.5": 0.8101851851851852,
+          "brier": 0.06292845480471695,
+          "gain_mae_c": 0.20045812297559776,
+          "gain_mae_c_when_present": 0.5884828848643945
+        },
+        "constant_flow": {
+          "auroc": 0.9973897459872214,
+          "avg_precision": 0.9955124756321703,
+          "f1_at_0.5": 0.9585987261146497,
+          "brier": 0.02183685260739796,
+          "gain_mae_c": 0.41006979836805374,
+          "gain_mae_c_when_present": 1.110764983576624
+        },
+        "overflow": {
+          "auroc": 0.9559981684981684,
+          "avg_precision": 0.8783075478853857,
+          "f1_at_0.5": 0.7721179624664879,
+          "brier": 0.06134422745638978,
+          "gain_mae_c": 0.18858185320411286,
+          "gain_mae_c_when_present": 0.5649901420019626
+        }
+      },
+      "any_fault_auroc": 0.999383468646956,
+      "macro_auroc": 0.970854858558476,
+      "macro_f1": 0.8540463301195853,
+      "exact_match": 0.7958783120706575,
+      "top1_fix_accuracy": 0.9372384937238494,
+      "top1_fix_gain_captured": 0.988735076855471,
+      "top1_fix_gain_captured_blind": 0.9591692664091577,
+      "top1_saving_captured": 0.9716973869422816
+    }
+  }
+}
