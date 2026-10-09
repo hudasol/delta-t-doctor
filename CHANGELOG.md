@@ -3,10 +3,10 @@
 Versions are git tags. All accuracy figures are simulator results unless stated.
 
 ## Unreleased: engineering round 1 (Google ML review)
-Measured before and after are in . Changes:
-* Evaluation: building-level bootstrap 95% intervals and paired differences; season hold-out now also holds out the test buildings (macro AUROC 0.941 summer, 0.960 winter); feature-group ablation (); calibration folds are grouped by building. README table is generated from  by . The previous README stress range (0.947 to 0.982) was from an older dataset; the current one is 0.902 to 0.978.
-* Input handling: NaN rows are dropped and reported, swapped supply/return, implausible temperatures and ΔT above 25 C are rejected, day-first dates and latin-1 files parse correctly, windows need 80% coverage, informed mode validates the design ΔT range, data-quality  flag and seasonal-annualisation note.
-* Service:  demo route was shadowed by the  route (fixed, tested); uploads parsed in worker threads with a concurrency limit and streaming size cap; NaN/inf parameters rejected (422).
+Measured before and after are in `results/metrics.md`. Changes:
+* Evaluation: building-level bootstrap 95% intervals and paired differences; season hold-out now also holds out the test buildings (macro AUROC 0.941 summer, 0.960 winter); feature-group ablation (`results/ablation.json`); calibration folds are grouped by building. README table is generated from `results/metrics.json` by `scripts/update_readme.py`. The previous README stress range (0.947 to 0.982) was from an older dataset; the current one is 0.902 to 0.978.
+* Input handling: NaN rows are dropped and reported, swapped supply/return, implausible temperatures and ΔT above 25 C are rejected, day-first dates and latin-1 files parse correctly, windows need 80% coverage, informed mode validates the design ΔT range, data-quality `reliable` flag and seasonal-annualisation note.
+* Service: the `.csv` demo route was shadowed by the `{name}` route (fixed, tested); uploads parsed in worker threads with a concurrency limit and streaming size cap; NaN/inf parameters rejected (422).
 * Reproducibility: bundled model hash checked against the model card; model card records git commit, data hash and sklearn version; lock file; one specific-heat constant; ruff and coverage in CI.
 * Docs: corrected the claim that the two valve faults overlap (measured confusion is 2 to 5%; overflow is the hard cause).
 
