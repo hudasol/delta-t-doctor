@@ -1,7 +1,7 @@
 """Latency and memory budget on this machine: parse + diagnose a one-year hourly file, a 5-year file and a 50-building portfolio."""
 import os, sys, time, resource
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
-import numpy as np, pandas as pd
+import pandas as pd
 from deltat_doctor.api import _demo, _portfolio_frame
 from deltat_doctor.diagnose import diagnose_frame, load_default_model
 from deltat_doctor.io import read_table
