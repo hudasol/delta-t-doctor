@@ -2,6 +2,9 @@
 
 Versions are git tags. All accuracy figures are simulator results unless stated.
 
+## v1.0.0
+Examples, one-page proposal, docs checked against a green CI run. 1.0 means the product surface is complete and documented. It does not mean validated on field data; that is what the pilot is for.
+
 ## v0.5.0
 Real-world file import (any delimiter, degF, L/s, RT, MW, cumulative kWh, .xlsx, dd/mm dates), data-quality notes, security headers, bundled fonts (no external requests), API, security, deployment and model-card docs. Docker image and CI smoke test (built and smoke-tested in GitHub Actions).
 
