@@ -13,9 +13,9 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from deltat_doctor import CAUSES, CAUSE_LABELS
+from deltat_doctor import CAUSES
 from deltat_doctor.diagnose import load_default_model
-from deltat_doctor.evaluate import (MODELS, confusion_single_cause, cross_validate, leave_one_group_out,
+from deltat_doctor.evaluate import (MODELS, bootstrap_ci, confusion_single_cause, cross_validate, leave_one_group_out,
                                     metrics, subtype_recall)
 from deltat_doctor.features import augment
 from deltat_doctor.models import Prediction
@@ -59,6 +59,8 @@ for lo, hi in bands:
                      "mean_p_any_on_healthy": float(pr.p_any[sel & healthy].mean()),
                      "false_alarm_rate_at_0.5": float((pr.p_any[sel & healthy] >= 0.5).mean())}
     res["by_design_band"][f"{lo}-{hi}"] = row_
+res["bootstrap"] = bootstrap_ci(ds, {n: p for n, (_, p) in cv.items()})
+res["bootstrap"]["models"]["ours_informed"] = bootstrap_ci(dsi, {"ours_informed": cvi["ours_informed"][1]})["models"]["ours_informed"]
 print("A done", round(time.time() - t0), flush=True)
 
 # reliability (pooled over causes, out-of-fold)
@@ -123,21 +125,27 @@ fig.tight_layout(); fig.savefig(f"{FIG}/stress.png", dpi=160); plt.close(fig)
 res["leave_one_type_out"] = leave_one_group_out(ds, "building_type")
 print("C done", round(time.time() - t0), flush=True)
 
-# ---- D: held-out seasons
+# ---- D: held-out seasons, leak-free: test = held-out buildings AND held-out months; train = other buildings AND other months
+from deltat_doctor.models import Diagnoser
+from sklearn.model_selection import GroupKFold
 summer = [6, 7, 8]; winter = [12, 1, 2]
 res["held_out_season"] = {}
+bid = ds.meta["building_id"].to_numpy()
 for tag, months in (("summer_JJA", summer), ("winter_DJF", winter)):
-    te = ds.meta["month"].isin(months).to_numpy()
-    from deltat_doctor.models import Diagnoser
-    m = Diagnoser(seed=0).fit(ds.X[~te], ds.Y[~te], ds.G[~te])
-    res["held_out_season"][tag] = metrics(ds.subset(te), m.predict(ds.X[te]))
+    in_season = ds.meta["month"].isin(months).to_numpy()
+    P = Prediction(np.zeros_like(ds.Y, dtype=float), np.zeros_like(ds.G), np.zeros(len(ds.Y)))
+    for tr_b, te_b in GroupKFold(5).split(ds.X, ds.Y, bid):
+        tr = tr_b[~in_season[tr_b]]; te = te_b[in_season[te_b]]
+        m = Diagnoser(seed=0).fit(ds.X[tr], ds.Y[tr], ds.G[tr], groups=bid[tr])
+        pr = m.predict(ds.X[te])
+        P.prob[te], P.gain[te], P.p_any[te] = pr.prob, pr.gain, pr.p_any
+    res["held_out_season"][tag] = metrics(ds.subset(in_season), Prediction(P.prob[in_season], P.gain[in_season], P.p_any[in_season]))
 print("D done", round(time.time() - t0), flush=True)
 
 json.dump(res, open(f"{OUT}/metrics.json", "w"), indent=2)
 
 # ---- markdown summary
 def row(name, m):
-    pc = m["per_cause"]
     return (f"| {name} | {m['n']} | {m['macro_auroc']:.3f} | {m['any_fault_auroc']:.3f} | {m['macro_f1']:.3f} | "
             f"{m['exact_match']:.3f} | {m.get('top1_fix_gain_captured_blind', float('nan')):.3f} | "
             f"{m.get('top1_saving_captured', float('nan')):.3f} |")
@@ -154,6 +162,13 @@ mo = res["cv_grouped_by_building"]["ours_gbdt"]
 for c in CAUSES:
     pc = mo["per_cause"][c]
     md.append(f"| {c} | {mo['prevalence'][c]:.2f} | {pc['auroc']:.3f} | {pc['f1_at_0.5']:.3f} | {pc['brier']:.3f} | {pc['gain_mae_c']:.2f} |")
+md += ["\nBuilding-level bootstrap, 95% intervals (200 resamples of whole buildings):\n",
+       "| model | macro AUROC | any-fault AUROC | macro AUROC, difference of ours minus this model |", "|---|---|---|---|"]
+for n_, v_ in res["bootstrap"]["models"].items():
+    d_ = res["bootstrap"]["paired_vs_ours_gbdt"].get(n_, {}).get("macro_auroc")
+    md.append(f"| {n_} | {v_['macro_auroc']['mean']:.3f} [{v_['macro_auroc']['ci95'][0]:.3f}, {v_['macro_auroc']['ci95'][1]:.3f}] | "
+              f"{v_['any_fault_auroc']['mean']:.3f} [{v_['any_fault_auroc']['ci95'][0]:.3f}, {v_['any_fault_auroc']['ci95'][1]:.3f}] | "
+              + (f"{d_['diff_mean']:+.3f} [{d_['diff_ci95'][0]:+.3f}, {d_['diff_ci95'][1]:+.3f}]" if d_ else "reference") + " |")
 md += ["\n## B. Distribution shift (model trained on the main set; fresh buildings)\n", H]
 for k, m in res["stress"].items(): md.append(row(k, m))
 md += ["\n## B2. Same stress sets, informed model (design delta-T supplied)\n", H]

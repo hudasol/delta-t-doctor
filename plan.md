@@ -89,7 +89,7 @@ Beyond 1.0 (needs real data): a feedback loop where inspection results update th
 | Risk | Mitigation |
 |---|---|
 | Real buildings behave unlike the simulator | The pilot; the out-of-range guard; honest confidence; invite labelled data |
-| Passing valves and constant-flow valves look similar | The tool flags the overlap and gives a site test to separate them |
+| Overflow looks like the valve faults in meter data | Reported with lower confidence; the report names the site reading that separates them |
 | Operators will not share data | The tool runs on an owner's own export; the operator pilot is a second step |
 | Incumbent hardware vendors | Neutral positioning; complement, not compete |
 | Tariff differences | Contract terms are inputs; operator presets only when confirmed |

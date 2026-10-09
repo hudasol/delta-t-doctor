@@ -15,8 +15,12 @@ Read this before trusting any number from the tool.
 3. **Four causes only.** Fouling, passing valves, constant-flow valves and excess pressure. Control
    problems, sensor errors, bad set-points, pump staging and the plant side are not modelled.
    A fifth cause in a real building will be forced into the closest of the four.
-4. **Passing valves and constant-flow valves overlap.** Both leave flow high when load is low. The
-   tool says so when both rank highly. Telling them apart needs a site check (close the valves, watch the flow).
+4. **Overflow is the hard cause; the two valve faults are not confused with each other.** In held-out
+   buildings with exactly one fault, passing valves are called constant-flow in 2% of cases and the reverse in
+   5% (`results/error_analysis.json`). The weak spot is overflow: even for large true gains its recall at p>=0.5
+   plateaus near 0.77, because it shares a high low-load flow signature with the valve faults. Weak faults
+   (true gain 0.2-0.4 C) are missed about half the time or more. Telling these apart on site needs a valve
+   position or differential-pressure reading.
 5. **The tariff is a parameter, not a fact.** The 10% per degC below 8.9 C surcharge comes from one operator's
    published FAQ. Contracts differ. The AED rate in the demo (0.40 per RT-hr) is illustrative. Use your
    own contract values before quoting any AED figure.

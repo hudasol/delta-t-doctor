@@ -17,7 +17,7 @@ usability or maintainability.
 | L5 | **Multi-fault degradation.** Exact-match falls from 0.86 (one cause) to 0.38 (two) and 0.05 (three) | S2 | `results/error_analysis.json` |
 | L6 | **Weak faults are missed.** Recall at p>=0.5 for true gains of 0.2-0.4 C: passing valves 0.29, overflow 0.29, fouling 0.52 | S2 | same |
 | L7 | **Overflow is barely identifiable.** Recall plateaus at 0.77 even for gains above 1.6 C. It looks like passing and constant-flow valves in meter data | S2 | AUROC 0.953; same file |
-| L8 | **Building-type gap.** Hotel 0.931, residential 0.952 vs office 0.983 (leave-one-type-out and slices) | S2 | `results/metrics.md` section C |
+| L8 | **Building-type gap.** Held-out type: hotel 0.930, residential 0.939, mall 0.958, office 0.965; in-sample slices hotel 0.946 vs office 0.983 | S2 | `results/metrics.md` section C |
 | L9 | **No time dimension.** 30-day windows are scored independently. No onset, trend or season-aware view | S2 | by design |
 | L10 | **Savings are point estimates with no uncertainty, and per-cause gains overlap** | S2 | `penalty.py`, portfolio note |
 | L11 | **One tariff shape.** Linear percent-per-degree on a single rate. No tiers, caps, bonuses or capacity charges | S2 | `penalty.py` |

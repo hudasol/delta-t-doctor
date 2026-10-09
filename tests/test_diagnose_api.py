@@ -1,7 +1,5 @@
 import io
 
-import numpy as np
-import pandas as pd
 import pytest
 from fastapi.testclient import TestClient
 
@@ -22,7 +20,7 @@ def client(tiny_model, tiny_informed_path, monkeypatch):
 
 
 def _year_frame(causes=("fouling",)):
-    from deltat_doctor.api import DEMOS, _demo
+    from deltat_doctor.api import _demo
     name = {(): "healthy", ("fouling",): "fouled_coils"}[tuple(causes)]
     return _demo(name)[0]
 
@@ -89,3 +87,27 @@ def test_api_validation_errors(client):
 def test_index_served(client):
     r = client.get("/")
     assert r.status_code == 200 and "delta-t-doctor" in r.text
+
+
+def test_demo_csv_route_not_shadowed(client):
+    r = client.get("/api/demo/fouled_coils.csv")
+    assert r.status_code == 200 and r.text.startswith("timestamp") or "flow" in r.text.splitlines()[0]
+
+
+@pytest.mark.parametrize("field", ["rate", "pct", "min_dt"])
+def test_non_finite_terms_rejected(client, field):
+    r = client.get("/api/demo/healthy", params={field: "nan"})
+    assert r.status_code == 422
+    r = client.get("/api/demo/healthy", params={field: "inf"})
+    assert r.status_code == 422
+
+
+def test_non_finite_design_dt_rejected(client):
+    assert client.get("/api/demo/healthy", params={"design_dt": "nan"}).status_code == 422
+
+
+def test_oversize_upload_rejected(client, monkeypatch):
+    from deltat_doctor import api
+    monkeypatch.setattr(api, "MAX_BYTES", 1000)
+    r = client.post("/api/diagnose", files={"file": ("x.csv", io.BytesIO(b"a,b\n" * 1000), "text/csv")})
+    assert r.status_code == 413

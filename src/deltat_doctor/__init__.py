@@ -2,6 +2,8 @@
 
 __version__ = "1.0.0"
 
+CP_KJ_KG_K = 4.186  # specific heat of chilled water, kJ/(kg K); single source for every module
+
 CAUSES = ("fouling", "passing_valves", "constant_flow", "overflow")
 
 CAUSE_LABELS = {

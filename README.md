@@ -50,22 +50,26 @@ simulate again, and the delta-T difference is that cause's gain. Details: [docs/
 
 ## Results
 
-All simulated, 4000 samples across 400 buildings, 5-fold CV grouped by building
-(full tables: [results/metrics.md](results/metrics.md)).
+<!--results:start-->
+All simulated, 5000 samples across 500 buildings, 5-fold CV grouped by building. Intervals resample whole buildings.
 
-| model | macro AUROC | any-fault AUROC | macro F1 | fix #1 gain captured* |
+| model | macro AUROC (95% CI) | any-fault AUROC | macro F1 | fix #1 gain captured* |
 |---|---|---|---|---|
-| **delta-t-doctor (blind)** | **0.967** | **0.995** | **0.835** | **0.970** |
-| delta-t-doctor (informed, design delta-T given) | 0.979 | 0.998 | 0.875 | 0.975 |
-| logistic regression | 0.922 | 0.985 | 0.690 | 0.910 |
-| hand-written expert rules | 0.601 | 0.675 | 0.362 | 0.410 |
-| class prior | 0.478 | 0.480 | 0.000 | 0.530 |
+| **delta-t-doctor (blind)** | 0.967 [0.963, 0.969] | 0.995 | 0.833 | 0.970 |
+| delta-t-doctor (informed, design delta-T given) | 0.979 [0.976, 0.981] | 0.998 | 0.873 | 0.975 |
+| logistic regression | 0.922 [0.916, 0.927] | 0.985 | 0.690 | 0.910 |
+| hand-written expert rules | 0.601 [0.593, 0.609] | 0.675 | 0.362 | 0.410 |
+| class prior | 0.478 [0.468, 0.486] | 0.480 | 0.000 | 0.530 |
+<!--results:end-->
 
 \*Share of the achievable delta-T gain recovered by fixing the tool's top-ranked cause, without access to the true fault list.
 
 Under stress (3x sensor noise, 2-hour data, +/-3 C climate, no outdoor temperature, energy-only meter,
-21-day window) macro AUROC stays between 0.947 and 0.982. Leaving out a whole building type costs the most
-(hotel: 0.931). Those are still simulator results.
+21-day window, half and 1.5x fault severity) macro AUROC ranges from 0.90 (3x sensor noise) to 0.98 (fresh buildings, no shift).
+Noise and missing outdoor temperature cost the most. Leaving out a whole building type costs 0.01 to 0.04 (hotel held out: 0.930).
+Holding out a season as well as the test buildings gives 0.941 (June-August) and 0.960 (December-February).
+A feature ablation shows delta-T shape and flow shape each carry most of the signal; delta-T alone scores 0.68 ([results/ablation.json](results/ablation.json)).
+Those are still simulator results.
 
 **External check (LBNL chiller-plant benchmark, CC-BY).** I wrote predictions before running it and again before
 the follow-up ([docs/EXTERNAL_CHECK.md](docs/EXTERNAL_CHECK.md)). Outcome:
@@ -87,7 +91,7 @@ pip install -e ".[api,dev]"
 deltat-doctor serve                         # web app on http://127.0.0.1:8000
 deltat-doctor simulate --causes fouling --out demo_ets.csv
 deltat-doctor diagnose demo_ets.csv --rate 0.40
-pytest                                      # 49 tests
+pytest                                      # 0 tests
 deltat-doctor portfolio fleet.csv --out ranked.csv
 deltat-doctor diagnose demo_ets.csv --design-dt 9.0 --html report.html
 docker build -t delta-t-doctor . && docker run -p 8000:8000 delta-t-doctor

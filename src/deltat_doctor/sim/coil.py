@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import numpy as np
 
-CP_W = 4.186  # kJ/(kg K)
+from .. import CP_KJ_KG_K as CP_W  # kJ/(kg K)
 
 
 def eps_counterflow(ntu: np.ndarray, cr: np.ndarray) -> np.ndarray:

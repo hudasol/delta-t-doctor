@@ -14,7 +14,9 @@ The result is always the canonical frame used everywhere else: hourly rows with
 from __future__ import annotations
 
 import io as _io
+import logging
 import re
+import warnings
 
 import numpy as np
 import pandas as pd
@@ -34,6 +36,8 @@ _ALIASES = {
 }
 
 MIN_HOURS = 14 * 24
+MAX_MEDIAN_STEP_H = 2.0          # coarser data cannot show time-of-day behaviour
+log = logging.getLogger(__name__)
 
 
 class DataError(ValueError):
@@ -50,25 +54,33 @@ def _find(df: pd.DataFrame, key: str):
 
 # ---------------------------------------------------------------- reading real exports
 
+def _decode(raw: bytes) -> str:
+    """Decode an upload. UTF-16 only when a byte-order mark says so; otherwise UTF-8, then Windows-1252."""
+    if raw[:2] in (b"\xff\xfe", b"\xfe\xff"):
+        return raw.decode("utf-16")
+    for enc in ("utf-8-sig", "cp1252"):
+        try:
+            return raw.decode(enc)
+        except UnicodeDecodeError:
+            continue
+    return raw.decode("latin-1")
+
+
 def read_table(raw: bytes, filename: str = "upload.csv") -> pd.DataFrame:
     """Read an uploaded export: CSV with any common delimiter or encoding, or an .xlsx sheet."""
     name = (filename or "").lower()
     try:
         if name.endswith((".xlsx", ".xlsm", ".xls")):
             return pd.read_excel(_io.BytesIO(raw))
-        for enc in ("utf-8-sig", "utf-16", "latin-1"):
-            try:
-                text = raw.decode(enc)
-                break
-            except (UnicodeDecodeError, UnicodeError):
-                continue
+        text = _decode(raw)
         df = pd.read_csv(_io.StringIO(text), sep=None, engine="python")
         if df.shape[1] < 2:
             df = pd.read_csv(_io.StringIO(text), sep=";")
         return df
     except ImportError:
         raise DataError("Reading Excel files needs the optional 'openpyxl' package; export the sheet as CSV instead.")
-    except Exception:
+    except Exception as e:
+        log.info("read_table failed for %s: %s: %s", filename, type(e).__name__, e)
         raise DataError("Could not read the file as a table. Use a CSV or an Excel sheet with a header row.")
 
 
@@ -152,26 +164,56 @@ def _energy_to_kw(kwh: pd.Series, df: pd.DataFrame, col: str) -> pd.Series:
     return kwh / step_h.median() if step_h.median() > 0 else kwh
 
 
-def _parse_time(series: pd.Series) -> pd.Series:
-    ts = pd.to_datetime(series, errors="coerce")
-    if ts.isna().mean() > 0.2 or ts.isna().all():
-        alt = pd.to_datetime(series, errors="coerce", dayfirst=True)
-        if alt.isna().mean() < ts.isna().mean():
-            ts = alt
-    return ts
+def _monotone_share(ts: pd.Series) -> float:
+    d = ts.diff().dropna()
+    return float((d >= pd.Timedelta(0)).mean()) if len(d) else 1.0
+
+
+def _parse_time(series: pd.Series, notes: list | None = None) -> pd.Series:
+    """Parse timestamps, resolving day-first versus month-first by which reading is consistent.
+
+    Both readings are tried. If exactly one parses every row it wins. If both do and they differ (dd/mm against
+    mm/dd with all days <= 12), the one whose rows run forward in time wins; a tie goes to day-first, the UAE convention.
+    """
+    notes = notes if notes is not None else []
+    if pd.api.types.is_datetime64_any_dtype(series):
+        return pd.to_datetime(series, errors="coerce")
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        a = pd.to_datetime(series, errors="coerce")
+        b = pd.to_datetime(series, errors="coerce", dayfirst=True)
+    na, nb = int(a.isna().sum()), int(b.isna().sum())
+    if na != nb:
+        return a if na < nb else b
+    if (a.fillna(pd.Timestamp(0)) == b.fillna(pd.Timestamp(0))).all():
+        return a
+    ma, mb = _monotone_share(a), _monotone_share(b)
+    if abs(ma - mb) > 1e-9:
+        pick = a if ma > mb else b
+    else:
+        pick = b
+        notes.append("Dates are ambiguous (day/month order); read as day first. Check the first and last date in the report.")
+    return pick
 
 
 def canonicalise(df: pd.DataFrame, min_hours: int = MIN_HOURS) -> pd.DataFrame:
-    """Return an hourly frame with flow_kgs, heat_kw, dt_c, t_outdoor_c."""
+    """Return an hourly frame with flow_kgs, heat_kw, dt_c, t_outdoor_c.
+
+    Rows with a missing flow or delta-T are dropped, never zero-filled. Supply and return that look swapped, impossible
+    temperatures and data coarser than 2-hourly are rejected. Counts of everything repaired or dropped are stored in
+    ``frame.attrs["quality"]`` and plain-language messages in ``frame.attrs["notes"]``.
+    """
+    notes: list[str] = []
     df = harmonise(df)
     c_ts = _find(df, "timestamp")
     if c_ts is None:
         raise DataError("No timestamp column found (expected e.g. 'timestamp'). Columns seen: "
                         + ", ".join(map(str, df.columns[:12])))
-    ts = _parse_time(df[c_ts])
+    ts = _parse_time(df[c_ts], notes)
     if ts.isna().all():
         raise DataError("Could not parse the timestamp column.")
     out = pd.DataFrame({"timestamp": ts})
+    n_raw = len(out)
 
     c_f = _find(df, "flow_m3h")
     c_fl = _find(df, "flow_ls")
@@ -185,32 +227,71 @@ def canonicalise(df: pd.DataFrame, min_hours: int = MIN_HOURS) -> pd.DataFrame:
     else:
         raise DataError("No flow column found (flow_m3h, flow_ls or flow_gpm). Columns seen: "
                         + ", ".join(map(str, df.columns[:12])))
+    flow_kgs = flow_kgs.replace([np.inf, -np.inf], np.nan)
+    neg_flow = float((flow_kgs < -1e-9).mean())
     out["flow_kgs"] = flow_kgs.clip(lower=0)
 
     c_s, c_r = _find(df, "t_supply_c"), _find(df, "t_return_c")
     c_e, c_rt = _find(df, "energy_kw"), _find(df, "energy_rt")
     if c_s is not None and c_r is not None:
-        dt = pd.to_numeric(df[c_r], errors="coerce") - pd.to_numeric(df[c_s], errors="coerce")
+        ts_, tr_ = pd.to_numeric(df[c_s], errors="coerce"), pd.to_numeric(df[c_r], errors="coerce")
+        for name, v, lo, hi in (("supply", ts_, -2.0, 25.0), ("return", tr_, 2.0, 40.0)):
+            med = float(v.median()) if v.notna().any() else float("nan")
+            if np.isfinite(med) and not (lo <= med <= hi):
+                raise DataError(f"The {name} temperature column has a median of {med:.1f}, which is not a plausible "
+                                f"chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the "
+                                f"column header.")
+        dt_raw = tr_ - ts_
     elif c_e is not None or c_rt is not None:
         kw = (pd.to_numeric(df[c_e], errors="coerce") if c_e is not None
               else pd.to_numeric(df[c_rt], errors="coerce") * 3.517)
         with np.errstate(divide="ignore", invalid="ignore"):
-            dt = kw / (CP_W * out["flow_kgs"].replace(0, np.nan))
+            dt_raw = kw / (CP_W * out["flow_kgs"].replace(0, np.nan))
     else:
         raise DataError("Need supply and return temperatures, or a cooling power/energy column. Columns seen: "
                         + ", ".join(map(str, df.columns[:12])))
-    out["dt_c"] = dt.clip(lower=0)
+    dt_raw = dt_raw.replace([np.inf, -np.inf], np.nan)
+    med_dt = float(dt_raw[out["flow_kgs"] > 1e-6].median()) if (out["flow_kgs"] > 1e-6).any() else float("nan")
+    if np.isfinite(med_dt) and med_dt < 0:
+        raise DataError("The return temperature is colder than the supply for most rows, so supply and return look "
+                        "swapped. Check the column mapping.")
+    if np.isfinite(med_dt) and med_dt > 25:
+        raise DataError(f"The typical delta-T is {med_dt:.0f} C, which is not plausible for chilled water. "
+                        f"Check the units of the temperature or energy columns.")
+    running = out["flow_kgs"] > 1e-6
+    neg_dt = float((dt_raw[running] < -0.5).mean()) if running.any() else 0.0
+    out["dt_c"] = dt_raw.clip(lower=0)
 
     c_o = _find(df, "t_outdoor_c")
     out["t_outdoor_c"] = pd.to_numeric(df[c_o], errors="coerce") if c_o else np.nan
 
     out = out.dropna(subset=["timestamp"]).sort_values("timestamp")
+    # A row is usable if flow is known and, when water is moving, delta-T is known. Others are dropped, not zero-filled.
+    usable = out["flow_kgs"].notna() & ((out["flow_kgs"] <= 1e-6) | out["dt_c"].notna())
+    dropped = float(1.0 - usable.mean()) if len(out) else 1.0
+    out = out[usable]
     out["heat_kw"] = CP_W * out["flow_kgs"] * out["dt_c"].fillna(0.0)
+
+    step_h = float(out["timestamp"].diff().dt.total_seconds().median() / 3600.0) if len(out) > 2 else float("nan")
+    if np.isfinite(step_h) and step_h > MAX_MEDIAN_STEP_H:
+        raise DataError(f"The readings are {step_h:.1f} hours apart. The tool needs hourly or 2-hourly data to see how "
+                        f"the building behaves through the day.")
+    dup = int(out["timestamp"].duplicated().sum())
+    if dup:
+        notes.append(f"{dup} duplicate timestamps were averaged (daylight-saving or export overlap).")
     out = _to_hourly(out)
     if len(out) < min_hours:
         raise DataError(
             f"Need at least {min_hours // 24} days of data ({min_hours} hourly rows); got {len(out)}.")
-    return out.reset_index(drop=True)
+    if dropped > 0.005:
+        notes.append(f"{dropped:.1%} of rows had a missing flow or temperature and were left out.")
+    if neg_dt > 0.005:
+        notes.append(f"{neg_dt:.1%} of running hours show the return colder than the supply (treated as zero delta-T).")
+    out = out.reset_index(drop=True)
+    out.attrs["quality"] = {"rows_raw": int(n_raw), "dropped_fraction": dropped, "negative_dt_fraction": neg_dt,
+                            "negative_flow_fraction": neg_flow, "median_step_h": step_h, "duplicate_timestamps": dup}
+    out.attrs["notes"] = notes
+    return out
 
 
 def _to_hourly(out: pd.DataFrame) -> pd.DataFrame:

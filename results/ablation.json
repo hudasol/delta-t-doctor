@@ -1,0 +1,98 @@
+{
+  "all": {
+    "n_features": 42,
+    "macro_auroc": 0.9668483029189057,
+    "any_fault_auroc": 0.9952555498193082,
+    "macro_f1": 0.8329861570598622,
+    "per_cause_auroc": {
+      "fouling": 0.991004435108515,
+      "passing_valves": 0.9568898790646034,
+      "constant_flow": 0.9974704689794989,
+      "overflow": 0.9220284285230058
+    }
+  },
+  "only_dt_shape": {
+    "n_features": 18,
+    "macro_auroc": 0.9549112792174332,
+    "any_fault_auroc": 0.9942705405457083,
+    "macro_f1": 0.7904680136019367,
+    "per_cause_auroc": {
+      "fouling": 0.9766424546632057,
+      "passing_valves": 0.9439171517658627,
+      "constant_flow": 0.9946301123316578,
+      "overflow": 0.9044553981090072
+    }
+  },
+  "without_dt_shape": {
+    "n_features": 24,
+    "macro_auroc": 0.9464110879848691,
+    "any_fault_auroc": 0.9843743666226887,
+    "macro_f1": 0.78274073433849,
+    "per_cause_auroc": {
+      "fouling": 0.9853183931125274,
+      "passing_valves": 0.9420556442082352,
+      "constant_flow": 0.9963301888744077,
+      "overflow": 0.8619401257443058
+    }
+  },
+  "only_flow_shape": {
+    "n_features": 14,
+    "macro_auroc": 0.9449036538795115,
+    "any_fault_auroc": 0.982562286085776,
+    "macro_f1": 0.7821708082914043,
+    "per_cause_auroc": {
+      "fouling": 0.982813450779967,
+      "passing_valves": 0.9412024482764868,
+      "constant_flow": 0.9952543494900599,
+      "overflow": 0.8603443669715322
+    }
+  },
+  "without_flow_shape": {
+    "n_features": 28,
+    "macro_auroc": 0.9595727413669368,
+    "any_fault_auroc": 0.99526185969139,
+    "macro_f1": 0.8070968057724289,
+    "per_cause_auroc": {
+      "fouling": 0.9810195553268706,
+      "passing_valves": 0.9496367598203377,
+      "constant_flow": 0.9955545211940667,
+      "overflow": 0.9120801291264724
+    }
+  },
+  "only_load_dist": {
+    "n_features": 10,
+    "macro_auroc": 0.7455127867270006,
+    "any_fault_auroc": 0.8210452398707432,
+    "macro_f1": 0.32250027257979996,
+    "per_cause_auroc": {
+      "fouling": 0.6671972918074887,
+      "passing_valves": 0.8293234952704617,
+      "constant_flow": 0.8736794306874367,
+      "overflow": 0.6118509291426157
+    }
+  },
+  "without_load_dist": {
+    "n_features": 32,
+    "macro_auroc": 0.9665847628151178,
+    "any_fault_auroc": 0.9950032505401634,
+    "macro_f1": 0.8329632664585713,
+    "per_cause_auroc": {
+      "fouling": 0.990403359237851,
+      "passing_valves": 0.9570513138454289,
+      "constant_flow": 0.9972477709509918,
+      "overflow": 0.9216366072262
+    }
+  },
+  "dt_period_only": {
+    "n_features": 1,
+    "macro_auroc": 0.6777897088431897,
+    "any_fault_auroc": 0.7666583491080136,
+    "macro_f1": 0.16093843395098623,
+    "per_cause_auroc": {
+      "fouling": 0.6560156686947851,
+      "passing_valves": 0.6053302330860703,
+      "constant_flow": 0.8040831419764578,
+      "overflow": 0.6457297916154452
+    }
+  }
+}
