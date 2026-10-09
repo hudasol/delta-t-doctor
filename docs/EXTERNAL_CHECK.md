@@ -95,3 +95,21 @@ fault-free year, which is the only well-behaved result here. It is a consistency
 measurement. Accuracy claims in this repo rest on the simulated evaluation (`results/metrics.md`), and
 the model has not been validated on real UAE meter data.
 
+
+## 5. Follow-up for v0.2 (written before it was run)
+
+Section 4 showed that the v0.1 model flags a plant with a low delta-T as faulty, because every training building was
+designed for 9-13 C. v0.2 trains on buildings designed for 5-12 C and adds an optional *informed* mode that takes the
+building's design delta-T as an input. This section is **post-hoc**: it was written after I saw the section 4 results,
+so it is a response to a known failure and cannot count as an independent test of the model.
+
+The benchmark documentation does not state a design delta-T for the secondary loop, and estimating it from the data
+itself would be circular. So I sweep the design value instead of choosing one.
+
+* **P4.** In informed mode on the fault-free year, the cooling-season mean "any cause" probability falls with the
+  design value I supply: it is below 0.35 when I enter a design delta-T within 1.5 C of the plant's observed
+  delta-T (2.6 C), i.e. 4.1 C or lower, and it is above 0.65 when I enter 9 C or more.
+* **P5.** In blind mode (no design value), the v0.2 model's fault-free score is lower than v0.1's 1.00, but I do not
+  expect it below 0.35, because a 2.6 C delta-T is below even the new training range.
+
+Section 6 is appended after the run.

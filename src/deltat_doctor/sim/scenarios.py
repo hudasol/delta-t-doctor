@@ -11,6 +11,7 @@ from .building import (BUILDING_TYPES, BuildingConfig, FaultSpec, PhysicsOut,
                        make_drivers, measure, physics)
 from .weather import make_timestamps, synth_outdoor_temp
 
+DESIGN_DT_RANGE_C = (5.0, 12.2)   # buildings are designed for anywhere in this range (v0.2; v0.1 used 9.0-12.2)
 PRESENT_THRESHOLD_C = 0.20   # a cause counts as "present" if fixing it recovers >= this
 
 
@@ -20,8 +21,8 @@ def sample_building(rng: np.random.Generator, building_id: int = 0) -> BuildingC
     q_total = float(np.exp(rng.uniform(np.log(400.0), np.log(6000.0))))  # kW, ~115-1700 RT
     share = rng.dirichlet(np.full(n, 4.0))
     q_d = q_total * share
-    dt_d_b = rng.uniform(9.0, 12.2)
-    dt_d = np.clip(dt_d_b + rng.normal(0, 0.5, n), 8.8, 13.5)
+    dt_d_b = rng.uniform(*DESIGN_DT_RANGE_C)
+    dt_d = np.clip(dt_d_b + rng.normal(0, 0.5, n), DESIGN_DT_RANGE_C[0] - 0.5, 13.5)
     dt_cap = np.clip(dt_d + rng.uniform(0.2, 1.5, n), dt_d, 14.5)
     return BuildingConfig(
         building_type=btype, q_design_kw=q_d, dt_design=dt_d, dt_cap=dt_cap,
