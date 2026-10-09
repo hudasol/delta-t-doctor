@@ -13,3 +13,14 @@ jobs:
           python-version: ${{ matrix.python }}
       - run: pip install -e ".[api,dev]"
       - run: pytest
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t delta-t-doctor .
+      - name: Smoke test
+        run: |
+          docker run -d --name dtd -p 8000:8000 delta-t-doctor
+          for i in $(seq 1 30); do curl -fs localhost:8000/api/health && break || sleep 2; done
+          curl -fs localhost:8000/api/health | grep '"status":"ok"'
+          curl -fs "localhost:8000/api/demo/fouled_coils" | grep -q '"findings"'

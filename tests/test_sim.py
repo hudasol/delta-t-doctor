@@ -19,7 +19,8 @@ def test_healthy_building_meets_load_and_has_reasonable_delta_t():
     cfg, drv, _ = _setup()
     out = physics(cfg, FaultSpec.healthy(cfg.n_ahu), drv)
     assert out.unmet_kw.sum() < 1e-3 * out.heat_kw.sum()
-    assert 8.5 < out.delta_t_period < 15.0
+    design = float(np.average(cfg.dt_design, weights=cfg.q_design_kw))   # designs span 5-12.2 C since v0.2
+    assert abs(out.delta_t_period - design) < 2.0
 
 
 def test_every_fault_family_lowers_delta_t():

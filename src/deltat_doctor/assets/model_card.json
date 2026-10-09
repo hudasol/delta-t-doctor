@@ -6,14 +6,22 @@
     "constant_flow",
     "overflow"
   ],
-  "trained_on_samples": 4000,
-  "n_buildings": 400,
+  "trained_on_samples": 5000,
+  "n_buildings": 500,
   "prevalence": {
-    "fouling": 0.252,
-    "passing_valves": 0.235,
-    "constant_flow": 0.26725,
-    "overflow": 0.228
+    "fouling": 0.2522,
+    "passing_valves": 0.2132,
+    "constant_flow": 0.262,
+    "overflow": 0.2026
   },
+  "design_dt_training_range_c": [
+    5.0,
+    12.2
+  ],
+  "modes": [
+    "blind",
+    "informed"
+  ],
   "data": "simulated (deltat_doctor.sim); no field data",
-  "train_seconds": 11.8
+  "train_seconds": 24.6
 }

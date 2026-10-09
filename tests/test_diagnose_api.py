@@ -12,18 +12,19 @@ from deltat_doctor.penalty import ContractTerms
 
 
 @pytest.fixture()
-def client(tiny_model, monkeypatch):
+def client(tiny_model, tiny_informed_path, monkeypatch):
     _, path = tiny_model
     monkeypatch.setattr(dg, "DEFAULT_MODEL", path)
+    monkeypatch.setattr(dg, "INFORMED_MODEL", tiny_informed_path)
     dg._cached.clear()
     from deltat_doctor.api import app
     return TestClient(app)
 
 
 def _year_frame(causes=("fouling",)):
-    from deltat_doctor.api import DEMOS, _demo_frame
+    from deltat_doctor.api import DEMOS, _demo
     name = {(): "healthy", ("fouling",): "fouled_coils"}[tuple(causes)]
-    return _demo_frame(name)
+    return _demo(name)[0]
 
 
 def test_diagnose_frame_report_structure(tiny_model):

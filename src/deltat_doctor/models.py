@@ -59,7 +59,18 @@ class Diagnoser:
             y_any = (Y.sum(axis=1) > 0).astype(int)
             self.any_clf = CalibratedClassifierCV(_gbc(self.seed), method="isotonic", cv=3).fit(X, y_any)
         self.trained_on = len(X)
+        # Out-of-distribution guard: remember the 1st-99th percentile range of every shape feature, and how
+        # many features fall outside it on a typical (95th percentile) training window.
+        n = len(FEATURE_NAMES)
+        self.feat_lo = np.percentile(X[:, :n], 1, axis=0)
+        self.feat_hi = np.percentile(X[:, :n], 99, axis=0)
+        self.ood_threshold = int(np.percentile(self.ood_count(X[:, :n]), 95))
         return self
+
+    def ood_count(self, X: np.ndarray) -> np.ndarray:
+        """Per row: how many of the shape features lie outside the range seen in training."""
+        X = np.atleast_2d(X)[:, : len(self.feat_lo)]
+        return ((X < self.feat_lo) | (X > self.feat_hi)).sum(axis=1)
 
     def predict(self, X: np.ndarray) -> Prediction:
         X = np.atleast_2d(X)

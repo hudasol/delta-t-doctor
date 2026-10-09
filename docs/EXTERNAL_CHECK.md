@@ -71,7 +71,7 @@ predictions above were not edited.
 
 * **P1 failed, clearly.** The fault-free year scores 1.00 "any cause", against a prediction of below 0.35.
   The tool raised a false alarm on a healthy building.
-* **Why (interpretation, not proven).** This plant's secondary loop runs at a delta-T of about 2.6 C
+* **Why (my first interpretation, partly wrong; see section 6).** This plant's secondary loop runs at a delta-T of about 2.6 C
   even with no fault. The classifier was trained on buildings designed for 9-13 C, in which a delta-T
   that low can only come from a fault. A building that is *designed* low-delta-T is outside what the
   model has seen, and it reads such a building as a badly fouled one. This is a domain-shift limit of
@@ -113,3 +113,33 @@ itself would be circular. So I sweep the design value instead of choosing one.
   expect it below 0.35, because a 2.6 C delta-T is below even the new training range.
 
 Section 6 is appended after the run.
+
+## 6. Results of the v0.2 follow-up
+
+Raw output: `results/lbnl_v02.json`. Fault-free year, cooling season, 4 windows.
+
+| Mode | any-cause probability |
+|---|---|
+| v0.1 blind (section 4) | 1.00 |
+| v0.2 blind | 1.00 |
+| v0.2 informed, design delta-T: 3.0 C: 0.90, 4.1 C: 0.99, 5.0 C: 1.00, 6.0 C: 1.00, 7.0 C: 1.00, 9.0 C: 1.00, 10.0 C: 1.00, 12.0 C: 1.00 | |
+
+* **P4 failed.** At a design delta-T of 4.1 C the score is 0.99, against a prediction of
+  below 0.35. It never drops below 0.90 at any design value I tried, including 3.0 C.
+* **P5 failed on its first clause.** The v0.2 blind score is 1.00, not lower than v0.1's 1.00.
+* **My section 4 explanation was incomplete.** I attributed the false alarm to a low design delta-T. Widening the
+  training range and supplying the design value did not remove it, so something else is out of range. Comparing
+  the plant's 42 shape features with the training range (post-hoc): 9 of 42 fall outside the training 1st-99th
+  percentile range in the cooling season. The largest is the correlation between flow and load: **0.18 here, against
+  a training minimum of 0.81.** In this plant the secondary flow barely follows load, while in every simulated building
+  it does. Delta-T by load band is also far below the training range. So the benchmark plant is a different kind
+  of system from the one the model was built for, and low design delta-T is only part of the difference.
+* **What changed in the tool.** The model now stores the range of every feature seen in training. If a building has
+  more out-of-range features than 95% of training windows (4 or more of 42), the report says its verdict is not
+  reliable. This flags the LBNL plant (20 of 42 out of range over the full year). The 95% rule was chosen after I knew
+  the plant had 9 out-of-range features, so this is a guard I built in response, not an independent test. On held-out
+  simulated buildings it flags 2.5-6% of windows.
+
+**Conclusion.** The model is not a general delta-T anomaly detector. It is a four-cause classifier for variable-flow
+building loops of the kind it was trained on, and it now says so when a building does not look like them. Real UAE
+ETS data would need to pass the same guard, and that is a first thing the pilot should measure.
