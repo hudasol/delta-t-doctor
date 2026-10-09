@@ -1,0 +1,19 @@
+{
+  "version": "0.1.0",
+  "causes": [
+    "fouling",
+    "passing_valves",
+    "constant_flow",
+    "overflow"
+  ],
+  "trained_on_samples": 4000,
+  "n_buildings": 400,
+  "prevalence": {
+    "fouling": 0.252,
+    "passing_valves": 0.235,
+    "constant_flow": 0.26725,
+    "overflow": 0.228
+  },
+  "data": "simulated (deltat_doctor.sim); no field data",
+  "train_seconds": 11.8
+}
