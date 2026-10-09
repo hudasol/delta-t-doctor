@@ -87,7 +87,7 @@ pip install -e ".[api,dev]"
 deltat-doctor serve                         # web app on http://127.0.0.1:8000
 deltat-doctor simulate --causes fouling --out demo_ets.csv
 deltat-doctor diagnose demo_ets.csv --rate 0.40
-pytest                                      # 50 tests
+pytest                                      # 0 tests
 deltat-doctor portfolio fleet.csv --out ranked.csv
 deltat-doctor diagnose demo_ets.csv --design-dt 9.0 --html report.html
 docker build -t delta-t-doctor . && docker run -p 8000:8000 delta-t-doctor
@@ -95,6 +95,10 @@ docker build -t delta-t-doctor . && docker run -p 8000:8000 delta-t-doctor
 
 Reproduce the data, model and evaluation: `make data train evaluate` (the data step takes several minutes).
 The external check needs the LBNL zip placed under `external/`: `make lbnl`.
+
+## Examples
+
+`examples/` holds a simulated six-month building, its printable report (open the HTML file), and a six-tower portfolio with its ranked output.
 
 ## Repository layout
 
