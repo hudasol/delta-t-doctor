@@ -33,6 +33,11 @@ temperature). You get:
 3. **Savings ranking**: causes ordered by expected AED per year recovered, with what to check on site.
 4. **Open benchmark**: the simulator, labels and evaluation scripts, so the approach can be tested and criticised.
 
+Also: **portfolio mode** (one file, many buildings, ranked by saving), a **printable owner report**, an optional
+**design delta-T** input that gives a more reliable diagnosis, and a **"not reliable" warning** when a building looks
+unlike anything the model was trained on. Accepts messy real-world exports (any delimiter, degF, L/s, RT, MW, cumulative
+kWh registers, .xlsx).
+
 ## How it works
 
 ```
@@ -82,7 +87,10 @@ pip install -e ".[api,dev]"
 deltat-doctor serve                         # web app on http://127.0.0.1:8000
 deltat-doctor simulate --causes fouling --out demo_ets.csv
 deltat-doctor diagnose demo_ets.csv --rate 0.40
-pytest                                      # 36 tests
+pytest                                      # 50 tests
+deltat-doctor portfolio fleet.csv --out ranked.csv
+deltat-doctor diagnose demo_ets.csv --design-dt 9.0 --html report.html
+docker build -t delta-t-doctor . && docker run -p 8000:8000 delta-t-doctor
 ```
 
 Reproduce the data, model and evaluation: `make data train evaluate` (the data step takes several minutes).
@@ -94,7 +102,7 @@ The external check needs the LBNL zip placed under `external/`: `make lbnl`.
 src/deltat_doctor/   sim/ (simulator), features, models, penalty, diagnose, io, api, cli, web/
 scripts/             generate_data, train, evaluate, lbnl_check
 tests/               unit and API tests
-docs/                METHODOLOGY, LIMITATIONS, EXTERNAL_CHECK
+docs/                METHODOLOGY, LIMITATIONS, EXTERNAL_CHECK, MODEL_CARD, PILOT, API, SECURITY, DEPLOYMENT
 results/             metrics.md/json, figures, logs
 ```
 

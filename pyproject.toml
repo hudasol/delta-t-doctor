@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "deltat-doctor"
-version = "0.4.0"
+version = "0.5.0"
 description = "Diagnose why district-cooled buildings pay low delta-T surcharges, using only utility meter data."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -27,7 +27,7 @@ deltat-doctor = "deltat_doctor.cli:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-deltat_doctor = ["assets/*", "web/*"]
+deltat_doctor = ["assets/*", "web/*", "web/fonts/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -32,7 +32,7 @@ def _aed(x: float) -> str:
 def _chart(sig: list, min_dt: float) -> str:
     if not sig:
         return ""
-    W, H, L, B, T = 640, 230, 46, 34, 14
+    W, H, L, B, T = 640, 240, 46, 40, 22
     xs = lambda v: L + (W - L - 10) * v
     ymax = max(14.0, max(p["dt_c"] for p in sig) + 1, min_dt + 1)
     ys = lambda v: T + (H - T - B) * (1 - v / ymax)
@@ -52,7 +52,7 @@ def _chart(sig: list, min_dt: float) -> str:
     for v in (0, .2, .4, .6, .8, 1.0):
         parts.append(f'<text x="{xs(v):.1f}" y="{H-14}" text-anchor="middle" font-size="11" fill="#5c7480">{int(v*100)}%</text>')
     parts.append(f'<text x="{(L+W)/2:.0f}" y="{H-1}" text-anchor="middle" font-size="11" fill="#5c7480">cooling load, share of peak</text>')
-    parts.append(f'<text x="12" y="{T+4}" font-size="11" fill="#5c7480">delta-T (C)</text></svg>')
+    parts.append(f'<text x="{L}" y="9" font-size="11" fill="#5c7480">delta-T (C)</text></svg>')
     return "".join(parts)
 
 

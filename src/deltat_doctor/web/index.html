@@ -5,10 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>delta-t-doctor</title>
 <meta name="description" content="Find out why a district-cooled building is paying low delta-T surcharges, from meter data alone.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+@font-face{font-family:'Bricolage Grotesque';font-weight:500;font-style:normal;font-display:swap;src:url(/fonts/BricolageGrotesque-500.ttf) format('truetype')}
+@font-face{font-family:'Bricolage Grotesque';font-weight:700;font-style:normal;font-display:swap;src:url(/fonts/BricolageGrotesque-700.ttf) format('truetype')}
+@font-face{font-family:'Instrument Sans';font-weight:400;font-style:normal;font-display:swap;src:url(/fonts/InstrumentSans-400.ttf) format('truetype')}
+@font-face{font-family:'Instrument Sans';font-weight:500;font-style:normal;font-display:swap;src:url(/fonts/InstrumentSans-500.ttf) format('truetype')}
+@font-face{font-family:'Instrument Sans';font-weight:600;font-style:normal;font-display:swap;src:url(/fonts/InstrumentSans-600.ttf) format('truetype')}
 :root{
   --frost:#edf2f4; --panel:#f8fbfc; --pipe:#11303b; --supply:#2b7ba3; --return:#d9822b;
   --slate:#5e7682; --alarm:#b23a2c; --alarm-tint:rgba(178,58,44,.12); --line:#cfdbe0;
@@ -98,7 +100,7 @@ td.n,th.n{text-align:right}
       <fieldset>
         <legend>Your meter export</legend>
         <label for="file">CSV with timestamp, flow, and either temperatures or energy</label>
-        <input id="file" type="file" accept=".csv,text/csv">
+        <input id="file" type="file" accept=".csv,.xlsx,text/csv">
         <p class="hint">At least 14 days. A full year works best. The file is analysed in memory and not stored.</p>
       </fieldset>
       <fieldset>
@@ -124,7 +126,7 @@ td.n,th.n{text-align:right}
     <fieldset style="margin-top:20px">
       <legend>Many buildings?</legend>
       <label for="pfile">One CSV with a building_id column (and optionally design_delta_t_c)</label>
-      <input id="pfile" type="file" accept=".csv,text/csv">
+      <input id="pfile" type="file" accept=".csv,.xlsx,text/csv">
       <button id="pgo" type="button">Rank my portfolio</button>
       <button id="pdemo" type="button" class="ghost" style="margin-top:8px">Try a demo portfolio</button>
     </fieldset>
