@@ -7,12 +7,14 @@ import os
 import numpy as np
 import pandas as pd
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
-from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse
+from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse, HTMLResponse
 
 from . import CAUSES, __version__
 from .diagnose import diagnose_frame, load_default_model
 from .io import DataError
 from .penalty import ContractTerms
+from .report import render_report
+from .portfolio import diagnose_portfolio, to_csv as portfolio_csv
 
 WEB_DIR = os.path.join(os.path.dirname(__file__), "web")
 MAX_BYTES = 25 * 1024 * 1024
@@ -29,7 +31,8 @@ DEMOS = {
 }
 
 
-def _demo_frame(name: str, seed: int = 7) -> pd.DataFrame:
+def _demo(name: str, seed: int = 7):
+    """Returns (frame, true design delta-T of the simulated building)."""
     from .sim.scenarios import make_sample
     rng = np.random.default_rng(seed)
     cfg, frames = None, []
@@ -37,7 +40,8 @@ def _demo_frame(name: str, seed: int = 7) -> pd.DataFrame:
         s = make_sample(rng, 0, cfg=cfg, causes=DEMOS[name], month=m)
         cfg = s.cfg
         frames.append(s.frame)
-    return pd.concat(frames, ignore_index=True)
+    design = float(np.average(cfg.dt_design, weights=cfg.q_design_kw))
+    return pd.concat(frames, ignore_index=True), design
 
 
 def _terms(min_dt: float, pct: float, rate: float) -> ContractTerms:
@@ -48,6 +52,15 @@ def _terms(min_dt: float, pct: float, rate: float) -> ContractTerms:
     if rate < 0:
         raise HTTPException(422, "Rate must be zero or positive.")
     return ContractTerms(min_dt, pct, rate)
+
+
+def _run(df, terms, design_dt):
+    try:
+        return diagnose_frame(df, terms, design_delta_t_c=design_dt)
+    except DataError as e:
+        raise HTTPException(422, str(e))
+    except FileNotFoundError:
+        raise HTTPException(503, "The informed model is not installed on this server.")
 
 
 @app.get("/api/health")
@@ -66,25 +79,88 @@ def demos():
 
 
 @app.get("/api/demo/{name}")
-def demo(name: str, min_dt: float = 8.9, pct: float = 0.10, rate: float = 0.40):
+def demo(name: str, min_dt: float = 8.9, pct: float = 0.10, rate: float = 0.40,
+         design_dt: float | None = None):
     if name not in DEMOS:
         raise HTTPException(404, f"Unknown demo. Choose from: {', '.join(DEMOS)}")
-    rep = diagnose_frame(_demo_frame(name), _terms(min_dt, pct, rate))
+    df, true_design = _demo(name)
+    rep = _run(df, _terms(min_dt, pct, rate), design_dt)
     d = rep.to_dict()
+    d["demo_true_design_dt"] = round(true_design, 1)
     d["truth_for_demo"] = list(DEMOS[name]) or ["none"]
     return JSONResponse(d)
+
+
+@app.get("/api/demo/{name}/report", response_class=HTMLResponse)
+def demo_report(name: str, min_dt: float = 8.9, pct: float = 0.10, rate: float = 0.40,
+                design_dt: float | None = None):
+    if name not in DEMOS:
+        raise HTTPException(404, "Unknown demo.")
+    df, _ = _demo(name)
+    return render_report(_run(df, _terms(min_dt, pct, rate), design_dt).to_dict(), f"Simulated building ({name.replace('_', ' ')})")
+
+
+@app.post("/api/report", response_class=HTMLResponse)
+async def report(file: UploadFile = File(...), name: str = Form("Your building"), min_dt: float = Form(8.9),
+                 pct: float = Form(0.10), rate: float = Form(0.40), design_dt: float | None = Form(None)):
+    terms = _terms(min_dt, pct, rate)
+    raw = await file.read()
+    if len(raw) > MAX_BYTES:
+        raise HTTPException(413, "File is larger than 25 MB.")
+    try:
+        df = pd.read_csv(io.BytesIO(raw))
+    except Exception:
+        raise HTTPException(422, "Could not read the file as CSV.")
+    return render_report(_run(df, terms, design_dt).to_dict(), name[:80])
 
 
 @app.get("/api/demo/{name}.csv", response_class=PlainTextResponse)
 def demo_csv(name: str):
     if name not in DEMOS:
         raise HTTPException(404, "Unknown demo.")
-    return _demo_frame(name).to_csv(index=False)
+    return _demo(name)[0].to_csv(index=False)
 
 
 @app.post("/api/diagnose")
 async def diagnose(file: UploadFile = File(...), min_dt: float = Form(8.9),
-                   pct: float = Form(0.10), rate: float = Form(0.40)):
+                   pct: float = Form(0.10), rate: float = Form(0.40),
+                   design_dt: float | None = Form(None)):
+    terms = _terms(min_dt, pct, rate)
+    raw = await file.read()
+    if len(raw) > MAX_BYTES:
+        raise HTTPException(413, "File is larger than 25 MB.")
+    try:
+        df = pd.read_csv(io.BytesIO(raw))
+    except Exception:
+        raise HTTPException(422, "Could not read the file as CSV.")
+    return JSONResponse(_run(df, terms, design_dt).to_dict())
+
+
+def _portfolio_frame(n: int = 12, seed: int = 21) -> pd.DataFrame:
+    """A made-up portfolio of simulated buildings with a mix of faults, for the demo."""
+    from .sim.scenarios import draw_cause_set, make_sample, sample_building
+    rng = np.random.default_rng(seed)
+    parts = []
+    for b in range(n):
+        cfg = sample_building(rng, b)
+        causes = draw_cause_set(rng)
+        design = float(np.average(cfg.dt_design, weights=cfg.q_design_kw))
+        frames = [make_sample(rng, b, cfg=cfg, causes=causes, month=m).frame for m in (5, 6, 7, 8, 9)]
+        f = pd.concat(frames, ignore_index=True)
+        f.insert(0, "building_id", f"Tower {chr(65 + b)}")
+        f["design_delta_t_c"] = round(design, 1)
+        parts.append(f)
+    return pd.concat(parts, ignore_index=True)
+
+
+@app.get("/api/demo-portfolio.csv", response_class=PlainTextResponse)
+def demo_portfolio_csv():
+    return _portfolio_frame().to_csv(index=False)
+
+
+@app.post("/api/portfolio")
+async def portfolio(file: UploadFile = File(...), min_dt: float = Form(8.9), pct: float = Form(0.10),
+                    rate: float = Form(0.40), design_dt: float | None = Form(None)):
     terms = _terms(min_dt, pct, rate)
     raw = await file.read()
     if len(raw) > MAX_BYTES:
@@ -94,9 +170,15 @@ async def diagnose(file: UploadFile = File(...), min_dt: float = Form(8.9),
     except Exception:
         raise HTTPException(422, "Could not read the file as CSV.")
     try:
-        rep = diagnose_frame(df, terms)
+        rep = diagnose_portfolio(df, terms, design_dt)
     except DataError as e:
         raise HTTPException(422, str(e))
+    return JSONResponse(rep.to_dict())
+
+
+@app.get("/api/demo-portfolio")
+def demo_portfolio(min_dt: float = 8.9, pct: float = 0.10, rate: float = 0.40):
+    rep = diagnose_portfolio(_portfolio_frame(), _terms(min_dt, pct, rate))
     return JSONResponse(rep.to_dict())
 
 

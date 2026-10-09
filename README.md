@@ -50,10 +50,11 @@ All simulated, 4000 samples across 400 buildings, 5-fold CV grouped by building
 
 | model | macro AUROC | any-fault AUROC | macro F1 | fix #1 gain captured* |
 |---|---|---|---|---|
-| **delta-t-doctor** | **0.974** | **0.998** | **0.862** | **0.973** |
-| logistic regression | 0.945 | 0.991 | 0.791 | 0.921 |
-| hand-written expert rules | 0.601 | 0.685 | 0.363 | 0.389 |
-| class prior | 0.479 | 0.482 | 0.000 | 0.536 |
+| **delta-t-doctor (blind)** | **0.967** | **0.995** | **0.835** | **0.970** |
+| delta-t-doctor (informed, design delta-T given) | 0.979 | 0.998 | 0.875 | 0.975 |
+| logistic regression | 0.922 | 0.985 | 0.690 | 0.910 |
+| hand-written expert rules | 0.601 | 0.675 | 0.362 | 0.410 |
+| class prior | 0.478 | 0.480 | 0.000 | 0.530 |
 
 \*Share of the achievable delta-T gain recovered by fixing the tool's top-ranked cause, without access to the true fault list.
 
@@ -61,18 +62,18 @@ Under stress (3x sensor noise, 2-hour data, +/-3 C climate, no outdoor temperatu
 21-day window) macro AUROC stays between 0.947 and 0.982. Leaving out a whole building type costs the most
 (hotel: 0.931). Those are still simulator results.
 
-**External check (LBNL chiller-plant benchmark, CC-BY).** I wrote predictions before running it
-([docs/EXTERNAL_CHECK.md](docs/EXTERNAL_CHECK.md)). Outcome:
+**External check (LBNL chiller-plant benchmark, CC-BY).** I wrote predictions before running it and again before
+the follow-up ([docs/EXTERNAL_CHECK.md](docs/EXTERNAL_CHECK.md)). Outcome:
 
-* **P1 failed.** A fault-free plant that is *designed* for about 2.6 C delta-T was flagged as faulty. The model
-  has only seen buildings designed for 9-13 C and misreads a low-design plant as a badly fouled one. The tool
-  now warns when average delta-T is below 4 C.
-* **P2** (plant-side faults should not change the verdict) passed only technically, because the score was
-  saturated.
-* **P3** (pressure-sensor bias raises "overflow") was not supported.
+* **It failed.** A fault-free plant was flagged as faulty with near-certainty, in v0.1 and again in v0.2, even when
+  told its design delta-T. My first explanation (low design delta-T) was only part of it: the plant's flow barely
+  follows load, unlike every simulated building. The model is a four-cause classifier for variable-flow building
+  loops, not a general anomaly detector.
+* **What changed.** The tool now measures how far a building's behaviour is from the training range and reports
+  "not reliable" when it is far. That guard was built after the failure and is untested on real data.
 * I also found and fixed a supply/return mapping bug in my own first run and kept the discarded log.
 
-That dataset has no building-side labels, so it cannot measure accuracy. It exposed a real limit.
+That dataset has no building-side labels, so it cannot measure accuracy.
 
 ## Quick start
 

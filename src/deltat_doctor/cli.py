@@ -33,8 +33,33 @@ def _fmt_report(r) -> str:
 def cmd_diagnose(a):
     from .diagnose import diagnose_csv
     terms = ContractTerms(a.min_dt, a.pct, a.rate)
-    rep = diagnose_csv(a.csv, terms)
+    rep = diagnose_csv(a.csv, terms, design_delta_t_c=a.design_dt)
+    if a.html:
+        from .report import render_report
+        open(a.html, "w", encoding="utf-8").write(render_report(rep.to_dict(), a.name))
+        print(f"wrote {a.html}")
     print(json.dumps(rep.to_dict(), indent=2, default=float) if a.json else _fmt_report(rep))
+
+
+def cmd_portfolio(a):
+    import pandas as pd
+    from .portfolio import diagnose_portfolio, to_csv
+    rep = diagnose_portfolio(pd.read_csv(a.csv), ContractTerms(a.min_dt, a.pct, a.rate), a.design_dt)
+    if a.out:
+        open(a.out, "w", newline="").write(to_csv(rep))
+        print(f"wrote {a.out}")
+    d = rep.to_dict()
+    print(f"{d['n_diagnosed']} of {d['n_buildings']} buildings diagnosed; "
+          f"estimated annual surcharge AED {d['total_surcharge_aed']:,.0f}")
+    print("\nRanked by the saving from the first fix:")
+    for r in d["buildings"][: a.top]:
+        if r["status"] == "ok":
+            print(f"  {r['building_id']:<14} dT {r['delta_t_c']:.1f} C  surcharge AED {r['annual_surcharge_aed']:>10,.0f}"
+                  f"  first fix: {r['top_cause_label'][:34]:<34} ({r['top_cause_probability']:.0%}, AED {r['top_cause_saving_aed']:,.0f})")
+        else:
+            print(f"  {r['building_id']:<14} skipped: {r['reason']}")
+    for n in d["notes"]:
+        print(f"\nNote: {n}")
 
 
 def cmd_simulate(a):
@@ -67,12 +92,24 @@ def main(argv=None):
 
     d = sub.add_parser("diagnose", help="diagnose a meter-export CSV")
     d.add_argument("csv")
+    d.add_argument("--design-dt", type=float, default=None, help="design delta-T of the building loop, deg C (enables the informed model)")
     d.add_argument("--min-dt", type=float, default=8.9, help="contract minimum delta-T, deg C")
     d.add_argument("--pct", type=float, default=0.10, help="surcharge fraction per degree below minimum")
     d.add_argument("--rate", type=float, default=0.40, help="AED per RT-hr (illustrative default)")
+    d.add_argument("--html", help="also write a printable owner report to this file")
+    d.add_argument("--name", default="Your building", help="building name for the report heading")
     d.add_argument("--json", action="store_true")
     d.set_defaults(fn=cmd_diagnose)
 
+    pf = sub.add_parser("portfolio", help="diagnose many buildings from one file")
+    pf.add_argument("csv")
+    pf.add_argument("--out", help="write the ranked table as CSV")
+    pf.add_argument("--top", type=int, default=15)
+    pf.add_argument("--design-dt", type=float, default=None)
+    pf.add_argument("--min-dt", type=float, default=8.9)
+    pf.add_argument("--pct", type=float, default=0.10)
+    pf.add_argument("--rate", type=float, default=0.40)
+    pf.set_defaults(fn=cmd_portfolio)
     s = sub.add_parser("simulate", help="write a simulated year of ETS data for a chosen fault set")
     s.add_argument("--causes", default="fouling", help=f"comma list from: {', '.join(CAUSES)} (empty = healthy)")
     s.add_argument("--seed", type=int, default=7)

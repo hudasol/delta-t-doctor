@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 
 from . import CAUSES, CAUSE_LABELS
-from .features import extract, to_vector
+from .features import FEATURE_NAMES, augment, extract, to_vector
 from .io import DataError, canonicalise
 from .models import Diagnoser
 from .penalty import ContractTerms, KW_PER_RT, monthly_table, saving_from_gain, window_penalty
@@ -17,6 +17,7 @@ WINDOW_DAYS = 30
 MIN_WINDOW_DAYS = 14
 
 DEFAULT_MODEL = os.path.join(os.path.dirname(__file__), "assets", "diagnoser.joblib")
+INFORMED_MODEL = os.path.join(os.path.dirname(__file__), "assets", "diagnoser_informed.joblib")
 
 CHECKS = {
     "fouling": [
@@ -41,7 +42,7 @@ CHECKS = {
     ],
 }
 
-DOMAIN_MIN_DT_C = 4.0
+DOMAIN_MIN_DT_C = 3.0   # revisited after v0.2 training; see docs/EXTERNAL_CHECK.md
 
 AMBIGUITY_NOTE = (
     "From meter data alone, constant-flow coils and leaking/passing valves can look alike "
@@ -80,6 +81,8 @@ class Report:
     terms: dict
     data_quality: dict
     signature: list = field(default_factory=list)
+    mode: str = "blind"                      # "informed" when a design delta-T was supplied
+    design_delta_t_c: float | None = None
     disclaimer: str = DISCLAIMER
 
     def to_dict(self) -> dict:
@@ -90,8 +93,8 @@ class Report:
 _cached: dict = {}
 
 
-def load_default_model(path: str | None = None) -> Diagnoser:
-    path = path or DEFAULT_MODEL
+def load_default_model(path: str | None = None, informed: bool = False) -> Diagnoser:
+    path = path or (INFORMED_MODEL if informed else DEFAULT_MODEL)
     if path not in _cached:
         if not os.path.exists(path):
             raise FileNotFoundError(
@@ -138,16 +141,31 @@ def _signature(h: pd.DataFrame) -> list:
 
 
 def diagnose_frame(df: pd.DataFrame, terms: ContractTerms | None = None,
-                   model: Diagnoser | None = None) -> Report:
+                   model: Diagnoser | None = None,
+                   design_delta_t_c: float | None = None) -> Report:
+    """Diagnose a meter export.
+
+    If ``design_delta_t_c`` (the delta-T the building's loop was designed for) is given, the *informed*
+    model is used: it separates "this building was never designed to return warm water" from "something is
+    wrong". Without it the blind model assumes a design delta-T anywhere in 5-12 C and is less certain.
+    """
     terms = terms or ContractTerms()
-    model = model or load_default_model()
+    informed = design_delta_t_c is not None
+    if informed and not (3.0 <= design_delta_t_c <= 16.0):
+        raise DataError("Design delta-T must be between 3 and 16 C.")
+    model = model or load_default_model(informed=informed)
     h = canonicalise(df)
     wins = _windows(h)
     if not wins:
         raise DataError("Not enough contiguous data to form a 14-day analysis window.")
 
     X = np.vstack([to_vector(extract(w)) for w in wins])
+    if informed:
+        X = augment(X, design_delta_t_c)
     pred = model.predict(X)
+    ood = getattr(model, "ood_count", None)
+    n_ood = float(np.average(ood(X[:, : len(FEATURE_NAMES)]), weights=[len(w) for w in wins])) if ood else 0.0
+    ood_limit = getattr(model, "ood_threshold", None)
 
     # per-window energy, delta-T
     rt_hr = np.array([w["heat_kw"].sum() / KW_PER_RT for w in wins])
@@ -180,16 +198,27 @@ def diagnose_frame(df: pd.DataFrame, terms: ContractTerms | None = None,
         notes.append("Delta-T is at or above the contract minimum over this period; no surcharge exposure "
                      "expected, but listed causes may still cost energy.")
 
-    if dt_all < DOMAIN_MIN_DT_C:
+    out_of_range = ood_limit is not None and n_ood > ood_limit
+    if out_of_range:
         notes.append(
-            f"Average delta-T ({dt_all:.1f} C) is below what the model saw in training (building design "
-            f"delta-T of 9-13 C). If this plant was designed for a low delta-T, the cause probabilities "
-            f"will be overconfident: a design deficit looks like fouling. Treat the ranking as unreliable.")
+            f"This building's behaviour is unlike anything the model was trained on ({n_ood:.0f} of "
+            f"{len(FEATURE_NAMES)} shape measurements are outside the training range; a normal building "
+            f"shows {ood_limit} or fewer). The ranking below is NOT reliable. Typical reasons: variable "
+            f"flow that does not follow load, a plant-side loop rather than a building ETS, or a different system type.")
+    if dt_all < DOMAIN_MIN_DT_C and not informed:
+        notes.append(
+            f"Average delta-T ({dt_all:.1f} C) is below the range the model was trained on. If this building "
+            f"was designed for a low delta-T, the ranking will be overconfident: a design shortfall looks like "
+            f"fouling. Enter the design delta-T to get an informed diagnosis.")
+    elif not informed:
+        notes.append("No design delta-T supplied. If you know it, enter it: the diagnosis separates a design "
+                     "shortfall from a fault and is more reliable.")
     signature = _signature(h)
     quality = {
         "hours": int(len(h)), "has_outdoor_temp": has_oat,
         "zero_flow_fraction": float((h["flow_kgs"] <= 1e-6).mean()),
-        "windows": len(wins),
+        "windows": len(wins), "features_out_of_range": n_ood, "out_of_range_limit": ood_limit,
+        "reliable": not out_of_range,
     }
     return Report(
         n_days=float(days.sum()), n_windows=len(wins), delta_t_c=dt_all,
@@ -197,8 +226,10 @@ def diagnose_frame(df: pd.DataFrame, terms: ContractTerms | None = None,
         annual_surcharge_aed_estimate=annual_sur, p_any_cause=float(np.average(pred.p_any, weights=days)),
         findings=[asdict(f) for f in findings], monthly=mt.to_dict(orient="records"),
         notes=notes, terms=terms.to_dict(), data_quality=quality, signature=signature,
+        mode="informed" if informed else "blind", design_delta_t_c=design_delta_t_c,
     )
 
 
-def diagnose_csv(path: str, terms: ContractTerms | None = None, model: Diagnoser | None = None) -> Report:
-    return diagnose_frame(pd.read_csv(path), terms, model)
+def diagnose_csv(path: str, terms: ContractTerms | None = None, model: Diagnoser | None = None,
+                 design_delta_t_c: float | None = None) -> Report:
+    return diagnose_frame(pd.read_csv(path), terms, model, design_delta_t_c)

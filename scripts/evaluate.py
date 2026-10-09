@@ -15,8 +15,10 @@ import matplotlib.pyplot as plt
 
 from deltat_doctor import CAUSES, CAUSE_LABELS
 from deltat_doctor.diagnose import load_default_model
-from deltat_doctor.evaluate import (confusion_single_cause, cross_validate, leave_one_group_out,
+from deltat_doctor.evaluate import (MODELS, confusion_single_cause, cross_validate, leave_one_group_out,
                                     metrics, subtype_recall)
+from deltat_doctor.features import augment
+from deltat_doctor.models import Prediction
 from deltat_doctor.sim.dataset import Dataset
 
 D = "results/data"
@@ -40,6 +42,23 @@ res["cv_grouped_by_building"] = {name: m for name, (m, _) in cv.items()}
 ours_pred = cv["ours_gbdt"][1]
 res["cv_confusion_single_cause"] = confusion_single_cause(ds, ours_pred)
 res["cv_constant_flow_subtypes"] = subtype_recall(ds, ours_pred)
+dsi = Dataset(augment(ds.X, ds.meta["design_dt"].to_numpy()), ds.Y, ds.G, ds.meta)
+cvi = cross_validate(dsi, 5, models={"ours_informed": MODELS["ours_gbdt"]})
+res["cv_grouped_by_building"]["ours_informed"] = cvi["ours_informed"][0]
+# E. by design delta-T band: does telling the model the design value cut false alarms on healthy buildings?
+bands = [(5, 7), (7, 9), (9, 11), (11, 13)]
+res["by_design_band"] = {}
+dd = ds.meta["design_dt"].to_numpy(); healthy = ds.Y.sum(1) == 0
+for lo, hi in bands:
+    sel = (dd >= lo) & (dd < hi)
+    row_ = {"n": int(sel.sum()), "n_healthy": int((sel & healthy).sum())}
+    for tag, pr in (("blind", ours_pred), ("informed", cvi["ours_informed"][1])):
+        sub = Prediction(pr.prob[sel], pr.gain[sel], pr.p_any[sel])
+        m_ = metrics(ds.subset(sel), sub)
+        row_[tag] = {"macro_auroc": m_["macro_auroc"], "any_fault_auroc": m_["any_fault_auroc"],
+                     "mean_p_any_on_healthy": float(pr.p_any[sel & healthy].mean()),
+                     "false_alarm_rate_at_0.5": float((pr.p_any[sel & healthy] >= 0.5).mean())}
+    res["by_design_band"][f"{lo}-{hi}"] = row_
 print("A done", round(time.time() - t0), flush=True)
 
 # reliability (pooled over causes, out-of-fold)
@@ -82,6 +101,11 @@ res["stress"] = {}
 for name in STRESS:
     sd = Dataset.load(f"{D}/stress_{name}.npz")
     res["stress"][name] = metrics(sd, final.predict(sd.X))
+final_i = load_default_model(informed=True)
+res["stress_informed"] = {}
+for name in STRESS:
+    sd = Dataset.load(f"{D}/stress_{name}.npz")
+    res["stress_informed"][name] = metrics(sd, final_i.predict(augment(sd.X, sd.meta["design_dt"].to_numpy())))
 print("B done", round(time.time() - t0), flush=True)
 fig, ax = plt.subplots(figsize=(7.4, 3.8))
 labels = STRESS
@@ -132,6 +156,16 @@ for c in CAUSES:
     md.append(f"| {c} | {mo['prevalence'][c]:.2f} | {pc['auroc']:.3f} | {pc['f1_at_0.5']:.3f} | {pc['brier']:.3f} | {pc['gain_mae_c']:.2f} |")
 md += ["\n## B. Distribution shift (model trained on the main set; fresh buildings)\n", H]
 for k, m in res["stress"].items(): md.append(row(k, m))
+md += ["\n## B2. Same stress sets, informed model (design delta-T supplied)\n", H]
+for k, m in res["stress_informed"].items(): md.append(row(k, m))
+md += ["\n## E. Healthy buildings by design delta-T band (held-out buildings)\n",
+       "False alarm = any-cause probability of 0.5 or more on a building with no fault.\n",
+       "| design delta-T (C) | n | healthy | blind: mean p(any) | blind: false alarms | informed: mean p(any) | informed: false alarms | blind any-fault AUROC | informed any-fault AUROC |",
+       "|---|---|---|---|---|---|---|---|---|"]
+for k, v in res["by_design_band"].items():
+    b, i = v["blind"], v["informed"]
+    md.append(f"| {k} | {v['n']} | {v['n_healthy']} | {b['mean_p_any_on_healthy']:.2f} | {b['false_alarm_rate_at_0.5']:.0%} | "
+              f"{i['mean_p_any_on_healthy']:.2f} | {i['false_alarm_rate_at_0.5']:.0%} | {b['any_fault_auroc']:.3f} | {i['any_fault_auroc']:.3f} |")
 md += ["\n## C. Leave one building type out\n", H]
 for k, m in res["leave_one_type_out"].items(): md.append(row(f"held out: {k}", m))
 md += ["\n## D. Held-out seasons\n", H]

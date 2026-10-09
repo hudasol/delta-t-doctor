@@ -110,6 +110,9 @@ td.n,th.n{text-align:right}
         <label for="rate">Rate (AED per RT-hr)</label>
         <input id="rate" type="number" step="0.01" value="0.40">
         <p class="hint">The default rate is a placeholder. Enter the rate from your contract to get real dirham figures.</p>
+        <label for="design">Design delta-T of your building (&deg;C, optional)</label>
+        <input id="design" type="number" step="0.1" min="3" max="16" placeholder="e.g. 9.0">
+        <p class="hint">From the MEP design or ETS data sheet. With it, the tool tells a design shortfall from a fault.</p>
       </fieldset>
       <button id="go" type="submit">Diagnose this file</button>
     </form>
@@ -117,6 +120,13 @@ td.n,th.n{text-align:right}
     <fieldset style="margin-top:26px">
       <legend>No file yet? Try a simulated building</legend>
       <div id="demos"></div>
+    </fieldset>
+    <fieldset style="margin-top:20px">
+      <legend>Many buildings?</legend>
+      <label for="pfile">One CSV with a building_id column (and optionally design_delta_t_c)</label>
+      <input id="pfile" type="file" accept=".csv,text/csv">
+      <button id="pgo" type="button">Rank my portfolio</button>
+      <button id="pdemo" type="button" class="ghost" style="margin-top:8px">Try a demo portfolio</button>
     </fieldset>
     <div id="status" role="status" aria-live="polite"></div>
   </aside>
@@ -152,7 +162,9 @@ const status = (msg, err=false) => { const s=$("#status"); s.textContent=msg; s.
 })();
 
 function terms(){
-  return {min_dt:$("#mindt").value, pct:$("#pct").value, rate:$("#rate").value};
+  const t={min_dt:$("#mindt").value, pct:$("#pct").value, rate:$("#rate").value};
+  const dd=$("#design").value.trim(); if(dd!=="") t.design_dt=dd;
+  return t;
 }
 function busy(on){ document.querySelectorAll("button").forEach(b=>b.disabled=on); }
 
@@ -162,7 +174,7 @@ async function runDemo(name){
     const q=new URLSearchParams(terms());
     const r=await fetch(`/api/demo/${name}?`+q); const j=await r.json();
     if(!r.ok) throw new Error(j.detail||"Request failed");
-    render(j, name);
+    lastSource={demo:name}; render(j, name);
     status("");
   }catch(e){ status(e.message, true); }
   busy(false);
@@ -179,7 +191,7 @@ $("#form").addEventListener("submit", async ev=>{
     const r=await fetch("/api/diagnose",{method:"POST",body:fd});
     const j=await r.json();
     if(!r.ok) throw new Error(typeof j.detail==="string"?j.detail:"The file could not be read.");
-    render(j, null); status("");
+    lastSource={file:f}; render(j, null); status("");
   }catch(e){ status(e.message, true); }
   busy(false);
 });
@@ -209,9 +221,6 @@ function chart(sig, minDt){
   // shortfall area
   const pts=sig.map(s=>[X(s.load_pct),Y(s.dt_c)]);
   if(pts.length>1){
-    let d=`M ${pts[0][0]} ${Y(minDt)}`;
-    sig.forEach((s,i)=>{ d+=` L ${pts[i][0]} ${Math.min(Y(s.dt_c),Y(minDt)+0)>Y(minDt)?Y(minDt):Y(s.dt_c)}`; });
-    sig.forEach((s,i)=>{});
     const below=[]; sig.forEach((s,i)=>{ if(s.dt_c<minDt) below.push(i); });
     if(below.length){
       let a=`M ${pts[0][0]} ${Y(minDt)}`;
@@ -234,6 +243,89 @@ function chart(sig, minDt){
   return svg;
 }
 
+
+let lastSource=null;   // {demo:name} or {file:File}
+function reportButton(root){
+  const b=el("button",{type:"button",class:"ghost",style:"margin:6px 0 22px;max-width:260px"},"Open printable report");
+  b.addEventListener("click", async ()=>{
+    try{
+      const t=terms(); let r;
+      if(lastSource && lastSource.demo){
+        r=await fetch(`/api/demo/${lastSource.demo}/report?`+new URLSearchParams(t));
+      }else if(lastSource && lastSource.file){
+        const fd=new FormData(); fd.append("file",lastSource.file); Object.keys(t).forEach(k=>fd.append(k,t[k]));
+        r=await fetch("/api/report",{method:"POST",body:fd});
+      }else return;
+      if(!r.ok) throw new Error("The report could not be built.");
+      const url=URL.createObjectURL(new Blob([await r.text()],{type:"text/html"}));
+      window.open(url,"_blank");
+    }catch(e){ status(e.message,true); }
+  });
+  root.append(b);
+}
+
+function renderPortfolio(d){
+  $("#empty").hidden=true;
+  const root=$("#result"); root.hidden=false; root.replaceChildren();
+  const v=el("p",{class:"verdict"});
+  v.append(`${d.n_diagnosed} buildings pay an estimated `);
+  v.append(el("span",{class:"gap"},`AED ${fmt0(d.total_surcharge_aed)}`));
+  v.append(" a year in delta-T surcharge.");
+  root.append(v);
+  root.append(el("p",{class:"honest"},"Buildings are ranked by the saving from their first fix. Figures use the contract terms on the left and a model trained on simulated buildings, so treat them as a ranking, not a quote."));
+  root.append(el("h2",{},"Across the portfolio"));
+  d.by_cause.forEach(c=>{
+    const box=el("div",{class:"finding"}); const head=el("div",{class:"fhead"});
+    head.append(el("div",{class:"fname"},c.label));
+    head.append(el("div",{class:"fmoney"},`AED ${fmt0(c.expected_saving_aed_per_year)} a year`));
+    box.append(head);
+    box.append(el("div",{class:"fmeta"},`first fix in ${c.buildings_where_top} building${c.buildings_where_top===1?"":"s"}`));
+    root.append(box);
+  });
+  root.append(el("h2",{style:"margin-top:36px"},"Buildings, most to gain first"));
+  const t=el("table"); const th=el("thead"); const hr=el("tr");
+  [["Building",""],["Delta-T (°C)","n"],["Surcharge (AED/yr)","n"],["First fix",""],["Likely","n"],["Saving (AED/yr)","n"]].forEach(([h,c])=>hr.append(el("th",c?{class:c}:{},h)));
+  th.append(hr); t.append(th); const tb=el("tbody");
+  d.buildings.forEach(b=>{
+    const r=el("tr");
+    r.append(el("td",{},b.building_id));
+    if(b.status!=="ok"){ const td=el("td",{colspan:5},"Skipped: "+b.reason); r.append(td); tb.append(r); return; }
+    r.append(el("td",{class:"n"},b.delta_t_c.toFixed(1)));
+    r.append(el("td",{class:"n"},fmt0(b.annual_surcharge_aed)));
+    r.append(el("td",{},b.top_cause_label.split(" (")[0]));
+    r.append(el("td",{class:"n"},Math.round(100*b.top_cause_probability)+"%"));
+    r.append(el("td",{class:"n"},fmt0(b.top_cause_saving_aed)));
+    tb.append(r);
+  });
+  t.append(tb); root.append(t);
+  d.notes.forEach(n=>root.append(el("div",{class:"note"},n)));
+  root.scrollIntoView({block:"start"});
+}
+
+$("#pdemo").addEventListener("click", async ()=>{
+  busy(true); status("Simulating twelve buildings…");
+  try{
+    const q=new URLSearchParams({min_dt:$("#mindt").value,pct:$("#pct").value,rate:$("#rate").value});
+    const r=await fetch("/api/demo-portfolio?"+q); const j=await r.json();
+    if(!r.ok) throw new Error(j.detail||"Request failed");
+    renderPortfolio(j); status("");
+  }catch(e){ status(e.message,true); }
+  busy(false);
+});
+$("#pgo").addEventListener("click", async ()=>{
+  const f=$("#pfile").files[0];
+  if(!f){ status("Choose a portfolio CSV first.",true); return; }
+  busy(true); status("Diagnosing every building…");
+  const fd=new FormData(); fd.append("file",f);
+  const t=terms(); Object.keys(t).forEach(k=>fd.append(k,t[k]));
+  try{
+    const r=await fetch("/api/portfolio",{method:"POST",body:fd}); const j=await r.json();
+    if(!r.ok) throw new Error(typeof j.detail==="string"?j.detail:"The file could not be read.");
+    renderPortfolio(j); status("");
+  }catch(e){ status(e.message,true); }
+  busy(false);
+});
+
 function render(d, demoName){
   $("#empty").hidden=true;
   const root=$("#result"); root.hidden=false; root.replaceChildren();
@@ -252,8 +344,11 @@ function render(d, demoName){
   if(demoName){
     root.append(el("p",{class:"demo-truth"},
       `Simulated building. The fault that was actually built in: ${d.truth_for_demo.join(" + ").replaceAll("_"," ")}. `+
-      `The tool saw only the meter data.`));
+      `The tool saw only the meter data.`+(d.demo_true_design_dt?` It was designed for ${d.demo_true_design_dt} °C: enter that as the design delta-T to see the informed diagnosis.`:"")));
   }
+  root.append(el("p",{class:"hint"}, d.mode==="informed"
+    ? `Informed diagnosis, using your design delta-T of ${d.design_delta_t_c} °C.`
+    : "Blind diagnosis: no design delta-T entered."));
   root.append(el("p",{class:"honest"},
     `Estimated surcharge over a year: AED ${fmt0(d.annual_surcharge_aed_estimate)} at the rate you entered. `+
     `The diagnosis comes from a model trained on simulated buildings, not on UAE field data, so treat it as a ranked inspection list.`));
@@ -294,6 +389,7 @@ function render(d, demoName){
     });
     t.append(tb); root.append(t);
   }
+  reportButton(root);
   root.append(el("p",{class:"foot"},d.disclaimer));
   root.scrollIntoView({block:"start"});
 }

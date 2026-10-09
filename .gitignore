@@ -10,3 +10,4 @@ results/*.log
 demo_ets.csv
 external/
 .DS_Store
+results/data_v01/
