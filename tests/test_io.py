@@ -106,3 +106,35 @@ def test_error_lists_columns_seen():
     ts, n = _msg_frame()
     with pytest.raises(DataError, match="Columns seen"):
         canonicalise(pd.DataFrame({"timestamp": ts, "mystery": 1.0}))
+
+
+def test_swapped_sensors_rejected():
+    n = 24 * 20
+    with pytest.raises(DataError):
+        canonicalise(_frame(n, flow_m3h=np.full(n, 36.0), t_supply_c=np.full(n, 14.0), t_return_c=np.full(n, 6.0)))
+
+
+def test_nan_rows_dropped_and_reported():
+    n = 24 * 20
+    ret = np.full(n, 14.0)
+    ret[::10] = np.nan
+    h = canonicalise(_frame(n, flow_m3h=np.full(n, 36.0), t_supply_c=np.full(n, 6.0), t_return_c=ret))
+    assert not h["dt_c"].isna().any()
+    assert h.attrs["quality"]["dropped_fraction"] > 0
+
+
+def test_latin1_and_dayfirst_dates():
+    from deltat_doctor.io import read_table
+    n = 24 * 20
+    ts = pd.date_range("2025-07-01", periods=n, freq="h")
+    df = pd.DataFrame({"timestamp": ts.strftime("%d/%m/%Y %H:%M"), "flow_m3h": 36.0,
+                       "t_supply_c": 6.0, "t_return_c": 14.0})
+    raw = df.to_csv(index=False).replace("flow_m3h", "flow_m3h").encode("latin-1")
+    h = canonicalise(read_table(raw, "x.csv"))
+    assert h["timestamp"].min().month == 7 and h["timestamp"].min().day == 1
+
+
+def test_implausible_temperature_rejected():
+    n = 24 * 20
+    with pytest.raises(DataError):
+        canonicalise(_frame(n, flow_m3h=np.full(n, 36.0), t_supply_c=np.full(n, 600.0), t_return_c=np.full(n, 614.0)))

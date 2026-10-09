@@ -1,4 +1,4 @@
-import sys, os, json, time
+import sys, time
 sys.path.insert(0, "src")
 from deltat_doctor.sim.dataset import Dataset
 from deltat_doctor.evaluate import cross_validate

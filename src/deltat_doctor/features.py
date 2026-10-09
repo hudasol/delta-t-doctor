@@ -9,13 +9,15 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
+from . import CP_KJ_KG_K
+
 LF_EDGES = np.array([0.0, 0.10, 0.20, 0.30, 0.45, 0.60, 0.75, 0.90, 10.0])
 N_BINS = len(LF_EDGES) - 1
 
 
 def _wavg_dt(heat: np.ndarray, flow: np.ndarray) -> float:
     f = flow.sum()
-    return float(heat.sum() / (4.186 * f)) if f > 1e-9 else np.nan
+    return float(heat.sum() / (CP_KJ_KG_K * f)) if f > 1e-9 else np.nan
 
 
 def feature_names() -> list[str]:
@@ -40,7 +42,6 @@ def extract(h: pd.DataFrame) -> dict:
     dt = h["dt_c"].to_numpy(float)
     oat = h["t_outdoor_c"].to_numpy(float)
     ts = pd.DatetimeIndex(h["timestamp"])
-    n = len(h)
 
     q98 = np.nanpercentile(heat, 98) if np.nanmax(heat) > 0 else 1.0
     q98 = max(q98, 1e-6)

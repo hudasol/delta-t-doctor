@@ -78,7 +78,7 @@ def cross_validate(ds: Dataset, n_splits: int = 5, models: dict | None = None):
     preds = {name: Prediction(np.zeros_like(ds.Y), np.zeros_like(ds.G), np.zeros(len(ds.Y))) for name in models}
     for tr, te in gkf.split(ds.X, ds.Y, groups):
         for name, mk in models.items():
-            m = mk().fit(ds.X[tr], ds.Y[tr], ds.G[tr])
+            m = mk().fit(ds.X[tr], ds.Y[tr], ds.G[tr], **({"groups": groups[tr]} if isinstance(mk(), Diagnoser) else {}))
             p = m.predict(ds.X[te])
             preds[name].prob[te], preds[name].gain[te], preds[name].p_any[te] = p.prob, p.gain, p.p_any
     return {name: (metrics(ds, p), p) for name, p in preds.items()}
@@ -91,7 +91,7 @@ def leave_one_group_out(ds: Dataset, key: str, values=None):
     for v in values:
         te = (ds.meta[key] == v).to_numpy() if not isinstance(v, (list, tuple)) else ds.meta[key].isin(v).to_numpy()
         tr = ~te
-        m = Diagnoser(seed=0).fit(ds.X[tr], ds.Y[tr], ds.G[tr])
+        m = Diagnoser(seed=0).fit(ds.X[tr], ds.Y[tr], ds.G[tr], groups=ds.meta["building_id"].to_numpy()[tr])
         res[str(v)] = metrics(ds.subset(te), m.predict(ds.X[te]))
     return res
 
@@ -118,4 +118,38 @@ def subtype_recall(ds: Dataset, pred: Prediction) -> dict:
         if sel.sum() >= 5:
             out[sub] = {"n": int(sel.sum()), "mean_prob": float(pred.prob[sel, k].mean()),
                         "recall_at_0.5": float((pred.prob[sel, k] >= 0.5).mean())}
+    return out
+
+
+def bootstrap_ci(ds: Dataset, preds: dict, n_boot: int = 200, seed: int = 0, ref: str = "ours_gbdt") -> dict:
+    """Building-level bootstrap (resample whole buildings with replacement) of macro AUROC and any-fault AUROC.
+
+    Returns the 95% interval for each model and the paired difference ref - other (same resamples), so a gap
+    between two models is judged against the same sampling noise.
+    """
+    rng = np.random.default_rng(seed)
+    bid = ds.meta["building_id"].to_numpy()
+    ids = np.unique(bid)
+    rows_of = {b: np.flatnonzero(bid == b) for b in ids}
+    names = list(preds)
+    draws = {n: {"macro_auroc": [], "any_fault_auroc": []} for n in names}
+    for _ in range(n_boot):
+        pick = rng.choice(ids, size=len(ids), replace=True)
+        idx = np.concatenate([rows_of[b] for b in pick])
+        Y = ds.Y[idx]
+        y_any = (Y.sum(1) > 0).astype(int)
+        for n in names:
+            p = preds[n]
+            macro = np.nanmean([_safe_auc(Y[:, k].astype(int), p.prob[idx, k]) for k in range(Y.shape[1])])
+            draws[n]["macro_auroc"].append(macro)
+            draws[n]["any_fault_auroc"].append(_safe_auc(y_any, p.p_any[idx]))
+    q = lambda a: [float(np.percentile(a, 2.5)), float(np.percentile(a, 97.5))]
+    out = {"n_boot": n_boot, "resampled": "buildings", "models": {}, "paired_vs_" + ref: {}}
+    for n in names:
+        out["models"][n] = {k: {"ci95": q(v), "mean": float(np.mean(v))} for k, v in draws[n].items()}
+        if n != ref and ref in draws:
+            out["paired_vs_" + ref][n] = {
+                k: {"diff_ci95": q(np.array(draws[ref][k]) - np.array(draws[n][k])),
+                    "diff_mean": float(np.mean(np.array(draws[ref][k]) - np.array(draws[n][k])))}
+                for k in draws[n]}
     return out

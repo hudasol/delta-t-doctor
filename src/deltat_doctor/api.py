@@ -1,8 +1,10 @@
 """FastAPI app: upload a meter export, get a ranked diagnosis. Nothing is stored."""
 from __future__ import annotations
 
-import io
+import logging
+import math
 import os
+import threading
 
 import numpy as np
 import pandas as pd
@@ -15,10 +17,13 @@ from .diagnose import diagnose_frame, load_default_model
 from .io import DataError, read_table
 from .penalty import ContractTerms
 from .report import render_report
-from .portfolio import diagnose_portfolio, to_csv as portfolio_csv
+from .portfolio import diagnose_portfolio
 
 WEB_DIR = os.path.join(os.path.dirname(__file__), "web")
 MAX_BYTES = 25 * 1024 * 1024
+MAX_CONCURRENT = int(os.environ.get("DTD_MAX_CONCURRENT", "4"))
+log = logging.getLogger("deltat_doctor.api")
+_slots = threading.BoundedSemaphore(MAX_CONCURRENT)
 
 app = FastAPI(title="delta-t-doctor", version=__version__,
               description="Diagnose low delta-T in district-cooled buildings from ETS meter data. "
@@ -62,6 +67,8 @@ def _demo(name: str, seed: int = 7):
 
 
 def _terms(min_dt: float, pct: float, rate: float) -> ContractTerms:
+    if not all(math.isfinite(v) for v in (min_dt, pct, rate)):
+        raise HTTPException(422, "Contract terms must be finite numbers.")
     if not (3.0 <= min_dt <= 15.0):
         raise HTTPException(422, "Minimum delta-T must be between 3 and 15 C.")
     if not (0.0 <= pct <= 1.0):
@@ -72,12 +79,29 @@ def _terms(min_dt: float, pct: float, rate: float) -> ContractTerms:
 
 
 def _run(df, terms, design_dt):
+    if design_dt is not None and not math.isfinite(design_dt):
+        raise HTTPException(422, "Design delta-T must be a finite number.")
+    if not _slots.acquire(blocking=False):
+        raise HTTPException(503, "Server is busy. Try again in a few seconds.")
     try:
         return diagnose_frame(df, terms, design_delta_t_c=design_dt)
     except DataError as e:
         raise HTTPException(422, str(e))
     except FileNotFoundError:
         raise HTTPException(503, "The informed model is not installed on this server.")
+    finally:
+        _slots.release()
+
+
+def _read_upload(file: UploadFile) -> pd.DataFrame:
+    """Read at most MAX_BYTES from the upload (never buffers more), then parse."""
+    raw = file.file.read(MAX_BYTES + 1)
+    if len(raw) > MAX_BYTES:
+        raise HTTPException(413, "File is larger than 25 MB.")
+    try:
+        return read_table(raw, file.filename or "")
+    except DataError as e:
+        raise HTTPException(422, str(e))
 
 
 @app.get("/api/health")
@@ -93,6 +117,13 @@ def health():
 @app.get("/api/demos")
 def demos():
     return {"demos": list(DEMOS)}
+
+
+@app.get("/api/demo/{name}.csv", response_class=PlainTextResponse)
+def demo_csv(name: str):
+    if name not in DEMOS:
+        raise HTTPException(404, "Unknown demo.")
+    return _demo(name)[0].to_csv(index=False)
 
 
 @app.get("/api/demo/{name}")
@@ -118,38 +149,19 @@ def demo_report(name: str, min_dt: float = 8.9, pct: float = 0.10, rate: float =
 
 
 @app.post("/api/report", response_class=HTMLResponse)
-async def report(file: UploadFile = File(...), name: str = Form("Your building"), min_dt: float = Form(8.9),
+def report(file: UploadFile = File(...), name: str = Form("Your building"), min_dt: float = Form(8.9),
                  pct: float = Form(0.10), rate: float = Form(0.40), design_dt: float | None = Form(None)):
     terms = _terms(min_dt, pct, rate)
-    raw = await file.read()
-    if len(raw) > MAX_BYTES:
-        raise HTTPException(413, "File is larger than 25 MB.")
-    try:
-        df = read_table(raw, file.filename or "")
-    except DataError as e:
-        raise HTTPException(422, str(e))
+    df = _read_upload(file)
     return render_report(_run(df, terms, design_dt).to_dict(), name[:80])
 
 
-@app.get("/api/demo/{name}.csv", response_class=PlainTextResponse)
-def demo_csv(name: str):
-    if name not in DEMOS:
-        raise HTTPException(404, "Unknown demo.")
-    return _demo(name)[0].to_csv(index=False)
-
-
 @app.post("/api/diagnose")
-async def diagnose(file: UploadFile = File(...), min_dt: float = Form(8.9),
+def diagnose(file: UploadFile = File(...), min_dt: float = Form(8.9),
                    pct: float = Form(0.10), rate: float = Form(0.40),
                    design_dt: float | None = Form(None)):
     terms = _terms(min_dt, pct, rate)
-    raw = await file.read()
-    if len(raw) > MAX_BYTES:
-        raise HTTPException(413, "File is larger than 25 MB.")
-    try:
-        df = read_table(raw, file.filename or "")
-    except DataError as e:
-        raise HTTPException(422, str(e))
+    df = _read_upload(file)
     return JSONResponse(_run(df, terms, design_dt).to_dict())
 
 
@@ -176,20 +188,21 @@ def demo_portfolio_csv():
 
 
 @app.post("/api/portfolio")
-async def portfolio(file: UploadFile = File(...), min_dt: float = Form(8.9), pct: float = Form(0.10),
+def portfolio(file: UploadFile = File(...), min_dt: float = Form(8.9), pct: float = Form(0.10),
                     rate: float = Form(0.40), design_dt: float | None = Form(None)):
     terms = _terms(min_dt, pct, rate)
-    raw = await file.read()
-    if len(raw) > MAX_BYTES:
-        raise HTTPException(413, "File is larger than 25 MB.")
-    try:
-        df = read_table(raw, file.filename or "")
-    except DataError as e:
-        raise HTTPException(422, str(e))
+    df = _read_upload(file)
+    if design_dt is not None and not math.isfinite(design_dt):
+        raise HTTPException(422, "Design delta-T must be a finite number.")
+    if not _slots.acquire(blocking=False):
+        raise HTTPException(503, "Server is busy. Try again in a few seconds.")
     try:
         rep = diagnose_portfolio(df, terms, design_dt)
     except DataError as e:
         raise HTTPException(422, str(e))
+    finally:
+        _slots.release()
+    log.info("portfolio buildings=%d", len(rep.buildings) if hasattr(rep, "buildings") else -1)
     return JSONResponse(rep.to_dict())
 
 

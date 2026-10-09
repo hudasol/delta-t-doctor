@@ -7,7 +7,7 @@ from dataclasses import dataclass, field, asdict
 import numpy as np
 import pandas as pd
 
-from . import CAUSES, CAUSE_LABELS
+from . import CAUSES, CAUSE_LABELS, CP_KJ_KG_K
 from .features import FEATURE_NAMES, augment, extract, to_vector
 from .io import DataError, canonicalise
 from .models import Diagnoser
@@ -91,6 +91,25 @@ class Report:
 
 
 _cached: dict = {}
+_ASSETS = os.path.join(os.path.dirname(__file__), "assets")
+
+
+def _verify_bundled(path: str) -> None:
+    """joblib files are pickles: refuse a bundled model whose sha256 does not match the model card."""
+    if os.path.dirname(os.path.abspath(path)) != os.path.abspath(_ASSETS):
+        return
+    import hashlib
+    import json
+    card = os.path.join(_ASSETS, "model_card.json")
+    if not os.path.exists(card):
+        return
+    want = json.load(open(card)).get("sha256", {}).get(os.path.basename(path))
+    if want is None:
+        return
+    with open(path, "rb") as fh:
+        got = hashlib.sha256(fh.read()).hexdigest()
+    if got != want:
+        raise RuntimeError(f"Model file {os.path.basename(path)} does not match its recorded sha256; refusing to load it.")
 
 
 def load_default_model(path: str | None = None, informed: bool = False) -> Diagnoser:
@@ -99,24 +118,37 @@ def load_default_model(path: str | None = None, informed: bool = False) -> Diagn
         if not os.path.exists(path):
             raise FileNotFoundError(
                 f"No trained model at {path}. Run `python scripts/train.py` first.")
+        _verify_bundled(path)
         _cached[path] = Diagnoser.load(path)
     return _cached[path]
 
 
+MIN_COVERAGE = 0.80          # share of hours in a window that must have data
+MAX_WINDOW_DAYS = 45
+DESIGN_DT_RANGE = (4.0, 14.0)   # training covers about 4.5-13.5 C; outside this the informed model would extrapolate
+
+
 def _windows(h: pd.DataFrame):
+    """Split into near-equal windows of 20-45 days (30 where possible), keeping only well-covered ones.
+
+    The model was trained on dense 30-day windows, so a window is kept only if at least 80% of its hours have data.
+    """
     ts = pd.DatetimeIndex(h["timestamp"])
     start = ts.min().normalize()
-    end = ts.max()
+    end = ts.max() + pd.Timedelta(hours=1)
     total_days = (end - start).total_seconds() / 86400.0
-    n = max(int(total_days // WINDOW_DAYS), 1)
-    edges = [start + pd.Timedelta(days=WINDOW_DAYS * i) for i in range(n)] + [end + pd.Timedelta(hours=1)]
+    n = max(int(round(total_days / WINDOW_DAYS)), 1)
+    while n > 1 and total_days / n < 20:
+        n -= 1
+    while total_days / n > MAX_WINDOW_DAYS:
+        n += 1
+    step = (end - start) / n
     wins = []
     for i in range(n):
-        lo, hi = edges[i], edges[i + 1]
-        if i == n - 1:
-            hi = end + pd.Timedelta(hours=1)  # last window absorbs the remainder
+        lo, hi = start + step * i, start + step * (i + 1)
         w = h[(h["timestamp"] >= lo) & (h["timestamp"] < hi)]
-        if len(w) >= MIN_WINDOW_DAYS * 24 * 0.6:
+        span_h = (hi - lo).total_seconds() / 3600.0
+        if len(w) >= MIN_WINDOW_DAYS * 24 and len(w) / span_h >= MIN_COVERAGE:
             wins.append(w.reset_index(drop=True))
     return wins
 
@@ -134,7 +166,7 @@ def _signature(h: pd.DataFrame) -> list:
         sel = (flow > 1e-6) & (lf >= lo) & (lf < hi)
         if sel.sum() < 3:
             continue
-        dt = float(heat[sel].sum() / (4.186 * flow[sel].sum()))
+        dt = float(heat[sel].sum() / (CP_KJ_KG_K * flow[sel].sum()))
         rows.append({"load_pct": float(100 * (lo + min(hi, 1.1)) / 2), "dt_c": dt,
                      "hours": int(sel.sum()), "flow_share": float(flow[sel].sum() / tot)})
     return rows
@@ -151,10 +183,13 @@ def diagnose_frame(df: pd.DataFrame, terms: ContractTerms | None = None,
     """
     terms = terms or ContractTerms()
     informed = design_delta_t_c is not None
-    if informed and not (3.0 <= design_delta_t_c <= 16.0):
-        raise DataError("Design delta-T must be between 3 and 16 C.")
+    if informed and not (DESIGN_DT_RANGE[0] <= design_delta_t_c <= DESIGN_DT_RANGE[1]):
+        raise DataError(f"Design delta-T must be between {DESIGN_DT_RANGE[0]:.0f} and {DESIGN_DT_RANGE[1]:.0f} C "
+                        f"(the range the model was trained on).")
     model = model or load_default_model(informed=informed)
     h = canonicalise(df)
+    q_in = dict(h.attrs.get("quality", {}))
+    in_notes = list(h.attrs.get("notes", []))
     wins = _windows(h)
     if not wins:
         raise DataError("Not enough contiguous data to form a 14-day analysis window.")
@@ -164,12 +199,12 @@ def diagnose_frame(df: pd.DataFrame, terms: ContractTerms | None = None,
         X = augment(X, design_delta_t_c)
     pred = model.predict(X)
     ood = getattr(model, "ood_count", None)
-    n_ood = float(np.average(ood(X[:, : len(FEATURE_NAMES)]), weights=[len(w) for w in wins])) if ood else 0.0
+    n_ood = float(np.average(ood(X), weights=[len(w) for w in wins])) if ood else 0.0
     ood_limit = getattr(model, "ood_threshold", None)
 
     # per-window energy, delta-T
     rt_hr = np.array([w["heat_kw"].sum() / KW_PER_RT for w in wins])
-    dts = np.array([w["heat_kw"].sum() / (4.186 * max(w["flow_kgs"].sum(), 1e-9)) for w in wins])
+    dts = np.array([w["heat_kw"].sum() / (CP_KJ_KG_K * max(w["flow_kgs"].sum(), 1e-9)) for w in wins])
     days = np.array([len(w) / 24.0 for w in wins])
     scale = 365.0 / days.sum()
 
@@ -183,9 +218,9 @@ def diagnose_frame(df: pd.DataFrame, terms: ContractTerms | None = None,
 
     mt = monthly_table(h, terms)
     annual_sur = float(sum(window_penalty(dts[i], rt_hr[i], terms)["surcharge_aed"] for i in range(len(wins))) * scale)
-    dt_all = float(h["heat_kw"].sum() / (4.186 * max(h["flow_kgs"].sum(), 1e-9)))
+    dt_all = float(h["heat_kw"].sum() / (CP_KJ_KG_K * max(h["flow_kgs"].sum(), 1e-9)))
 
-    notes = []
+    notes = list(in_notes)
     has_oat = bool(h["t_outdoor_c"].notna().mean() > 0.5)
     if not has_oat:
         notes.append("No outdoor temperature supplied; diagnosis is less certain (add t_outdoor_c).")
@@ -218,6 +253,9 @@ def diagnose_frame(df: pd.DataFrame, terms: ContractTerms | None = None,
     if coverage < 0.85:
         notes.append(f"Only {coverage:.0%} of the hours between the first and last reading have data. "
                      f"Gaps weaken the diagnosis; check the export for missing periods.")
+    if days.sum() < 330:
+        notes.append(f"The yearly figures are scaled up from {days.sum():.0f} days of data. Cooling demand is seasonal, "
+                     f"so a summer-only file overstates and a winter-only file understates the year.")
     if float(np.nanstd(h["flow_kgs"])) < 1e-6:
         notes.append("Flow never changes in this file. Check that the flow column is the real meter reading.")
     signature = _signature(h)
@@ -226,7 +264,9 @@ def diagnose_frame(df: pd.DataFrame, terms: ContractTerms | None = None,
         "hours": int(len(h)), "has_outdoor_temp": has_oat,
         "zero_flow_fraction": float((h["flow_kgs"] <= 1e-6).mean()),
         "windows": len(wins), "features_out_of_range": n_ood, "out_of_range_limit": ood_limit,
-        "reliable": not out_of_range,
+        "reliable": bool(not out_of_range and q_in.get("dropped_fraction", 0) < 0.05
+                         and q_in.get("negative_dt_fraction", 0) < 0.02 and coverage >= MIN_COVERAGE),
+        "input": q_in, "annualised_from_days": float(days.sum()),
     }
     return Report(
         n_days=float(days.sum()), n_windows=len(wins), delta_t_c=dt_all,

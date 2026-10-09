@@ -14,6 +14,8 @@ from dataclasses import dataclass, asdict
 import numpy as np
 import pandas as pd
 
+from . import CP_KJ_KG_K
+
 KW_PER_RT = 3.517
 
 
@@ -53,7 +55,7 @@ def monthly_table(h: pd.DataFrame, terms: ContractTerms) -> pd.DataFrame:
     for m, g in d.groupby("month"):
         f = g["flow_kgs"].sum()
         heat = g["heat_kw"].sum()  # kW * 1 h = kWh (hourly rows)
-        dt = heat / (4.186 * f) if f > 0 else np.nan
+        dt = heat / (CP_KJ_KG_K * f) if f > 0 else np.nan
         rt_hr = heat / KW_PER_RT
         p = window_penalty(float(dt) if np.isfinite(dt) else terms.min_delta_t_c, rt_hr, terms)
         p.update({"month": str(m), "rt_hr": rt_hr, "hours": len(g)})

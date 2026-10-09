@@ -9,6 +9,7 @@ import numpy as np
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.ensemble import HistGradientBoostingClassifier, HistGradientBoostingRegressor
 from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import GroupKFold
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
@@ -46,30 +47,39 @@ class Diagnoser:
         self.feature_names = list(FEATURE_NAMES)
         self.trained_on = 0
 
-    def fit(self, X: np.ndarray, Y: np.ndarray, G: np.ndarray) -> "Diagnoser":
+    def _calibrated(self, X, y, groups):
+        """Isotonic-calibrated booster. With groups, the inner calibration folds never split a building."""
+        cv = 3
+        if groups is not None:
+            folds = list(GroupKFold(3).split(X, y, groups))
+            if all(0 < y[te].sum() < len(te) and 0 < y[tr].sum() < len(tr) for tr, te in folds):
+                cv = folds
+        return CalibratedClassifierCV(_gbc(self.seed), method="isotonic", cv=cv).fit(X, y)
+
+    def fit(self, X: np.ndarray, Y: np.ndarray, G: np.ndarray, groups: np.ndarray | None = None) -> "Diagnoser":
+        """groups: building id per row. Used so that calibration folds are building-grouped (no leakage)."""
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             for k, c in enumerate(CAUSES):
                 y = Y[:, k].astype(int)
                 if y.sum() >= 10 and (1 - y).sum() >= 10:
-                    self.clf[c] = CalibratedClassifierCV(_gbc(self.seed), method="isotonic", cv=3).fit(X, y)
+                    self.clf[c] = self._calibrated(X, y, groups)
                 else:
                     self.clf[c] = None
                 self.reg[c] = _gbr(self.seed).fit(X, G[:, k])
             y_any = (Y.sum(axis=1) > 0).astype(int)
-            self.any_clf = CalibratedClassifierCV(_gbc(self.seed), method="isotonic", cv=3).fit(X, y_any)
+            self.any_clf = self._calibrated(X, y_any, groups)
         self.trained_on = len(X)
         # Out-of-distribution guard: remember the 1st-99th percentile range of every shape feature, and how
         # many features fall outside it on a typical (95th percentile) training window.
-        n = len(FEATURE_NAMES)
-        self.feat_lo = np.percentile(X[:, :n], 1, axis=0)
-        self.feat_hi = np.percentile(X[:, :n], 99, axis=0)
-        self.ood_threshold = int(np.percentile(self.ood_count(X[:, :n]), 95))
+        self.feat_lo = np.percentile(X, 1, axis=0)
+        self.feat_hi = np.percentile(X, 99, axis=0)
+        self.ood_threshold = int(np.percentile(self.ood_count(X), 95))
         return self
 
     def ood_count(self, X: np.ndarray) -> np.ndarray:
         """Per row: how many of the shape features lie outside the range seen in training."""
-        X = np.atleast_2d(X)[:, : len(self.feat_lo)]
+        X = np.atleast_2d(X)
         return ((X < self.feat_lo) | (X > self.feat_hi)).sum(axis=1)
 
     def predict(self, X: np.ndarray) -> Prediction:

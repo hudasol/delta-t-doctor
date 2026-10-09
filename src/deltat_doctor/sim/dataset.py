@@ -8,7 +8,7 @@ import pandas as pd
 from joblib import Parallel, delayed
 
 from .. import CAUSES
-from ..features import FEATURE_NAMES, extract, to_vector
+from ..features import extract, to_vector
 from ..io import canonicalise
 from .scenarios import Sample, make_sample, sample_building
 

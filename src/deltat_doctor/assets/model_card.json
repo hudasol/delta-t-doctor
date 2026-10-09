@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "1.0.0",
   "causes": [
     "fouling",
     "passing_valves",
@@ -23,5 +23,12 @@
     "informed"
   ],
   "data": "simulated (deltat_doctor.sim); no field data",
-  "train_seconds": 24.6
+  "train_seconds": 21.3,
+  "git_commit_at_training": "fe118aa",
+  "sklearn_version": "1.9.1",
+  "training_data_sha256": "ba9cc0872fe3f36f7643e17892175ae3d8edba6131de3c7e59f2e514a3682f32",
+  "sha256": {
+    "diagnoser.joblib": "05b1666a0cbf514c353ecf14c4d1c714887bb7fb8c20ddb8b73199923d86d0fe",
+    "diagnoser_informed.joblib": "8a78fcd1ef15d93cff67f84eb774ff30535c34d69995364194e245fecbb9506c"
+  }
 }
