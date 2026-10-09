@@ -7,8 +7,7 @@ docker build -t delta-t-doctor .
 docker run -p 8000:8000 delta-t-doctor           # http://localhost:8000
 ```
 
-The Dockerfile has not been built on the machine where I wrote it (no Docker daemon there). The CI workflow builds it
-and runs a smoke test on every push, which is the first real check.
+The CI workflow builds the image and smoke-tests it on every push (it passed for v0.4.0 and v0.5.0).
 
 ## From source
 
