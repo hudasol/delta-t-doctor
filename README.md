@@ -87,7 +87,7 @@ pip install -e ".[api,dev]"
 deltat-doctor serve                         # web app on http://127.0.0.1:8000
 deltat-doctor simulate --causes fouling --out demo_ets.csv
 deltat-doctor diagnose demo_ets.csv --rate 0.40
-pytest                                      #  tests
+pytest                                      # 49 tests
 deltat-doctor portfolio fleet.csv --out ranked.csv
 deltat-doctor diagnose demo_ets.csv --design-dt 9.0 --html report.html
 docker build -t delta-t-doctor . && docker run -p 8000:8000 delta-t-doctor
