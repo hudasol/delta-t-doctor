@@ -1,6 +1,7 @@
 """End-to-end diagnosis of a real meter export."""
 from __future__ import annotations
 
+import logging
 import os
 from dataclasses import dataclass, field, asdict
 
@@ -90,26 +91,44 @@ class Report:
         return d
 
 
+log = logging.getLogger(__name__)
 _cached: dict = {}
 _ASSETS = os.path.join(os.path.dirname(__file__), "assets")
 
 
-def _verify_bundled(path: str) -> None:
-    """joblib files are pickles: refuse a bundled model whose sha256 does not match the model card."""
-    if os.path.dirname(os.path.abspath(path)) != os.path.abspath(_ASSETS):
-        return
+def _load_verified(path: str) -> Diagnoser:
+    """Load a model. A bundled file must match the sha256 in the model card (fail closed) and the sklearn minor
+    version it was trained with. The bytes that are hashed are the bytes that are unpickled.
+
+    This is integrity, not authenticity: whoever can rewrite both the model and its card can still swap the model.
+    Verify release artefacts out of band (see docs/SECURITY.md) and never point DTD at a model you did not build.
+    """
     import hashlib
+    import io as _io
     import json
-    card = os.path.join(_ASSETS, "model_card.json")
-    if not os.path.exists(card):
-        return
-    want = json.load(open(card)).get("sha256", {}).get(os.path.basename(path))
-    if want is None:
-        return
+    import warnings
     with open(path, "rb") as fh:
-        got = hashlib.sha256(fh.read()).hexdigest()
-    if got != want:
-        raise RuntimeError(f"Model file {os.path.basename(path)} does not match its recorded sha256; refusing to load it.")
+        blob = fh.read()
+    if os.path.dirname(os.path.abspath(path)) == os.path.abspath(_ASSETS):
+        card_path = os.path.join(_ASSETS, "model_card.json")
+        try:
+            card = json.load(open(card_path))
+            want = card["sha256"][os.path.basename(path)]
+        except (OSError, KeyError, ValueError):
+            raise RuntimeError("No recorded sha256 for the bundled model; refusing to load it. Rebuild with scripts/train.py.") from None
+        if hashlib.sha256(blob).hexdigest() != want:
+            raise RuntimeError(f"{os.path.basename(path)} does not match its recorded sha256; refusing to load it.")
+        import sklearn
+        trained = str(card.get("sklearn_version", ""))
+        if trained.split(".")[:2] != sklearn.__version__.split(".")[:2] and not os.environ.get("DTD_ALLOW_SKLEARN_MISMATCH"):
+            raise RuntimeError(f"The model was trained with scikit-learn {trained} but {sklearn.__version__} is installed. "
+                               f"Install the pinned version (requirements-lock.txt) or retrain.")
+    else:
+        log.warning("loading a model from outside the package assets: %s (not verified)", path)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        import joblib
+        return joblib.load(_io.BytesIO(blob))
 
 
 def load_default_model(path: str | None = None, informed: bool = False) -> Diagnoser:
@@ -118,8 +137,7 @@ def load_default_model(path: str | None = None, informed: bool = False) -> Diagn
         if not os.path.exists(path):
             raise FileNotFoundError(
                 f"No trained model at {path}. Run `python scripts/train.py` first.")
-        _verify_bundled(path)
-        _cached[path] = Diagnoser.load(path)
+        _cached[path] = _load_verified(path)
     return _cached[path]
 
 
@@ -265,7 +283,9 @@ def diagnose_frame(df: pd.DataFrame, terms: ContractTerms | None = None,
         "zero_flow_fraction": float((h["flow_kgs"] <= 1e-6).mean()),
         "windows": len(wins), "features_out_of_range": n_ood, "out_of_range_limit": ood_limit,
         "reliable": bool(not out_of_range and q_in.get("dropped_fraction", 0) < 0.05
-                         and q_in.get("negative_dt_fraction", 0) < 0.02 and coverage >= MIN_COVERAGE),
+                         and q_in.get("negative_dt_fraction", 0) < 0.02 and coverage >= MIN_COVERAGE
+                         and q_in.get("outlier_fraction", 0) < 0.02 and q_in.get("bad_timestamp_fraction", 0) < 0.02
+                         and q_in.get("longest_flatline_readings", 0) < 48),
         "input": q_in, "annualised_from_days": float(days.sum()),
     }
     return Report(

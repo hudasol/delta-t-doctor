@@ -42,9 +42,11 @@ def cmd_diagnose(a):
 
 
 def cmd_portfolio(a):
-    import pandas as pd
+    from .io import read_table
     from .portfolio import diagnose_portfolio, to_csv
-    rep = diagnose_portfolio(pd.read_csv(a.csv), ContractTerms(a.min_dt, a.pct, a.rate), a.design_dt)
+    with open(a.csv, "rb") as fh:
+        table = read_table(fh.read(), a.csv)
+    rep = diagnose_portfolio(table, ContractTerms(a.min_dt, a.pct, a.rate), a.design_dt)
     if a.out:
         open(a.out, "w", newline="").write(to_csv(rep))
         print(f"wrote {a.out}")
@@ -82,7 +84,9 @@ def cmd_simulate(a):
 
 
 def cmd_serve(a):
+    import logging
     import uvicorn
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
     uvicorn.run("deltat_doctor.api:app", host=a.host, port=a.port, reload=False)
 
 

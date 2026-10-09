@@ -24,3 +24,13 @@ deltat-doctor serve --host 0.0.0.0 --port 8000
   larger batches.
 * Memory: a few hundred MB per worker.
 * To retrain on your own labelled data, see `scripts/train.py`. The model is a plain scikit-learn pipeline.
+
+## Measured budget (2-core cloud VM, scripts/benchmark.py)
+
+| job | time |
+|---|---|
+| parse and diagnose 6 months hourly (0.4 MB) | about 0.1 s |
+| 5 years hourly (4.4 MB) | about 0.5 s |
+| 50-building portfolio (180,000 rows) | about 5 s |
+
+Peak memory in that run was 263 MB. Size the container with at least 512 MB and set `DTD_MAX_CONCURRENT` to the number of CPU cores.

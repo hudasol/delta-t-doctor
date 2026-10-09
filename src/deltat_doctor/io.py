@@ -66,22 +66,52 @@ def _decode(raw: bytes) -> str:
     return raw.decode("latin-1")
 
 
+def _sniff_sep(text: str) -> str:
+    head = text[:4096]
+    best, best_n = ",", 0
+    for sep in (",", ";", "\t", "|"):
+        n = head.count(sep)
+        if n > best_n:
+            best, best_n = sep, n
+    return best
+
+
+def _check_zip(raw: bytes) -> None:
+    """Refuse spreadsheets that expand absurdly (zip bombs) before openpyxl touches them."""
+    import zipfile
+    if raw[:2] != b"PK":
+        raise DataError("That file is not an .xlsx workbook. Save it as .xlsx or export a CSV.")
+    try:
+        with zipfile.ZipFile(_io.BytesIO(raw)) as z:
+            total = sum(i.file_size for i in z.infolist())
+            if total > MAX_UNZIPPED_BYTES or len(z.infolist()) > 200:
+                raise DataError("The workbook is too large when unpacked. Export the period you need as a CSV.")
+    except zipfile.BadZipFile:
+        raise DataError("The .xlsx file is damaged or not a workbook.") from None
+
+
 def read_table(raw: bytes, filename: str = "upload.csv") -> pd.DataFrame:
-    """Read an uploaded export: CSV with any common delimiter or encoding, or an .xlsx sheet."""
+    """Read an uploaded export: CSV with any common delimiter or encoding, or an .xlsx sheet. Size-bounded."""
     name = (filename or "").lower()
     try:
-        if name.endswith((".xlsx", ".xlsm", ".xls")):
-            return pd.read_excel(_io.BytesIO(raw))
-        text = _decode(raw)
-        df = pd.read_csv(_io.StringIO(text), sep=None, engine="python")
-        if df.shape[1] < 2:
-            df = pd.read_csv(_io.StringIO(text), sep=";")
-        return df
+        if name.endswith(".xls"):
+            raise DataError("Old .xls files are not supported. Save the sheet as .xlsx or CSV.")
+        if name.endswith((".xlsx", ".xlsm")):
+            _check_zip(raw)
+            df = pd.read_excel(_io.BytesIO(raw), nrows=MAX_ROWS + 1)
+        else:
+            text = _decode(raw)
+            df = pd.read_csv(_io.StringIO(text), sep=_sniff_sep(text), nrows=MAX_ROWS + 1)
+    except DataError:
+        raise
     except ImportError:
-        raise DataError("Reading Excel files needs the optional 'openpyxl' package; export the sheet as CSV instead.")
+        raise DataError("Reading Excel files needs the optional 'openpyxl' package; export the sheet as CSV instead.") from None
     except Exception as e:
-        log.info("read_table failed for %s: %s: %s", filename, type(e).__name__, e)
-        raise DataError("Could not read the file as a table. Use a CSV or an Excel sheet with a header row.")
+        log.info("read_table failed (%s): %s", type(e).__name__, filename)
+        raise DataError("Could not read the file as a table. Use a CSV or an Excel sheet with a header row.") from None
+    if len(df) > MAX_ROWS or df.shape[1] > MAX_COLS:
+        raise DataError(f"The file has more than {MAX_ROWS:,} rows or {MAX_COLS} columns. Export a smaller period.")
+    return df
 
 
 def _split_name(col: str) -> tuple[str, str]:
@@ -196,6 +226,34 @@ def _parse_time(series: pd.Series, notes: list | None = None) -> pd.Series:
     return pick
 
 
+MAX_UNZIPPED_BYTES = 150 * 1024 * 1024
+SENTINELS = (-999.0, -9999.0, -99999.0, 9999.0, 99999.0, 65535.0, -32768.0, 32767.0, 999.0, 99.99)
+MAX_DT_C = 30.0              # a chilled-water delta-T above this is a sensor fault, not physics
+SPIKE_FACTOR = 6.0           # flow above this multiple of its 90th percentile (while running) is a spike
+FLATLINE_HOURS = 48          # identical flow and delta-T for this long while water moves means a stuck reading
+MAX_ROWS = 2_000_000
+MAX_COLS = 200
+
+
+def _num(df: pd.DataFrame, col, counts: dict) -> pd.Series:
+    """to_numeric that counts what it had to throw away: text in a numeric column, infinities, sentinel codes."""
+    raw = df[col]
+    v = pd.to_numeric(raw, errors="coerce")
+    counts["coerced"] += int((v.isna() & raw.notna() & (raw.astype(str).str.strip() != "")).sum())
+    v = v.replace([np.inf, -np.inf], np.nan)
+    sent = v.isin(SENTINELS)
+    counts["sentinel"] += int(sent.sum())
+    return v.mask(sent)
+
+
+def _longest_run(same: np.ndarray) -> int:
+    best = cur = 0
+    for x in same:
+        cur = cur + 1 if x else 0
+        best = max(best, cur)
+    return best
+
+
 def canonicalise(df: pd.DataFrame, min_hours: int = MIN_HOURS) -> pd.DataFrame:
     """Return an hourly frame with flow_kgs, heat_kw, dt_c, t_outdoor_c.
 
@@ -214,43 +272,61 @@ def canonicalise(df: pd.DataFrame, min_hours: int = MIN_HOURS) -> pd.DataFrame:
         raise DataError("Could not parse the timestamp column.")
     out = pd.DataFrame({"timestamp": ts})
     n_raw = len(out)
+    bad_ts = float(ts.isna().mean())
+    counts = {"coerced": 0, "sentinel": 0}
 
     c_f = _find(df, "flow_m3h")
     c_fl = _find(df, "flow_ls")
     c_fg = _find(df, "flow_gpm")
     if c_f is not None:
-        flow_kgs = pd.to_numeric(df[c_f], errors="coerce") / 3.6
+        flow_kgs = _num(df, c_f, counts) / 3.6
     elif c_fl is not None:
-        flow_kgs = pd.to_numeric(df[c_fl], errors="coerce")
+        flow_kgs = _num(df, c_fl, counts)
     elif c_fg is not None:
-        flow_kgs = pd.to_numeric(df[c_fg], errors="coerce") * 0.0630902
+        flow_kgs = _num(df, c_fg, counts) * 0.0630902
     else:
         raise DataError("No flow column found (flow_m3h, flow_ls or flow_gpm). Columns seen: "
                         + ", ".join(map(str, df.columns[:12])))
     flow_kgs = flow_kgs.replace([np.inf, -np.inf], np.nan)
     neg_flow = float((flow_kgs < -1e-9).mean())
+    if neg_flow > 0.5:
+        raise DataError("Most flow readings are negative. Check the flow column (reverse-flow sign or wrong column).")
+    flow_kgs = flow_kgs.where(flow_kgs >= -1e-9, np.nan) if neg_flow > 0.05 else flow_kgs
+    moving = flow_kgs[flow_kgs > 1e-6]
+    n_spike = 0
+    if len(moving) >= 24:
+        cap = SPIKE_FACTOR * float(np.percentile(moving, 90))
+        spike = flow_kgs > cap
+        n_spike = int(spike.sum())
+        flow_kgs = flow_kgs.mask(spike)
     out["flow_kgs"] = flow_kgs.clip(lower=0)
 
     c_s, c_r = _find(df, "t_supply_c"), _find(df, "t_return_c")
     c_e, c_rt = _find(df, "energy_kw"), _find(df, "energy_rt")
     if c_s is not None and c_r is not None:
-        ts_, tr_ = pd.to_numeric(df[c_s], errors="coerce"), pd.to_numeric(df[c_r], errors="coerce")
+        ts_, tr_ = _num(df, c_s, counts), _num(df, c_r, counts)
         for name, v, lo, hi in (("supply", ts_, -2.0, 25.0), ("return", tr_, 2.0, 40.0)):
             med = float(v.median()) if v.notna().any() else float("nan")
             if np.isfinite(med) and not (lo <= med <= hi):
                 raise DataError(f"The {name} temperature column has a median of {med:.1f}, which is not a plausible "
                                 f"chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the "
                                 f"column header.")
-        dt_raw = tr_ - ts_
+        # Readings outside any physical chilled-water range are sensor faults (e.g. 99.9 as 'no reading'): remove them.
+        bad_t = (ts_ < -5) | (ts_ > 35) | (tr_ < -5) | (tr_ > 50)
+        n_range = int(bad_t.sum())
+        dt_raw = (tr_ - ts_).mask(bad_t)
     elif c_e is not None or c_rt is not None:
-        kw = (pd.to_numeric(df[c_e], errors="coerce") if c_e is not None
-              else pd.to_numeric(df[c_rt], errors="coerce") * 3.517)
+        kw = (_num(df, c_e, counts) if c_e is not None else _num(df, c_rt, counts) * 3.517)
+        n_range = 0
         with np.errstate(divide="ignore", invalid="ignore"):
             dt_raw = kw / (CP_W * out["flow_kgs"].replace(0, np.nan))
     else:
         raise DataError("Need supply and return temperatures, or a cooling power/energy column. Columns seen: "
                         + ", ".join(map(str, df.columns[:12])))
     dt_raw = dt_raw.replace([np.inf, -np.inf], np.nan)
+    too_hot = dt_raw > MAX_DT_C
+    n_range += int(too_hot.sum())
+    dt_raw = dt_raw.mask(too_hot)
     med_dt = float(dt_raw[out["flow_kgs"] > 1e-6].median()) if (out["flow_kgs"] > 1e-6).any() else float("nan")
     if np.isfinite(med_dt) and med_dt < 0:
         raise DataError("The return temperature is colder than the supply for most rows, so supply and return look "
@@ -263,13 +339,19 @@ def canonicalise(df: pd.DataFrame, min_hours: int = MIN_HOURS) -> pd.DataFrame:
     out["dt_c"] = dt_raw.clip(lower=0)
 
     c_o = _find(df, "t_outdoor_c")
-    out["t_outdoor_c"] = pd.to_numeric(df[c_o], errors="coerce") if c_o else np.nan
+    oat = _num(df, c_o, counts) if c_o else pd.Series(np.nan, index=df.index)
+    out["t_outdoor_c"] = oat.where((oat > -30) & (oat < 60))
+    # Stuck sensor: the exact same flow value repeated for two days while water is moving.
+    run_len = 0
+    if running.any():
+        same = (flow_kgs.diff() == 0) & running
+        run_len = _longest_run(same.to_numpy())
 
     out = out.dropna(subset=["timestamp"]).sort_values("timestamp")
     # A row is usable if flow is known and, when water is moving, delta-T is known. Others are dropped, not zero-filled.
     usable = out["flow_kgs"].notna() & ((out["flow_kgs"] <= 1e-6) | out["dt_c"].notna())
-    dropped = float(1.0 - usable.mean()) if len(out) else 1.0
     out = out[usable]
+    dropped = float(1.0 - len(out) / max(n_raw, 1))
     out["heat_kw"] = CP_W * out["flow_kgs"] * out["dt_c"].fillna(0.0)
 
     step_h = float(out["timestamp"].diff().dt.total_seconds().median() / 3600.0) if len(out) > 2 else float("nan")
@@ -285,11 +367,23 @@ def canonicalise(df: pd.DataFrame, min_hours: int = MIN_HOURS) -> pd.DataFrame:
             f"Need at least {min_hours // 24} days of data ({min_hours} hourly rows); got {len(out)}.")
     if dropped > 0.005:
         notes.append(f"{dropped:.1%} of rows had a missing flow or temperature and were left out.")
+    outlier = float((n_spike + n_range) / max(n_raw, 1))
+    if outlier > 0.001:
+        notes.append(f"{outlier:.1%} of rows had an impossible flow, temperature or delta-T (spikes, sensor codes) and were left out.")
+    if bad_ts > 0.005:
+        notes.append(f"{bad_ts:.1%} of timestamps could not be read; those rows were left out.")
+    if counts["coerced"] or counts["sentinel"]:
+        notes.append(f"{counts['coerced']} non-numeric cells and {counts['sentinel']} sensor-code values (such as -999) were treated as missing.")
+    if run_len >= FLATLINE_HOURS:
+        notes.append(f"The flow reading repeats exactly for {run_len} consecutive readings: a stuck or frozen meter. Check the export.")
     if neg_dt > 0.005:
         notes.append(f"{neg_dt:.1%} of running hours show the return colder than the supply (treated as zero delta-T).")
     out = out.reset_index(drop=True)
     out.attrs["quality"] = {"rows_raw": int(n_raw), "dropped_fraction": dropped, "negative_dt_fraction": neg_dt,
-                            "negative_flow_fraction": neg_flow, "median_step_h": step_h, "duplicate_timestamps": dup}
+                            "negative_flow_fraction": neg_flow, "median_step_h": step_h, "duplicate_timestamps": dup,
+                            "outlier_fraction": outlier, "bad_timestamp_fraction": bad_ts,
+                            "coerced_cells": int(counts["coerced"]), "sentinel_cells": int(counts["sentinel"]),
+                            "longest_flatline_readings": int(run_len)}
     out.attrs["notes"] = notes
     return out
 
