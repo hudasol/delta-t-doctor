@@ -62,3 +62,47 @@ def test_too_short():
     n = 24 * 5
     with pytest.raises(DataError, match="at least"):
         canonicalise(_frame(n, flow_m3h=np.full(n, 36.0), t_supply_c=6.0, t_return_c=14.0))
+
+
+def _msg_frame(n=24 * 20):
+    return pd.date_range("2025-07-01", periods=n, freq="h"), n
+
+
+def test_messy_headers_fahrenheit_lps_and_dayfirst_dates():
+    ts, n = _msg_frame()
+    df = pd.DataFrame({"Date Time": ts.strftime("%d/%m/%Y %H:%M"), "CHW Supply Temp (°F)": np.full(n, 42.8),
+                       "CHW Return Temp (°F)": np.full(n, 57.2), "Flow Rate [L/s]": np.full(n, 10.0)})
+    h = canonicalise(df)
+    assert abs(h["dt_c"].mean() - 8.0) < 1e-6 and abs(h["flow_kgs"].mean() - 10.0) < 1e-9
+    assert h["timestamp"].iloc[0] == pd.Timestamp("2025-07-01 00:00")
+
+
+def test_cumulative_kwh_register_is_differenced():
+    ts, n = _msg_frame()
+    kw = 4.186 * 10.0 * 8.0
+    df = pd.DataFrame({"Timestamp": ts, "Flow (m3/h)": np.full(n, 36.0),
+                       "Cooling Energy (kWh)": np.cumsum(np.full(n, kw))})
+    assert abs(canonicalise(df)["dt_c"].mean() - 8.0) < 0.05
+
+
+def test_power_in_rt_and_mw():
+    ts, n = _msg_frame()
+    kw = 4.186 * 10.0 * 8.0
+    a = canonicalise(pd.DataFrame({"time": ts, "flow m3/h": np.full(n, 36.0), "Cooling Load (RT)": np.full(n, kw / 3.517)}))
+    b = canonicalise(pd.DataFrame({"time": ts, "flow m3/h": np.full(n, 36.0), "Cooling Load (MW)": np.full(n, kw / 1000)}))
+    assert abs(a["dt_c"].mean() - 8.0) < 1e-6 and abs(b["dt_c"].mean() - 8.0) < 1e-6
+
+
+def test_read_table_sniffs_delimiter_and_rejects_garbage():
+    from deltat_doctor.io import read_table
+    ts, n = _msg_frame(30)
+    raw = "timestamp;flow_m3h;t_supply_c;t_return_c\n" + "\n".join(f"{t};36;6;14" for t in ts)
+    assert read_table(raw.encode(), "a.csv").shape == (30, 4)
+    with pytest.raises(DataError):
+        read_table(b"\x00\x01\x02 not a table", "a.xlsx")
+
+
+def test_error_lists_columns_seen():
+    ts, n = _msg_frame()
+    with pytest.raises(DataError, match="Columns seen"):
+        canonicalise(pd.DataFrame({"timestamp": ts, "mystery": 1.0}))

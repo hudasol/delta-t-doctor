@@ -87,3 +87,12 @@ def test_ood_guard_flags_flow_that_ignores_load(models):
     weird["energy_kw"] = weird["flow_m3h"] * 1.163 * (df["t_return_c"] - df["t_supply_c"])
     bad = dg.diagnose_frame(weird, ContractTerms())
     assert bad.data_quality["features_out_of_range"] > ok.data_quality["features_out_of_range"]
+
+
+def test_security_headers_and_bundled_fonts(models):
+    from deltat_doctor.api import app
+    c = TestClient(app)
+    r = c.get("/")
+    assert r.headers["x-content-type-options"] == "nosniff" and "frame-ancestors 'none'" in r.headers["content-security-policy"]
+    assert "googleapis" not in r.text and "http://" not in r.text.replace("http://www.w3.org", "")
+    assert c.get("/fonts/BricolageGrotesque-700.ttf").status_code == 200

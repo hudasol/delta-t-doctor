@@ -2,8 +2,8 @@
 
 Versions are git tags. All accuracy figures are simulator results unless stated.
 
-## v0.5.0 (planned)
-Docker image and CI smoke test (the Dockerfile is written but could not be built in my sandbox, which has no Docker daemon; the CI job is the first real build).
+## v0.5.0
+Real-world file import (any delimiter, degF, L/s, RT, MW, cumulative kWh, .xlsx, dd/mm dates), data-quality notes, security headers, bundled fonts (no external requests), API, security, deployment and model-card docs. Docker image and CI smoke test (the Dockerfile is written but could not be built in my sandbox, which has no Docker daemon; the CI job is the first real build).
 
 ## v0.4.0 (v0.2.0 to v0.4.0 landed in one commit)
 Printable owner report (HTML, Print to PDF), `/api/report`, `--html` in the CLI.

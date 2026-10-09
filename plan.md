@@ -57,19 +57,20 @@ See [docs/PILOT.md](docs/PILOT.md).
 ## 5. Where this stands (honest)
 
 Built and tested on a physics simulator. **Not yet validated on real UAE data.** A pre-registered external check
-on the public LBNL chiller-plant data failed its first prediction: a plant designed for about 2.6 C was flagged
-as faulty, because the model had only seen 9-13 C designs. Results: [docs/EXTERNAL_CHECK.md](docs/EXTERNAL_CHECK.md).
-Fixing that limit is the first item on the roadmap.
+on the public LBNL chiller-plant data failed its first prediction: a fault-free plant was flagged
+as faulty. Results: [docs/EXTERNAL_CHECK.md](docs/EXTERNAL_CHECK.md).
+
+The v0.2 follow-up did not fix it: the benchmark plant's flow does not follow load, which no simulated building does. The tool now reports "not reliable" for buildings that far from its training data. The first job of the pilot is to find out how often real ETS data passes that guard.
 
 ## 6. Roadmap
 
 | Version | Goal | Done when |
 |---|---|---|
 | v0.1.0 | Prototype: simulator, 4-cause classifier, penalty calculator, web app, CLI, tests | Done |
-| v0.2.0 | **Design-delta-T aware diagnosis.** Train over a design range of 5-12 C, take an optional design delta-T input, add an out-of-range guard | Re-run LBNL fault-free year: false-alarm rate reported against a hypothesis written before the run |
-| v0.3.0 | **Portfolio mode.** One file with many buildings, ranked by AED/yr; batch CLI; JSON and CSV export | Test on a 30-building synthetic portfolio |
-| v0.4.0 | **Reports.** Printable one-page owner report (HTML to PDF) and a plain-language "what to tell the contractor" checklist | Report renders for all demo cases |
-| v0.5.0 | **Deployable.** Dockerfile, health and version endpoints, request limits, CI on every push, release workflow | `docker build` and smoke test pass in CI |
+| v0.2.0 | **Design-delta-T aware diagnosis (done; the LBNL follow-up failed, see EXTERNAL_CHECK section 6).** Train over a design range of 5-12 C, take an optional design delta-T input, add an out-of-range guard | Re-run LBNL fault-free year: false-alarm rate reported against a hypothesis written before the run |
+| v0.3.0 | **Portfolio mode (done).** One file with many buildings, ranked by AED/yr; batch CLI; JSON and CSV export | Test on a 30-building synthetic portfolio |
+| v0.4.0 | **Reports (done).** Printable one-page owner report (HTML to PDF) and a plain-language "what to tell the contractor" checklist | Report renders for all demo cases |
+| v0.5.0 | **Deployable (written; first real Docker build happens in CI).** Dockerfile, health and version endpoints, request limits, CI on every push, release workflow | `docker build` and smoke test pass in CI |
 | v1.0.0 | **Pilot-ready.** Pilot protocol, data-sharing and privacy note, evidence pack, model card | Documents complete; limits stated |
 
 Beyond 1.0 (needs real data): a feedback loop where inspection results update the model, tariff presets per operator

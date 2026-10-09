@@ -7,11 +7,12 @@ import os
 import numpy as np
 import pandas as pd
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse, HTMLResponse
 
 from . import CAUSES, __version__
 from .diagnose import diagnose_frame, load_default_model
-from .io import DataError
+from .io import DataError, read_table
 from .penalty import ContractTerms
 from .report import render_report
 from .portfolio import diagnose_portfolio, to_csv as portfolio_csv
@@ -19,7 +20,23 @@ from .portfolio import diagnose_portfolio, to_csv as portfolio_csv
 WEB_DIR = os.path.join(os.path.dirname(__file__), "web")
 MAX_BYTES = 25 * 1024 * 1024
 
-app = FastAPI(title="delta-t-doctor", version=__version__)
+app = FastAPI(title="delta-t-doctor", version=__version__,
+              description="Diagnose low delta-T in district-cooled buildings from ETS meter data. "
+                          "Files are analysed in memory and never stored.")
+
+
+@app.middleware("http")
+async def security_headers(request, call_next):
+    resp = await call_next(request)
+    resp.headers.setdefault("X-Content-Type-Options", "nosniff")
+    resp.headers.setdefault("X-Frame-Options", "DENY")
+    resp.headers.setdefault("Referrer-Policy", "no-referrer")
+    resp.headers.setdefault("Cache-Control", "no-store")
+    if not request.url.path.startswith(("/docs", "/redoc", "/openapi")):
+        resp.headers.setdefault("Content-Security-Policy",
+                                "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; "
+                                "img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-ancestors 'none'")
+    return resp
 
 DEMOS = {
     "healthy": (),
@@ -108,9 +125,9 @@ async def report(file: UploadFile = File(...), name: str = Form("Your building")
     if len(raw) > MAX_BYTES:
         raise HTTPException(413, "File is larger than 25 MB.")
     try:
-        df = pd.read_csv(io.BytesIO(raw))
-    except Exception:
-        raise HTTPException(422, "Could not read the file as CSV.")
+        df = read_table(raw, file.filename or "")
+    except DataError as e:
+        raise HTTPException(422, str(e))
     return render_report(_run(df, terms, design_dt).to_dict(), name[:80])
 
 
@@ -130,9 +147,9 @@ async def diagnose(file: UploadFile = File(...), min_dt: float = Form(8.9),
     if len(raw) > MAX_BYTES:
         raise HTTPException(413, "File is larger than 25 MB.")
     try:
-        df = pd.read_csv(io.BytesIO(raw))
-    except Exception:
-        raise HTTPException(422, "Could not read the file as CSV.")
+        df = read_table(raw, file.filename or "")
+    except DataError as e:
+        raise HTTPException(422, str(e))
     return JSONResponse(_run(df, terms, design_dt).to_dict())
 
 
@@ -166,9 +183,9 @@ async def portfolio(file: UploadFile = File(...), min_dt: float = Form(8.9), pct
     if len(raw) > MAX_BYTES:
         raise HTTPException(413, "File is larger than 25 MB.")
     try:
-        df = pd.read_csv(io.BytesIO(raw))
-    except Exception:
-        raise HTTPException(422, "Could not read the file as CSV.")
+        df = read_table(raw, file.filename or "")
+    except DataError as e:
+        raise HTTPException(422, str(e))
     try:
         rep = diagnose_portfolio(df, terms, design_dt)
     except DataError as e:
@@ -180,6 +197,9 @@ async def portfolio(file: UploadFile = File(...), min_dt: float = Form(8.9), pct
 def demo_portfolio(min_dt: float = 8.9, pct: float = 0.10, rate: float = 0.40):
     rep = diagnose_portfolio(_portfolio_frame(), _terms(min_dt, pct, rate))
     return JSONResponse(rep.to_dict())
+
+
+app.mount("/fonts", StaticFiles(directory=os.path.join(WEB_DIR, "fonts")), name="fonts")
 
 
 @app.get("/")

@@ -213,8 +213,16 @@ def diagnose_frame(df: pd.DataFrame, terms: ContractTerms | None = None,
     elif not informed:
         notes.append("No design delta-T supplied. If you know it, enter it: the diagnosis separates a design "
                      "shortfall from a fault and is more reliable.")
+    span_h = max((h["timestamp"].iloc[-1] - h["timestamp"].iloc[0]).total_seconds() / 3600.0, 1.0)
+    coverage = float(min(len(h) / (span_h + 1.0), 1.0))
+    if coverage < 0.85:
+        notes.append(f"Only {coverage:.0%} of the hours between the first and last reading have data. "
+                     f"Gaps weaken the diagnosis; check the export for missing periods.")
+    if float(np.nanstd(h["flow_kgs"])) < 1e-6:
+        notes.append("Flow never changes in this file. Check that the flow column is the real meter reading.")
     signature = _signature(h)
     quality = {
+        "coverage": coverage,
         "hours": int(len(h)), "has_outdoor_temp": has_oat,
         "zero_flow_fraction": float((h["flow_kgs"] <= 1e-6).mean()),
         "windows": len(wins), "features_out_of_range": n_ood, "out_of_range_limit": ood_limit,
@@ -232,4 +240,6 @@ def diagnose_frame(df: pd.DataFrame, terms: ContractTerms | None = None,
 
 def diagnose_csv(path: str, terms: ContractTerms | None = None, model: Diagnoser | None = None,
                  design_delta_t_c: float | None = None) -> Report:
-    return diagnose_frame(pd.read_csv(path), terms, model, design_delta_t_c)
+    from .io import read_table
+    with open(path, "rb") as fh:
+        return diagnose_frame(read_table(fh.read(), path), terms, model, design_delta_t_c)
