@@ -8,6 +8,8 @@
 > It has **not** been validated on real UAE building data, and one prediction in the external check failed
 > (see [Results](#results) and [Limitations](docs/LIMITATIONS.md)). Treat its output as a ranked inspection list.
 
+Product plan, market research and roadmap: [plan.md](plan.md). Draft pilot protocol: [docs/PILOT.md](docs/PILOT.md).
+
 ## The problem
 
 District cooling supplies chilled water to buildings through an energy transfer station (ETS). The
