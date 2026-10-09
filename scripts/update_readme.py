@@ -1,5 +1,5 @@
 """Rewrite the results table in README.md from results/metrics.json so the README never drifts from the evidence."""
-import json, re, sys
+import json, re
 m = json.load(open("results/metrics.json"))
 cv, bs = m["cv_grouped_by_building"], m.get("bootstrap", {}).get("models", {})
 rows = [("**delta-t-doctor (blind)**", "ours_gbdt"), ("delta-t-doctor (informed, design delta-T given)", "ours_informed"),
