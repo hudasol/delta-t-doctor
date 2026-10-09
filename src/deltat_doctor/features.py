@@ -129,3 +129,16 @@ def extract(h: pd.DataFrame) -> dict:
 def to_vector(feats: dict) -> np.ndarray:
     v = np.array([feats[k] for k in FEATURE_NAMES], dtype=float)
     return np.nan_to_num(v, nan=0.0, posinf=0.0, neginf=0.0)
+
+
+INFORMED_EXTRA = ["design_dt_c", "dt_gap_to_design"]
+
+
+def augment(X: np.ndarray, design_dt) -> np.ndarray:
+    """Add the two 'informed' columns: the design delta-T and the shortfall against it.
+
+    X is (n, len(FEATURE_NAMES)); design_dt is a scalar or (n,) array in deg C.
+    """
+    X = np.atleast_2d(np.asarray(X, float))
+    d = np.broadcast_to(np.asarray(design_dt, float), (len(X),))
+    return np.column_stack([X, d, X[:, FEATURE_NAMES.index("dt_period")] - d])

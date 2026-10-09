@@ -63,6 +63,7 @@ def sample_to_row(s: Sample, post: str = "none"):
         "dt_actual": s.dt_actual, "dt_healthy": s.dt_healthy, "gain_all": s.gain_all,
         "injected": "+".join(s.causes_injected) or "none", "cf_subtype": s.cf_subtype,
         "unmet_kwh": s.unmet_kwh,
+        "design_dt": float(np.average(s.cfg.dt_design, weights=s.cfg.q_design_kw)),
     }
     return x, y, g, meta
 
