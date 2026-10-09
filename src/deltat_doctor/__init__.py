@@ -1,6 +1,6 @@
 """delta-t-doctor: diagnose low delta-T syndrome from utility meter data only."""
 
-__version__ = "0.5.0"
+__version__ = "1.0.0"
 
 CAUSES = ("fouling", "passing_valves", "constant_flow", "overflow")
 
