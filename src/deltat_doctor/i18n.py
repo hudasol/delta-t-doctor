@@ -34,7 +34,7 @@ EN = {
                "low delta-T, the ranking will be overconfident: a design shortfall looks like fouling. Enter the design "
                "delta-T to get an informed diagnosis."),
     "no_design": ("No design delta-T supplied. If you know it, enter it: the diagnosis separates a design "
-                  "shortfall from a fault and is more reliable."),
+                  "shortfall from a fault, and it was slightly more accurate in simulation."),
     "coverage": "Only {p} of the hours between the first and last reading have data. Gaps weaken the diagnosis; check the export for missing periods.",
     "seasonal": ("The yearly figures are scaled up from {d} days of data. Cooling demand is seasonal, so a summer-only "
                  "file overstates and a winter-only file understates the year."),
@@ -71,7 +71,7 @@ AR = {
     "trend": "فرق الحرارة عند الأحمال العالية {direction_ar} بنحو {slope} °م في الشهر عبر {n} نوافذ (قيمة كندال p={p}). التقلبات الموسمية قد تحاكي اتجاهاً؛ قارنه بالحمل والطقس.",
     "low_dt": ("متوسط فرق الحرارة ({dt} °م) أقل من النطاق الذي تدرّب عليه النموذج. إذا صُمّم المبنى لفرق حرارة منخفض فسيكون "
                "الترتيب مبالغاً في ثقته، إذ يشبه القصور التصميمي اتساخ الملفات. أدخل فرق الحرارة التصميمي للحصول على تشخيص مُستنير."),
-    "no_design": "لم يُدخل فرق الحرارة التصميمي. إن كنت تعرفه فأدخله: فهو يميّز القصور التصميمي عن العطل ويزيد الموثوقية.",
+    "no_design": "لم يُدخل فرق الحرارة التصميمي. إن كنت تعرفه فأدخله: فهو يميّز القصور التصميمي عن العطل، وكان أدق قليلاً في المحاكاة.",
     "coverage": "{p} فقط من الساعات بين أول قراءة وآخر قراءة فيها بيانات. الفجوات تُضعف التشخيص؛ تحقّق من ملف التصدير بحثاً عن فترات ناقصة.",
     "seasonal": ("الأرقام السنوية مُستقرأة من {d} يوماً من البيانات. الطلب على التبريد موسمي، لذا يبالغ ملف الصيف في تقدير "
                  "السنة ويقلّل ملف الشتاء من تقديرها."),

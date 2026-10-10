@@ -20,7 +20,7 @@ S = {
         "status_below": "Below contract by", "status_ok": "Meets the contract minimum",
         "k_sur": "estimated surcharge per year", "k_sur_basis": "extrapolated from", "days": "days",
         "k_first": "first action", "k_save": "expected saving from the first fix", "k_range": "plausible range", "k_negl": "could be negligible",
-        "k_conf": "confidence", "High": "High", "Medium": "Medium", "Low": "Low", "NA": "Not reliable",
+        "k_conf": "simulated-model probability band", "withheld": "The cause ranking is withheld because this result is flagged not reliable (see the notes). The delta-T and surcharge figures above are measured from your data.", "h_series": "Delta-T over time", "s_start": "Window start", "s_dt": "Delta-T (°C)", "s_hi": "Delta-T at 60-100% load (°C)", "trend_sig": "High-load delta-T is {direction} by about {slope} °C per month (Kendall p={p}). Seasonal swings can mimic a trend.", "High": "High", "Medium": "Medium", "Low": "Low", "NA": "Not reliable",
         "k_chance": "chance a fixable cause is present",
         "basis": "Basis", "basis_blind": "blind diagnosis (no design delta-T given)", "basis_informed": "informed diagnosis, design delta-T",
         "coverage": "data coverage", "window": "analysis windows",
@@ -48,7 +48,7 @@ S = {
         "status_below": "أقل من العقد بمقدار", "status_ok": "يستوفي الحد الأدنى للعقد",
         "k_sur": "الغرامة السنوية المقدّرة", "k_sur_basis": "مُستقرأة من", "days": "يوماً",
         "k_first": "أول إجراء", "k_save": "الوفر المتوقع من الإصلاح الأول", "k_range": "النطاق المحتمل", "k_negl": "قد يكون ضئيلاً",
-        "k_conf": "درجة الثقة", "High": "عالية", "Medium": "متوسطة", "Low": "منخفضة", "NA": "غير موثوق",
+        "k_conf": "نطاق احتمال النموذج المحاكى", "withheld": "حُجب ترتيب الأسباب لأن هذه النتيجة موسومة بأنها غير موثوقة (راجع الملاحظات). أرقام فرق الحرارة والغرامة أعلاه مقيسة من بياناتك.", "h_series": "فرق الحرارة عبر الزمن", "s_start": "بداية النافذة", "s_dt": "فرق الحرارة (°م)", "s_hi": "فرق الحرارة عند حمل 60-100% (°م)", "trend_sig": "فرق الحرارة عند الأحمال العالية {direction} بنحو {slope} °م في الشهر (كندال p={p}). التقلبات الموسمية قد تحاكي اتجاهاً.", "High": "عالية", "Medium": "متوسطة", "Low": "منخفضة", "NA": "غير موثوق",
         "k_chance": "احتمال وجود سبب قابل للإصلاح",
         "basis": "الأساس", "basis_blind": "تشخيص دون فرق الحرارة التصميمي", "basis_informed": "تشخيص مُستنير بفرق الحرارة التصميمي",
         "coverage": "تغطية البيانات", "window": "نوافذ التحليل",
@@ -228,7 +228,7 @@ def render_report(d: dict, building_name: str = "Building", lang: str = "en") ->
             rng = (f'{t["k_range"]}: {_money(lo, ar)} – {_money(hi, ar)}' if lo > 0.005 * max(hi, 1) else f'{t["k_negl"]}; {t["k_range"]}: 0 – {_money(hi, ar)}')
         kpis.append((_money(top["expected_saving_aed_per_year"], ar), t["k_save"], rng))
         label = top["label_ar"] if ar and top.get("label_ar") else top["label"]
-        kpis.append((e(label.split(" (")[0].split(" (")[0] if not ar else label.split(" (")[0].split(" (")[0]), t["k_first"], f'{t["k_conf"]}: {t[conf]}'))
+        kpis.append((e(label.split(" (")[0]), t["k_first"], f'{t["k_conf"]}: {t[conf]}'))
     else:
         kpis.append(("–", t["k_save"], t["NA"]))
         kpis.append(("–", t["k_first"], t["NA"]))
@@ -260,6 +260,9 @@ def render_report(d: dict, building_name: str = "Building", lang: str = "en") ->
     minor = [f for f in findings if f not in main_f]
     scale = max([f.get("saving_high_aed_per_year") or f["expected_saving_aed_per_year"] for f in findings] + [1.0])
     out.append(f'<h2>{e(t["h_first"])}</h2>')
+    if not reliable or not findings:
+        main_f, minor = [], []
+        out.append(f'<p class="sub">{e(t["withheld"])}</p>')
     for f in main_f:
         label = f["label_ar"] if ar and f.get("label_ar") else f["label"]
         checks = f["checks_ar"] if ar and f.get("checks_ar") else f["checks"]
@@ -275,6 +278,19 @@ def render_report(d: dict, building_name: str = "Building", lang: str = "en") ->
     if minor:
         names = "؛ ".join((f["label_ar"] if ar and f.get("label_ar") else f["label"]).split(" (")[0] for f in minor) if ar else "; ".join(f["label"].split(" (")[0] for f in minor)
         out.append(f'<h2>{e(t["h_ruled"])}</h2><p class="sub">{e(names)}. {e(t["ruled_note"])}</p>')
+
+    ser = d.get("series") or []
+    if len(ser) >= 2:
+        out.append(f'<h2>{e(t["h_series"])}</h2><table><tr><th>{e(t["s_start"])}</th><th>{e(t["s_dt"])}</th><th>{e(t["s_hi"])}</th></tr>')
+        for w in ser:
+            hi = w.get("dt_high_load_c")
+            out.append(f'<tr><td>{e(w["start"][:10])}</td><td>{w["dt_c"]:.2f}</td><td>{"-" if hi is None else f"{hi:.2f}"}</td></tr>')
+        out.append("</table>")
+        tr = d.get("trend") or {}
+        if tr.get("significant"):
+            dirn = ("ينخفض" if tr["direction"] == "falling" else "يرتفع") if ar else tr["direction"]
+            msg = t["trend_sig"].format(direction=dirn, slope="%.2f" % abs(tr["slope_c_per_month"]), p="%.2f" % tr["p_value"])
+            out.append(f'<p class="sub">{e(msg)}</p>')
 
     if d.get("monthly"):
         out.append(f'<h2>{e(t["h_month"])}</h2><table><tr><th>{e(t["m_month"])}</th><th>{e(t["m_dt"])}</th><th>{e(t["m_short"])}</th><th>{e(t["m_sur"])}</th></tr>')

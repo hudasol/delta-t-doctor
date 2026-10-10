@@ -209,12 +209,11 @@ const I = {
   go:"Diagnose this file",f_many:"Many buildings?",f_pfile:"One CSV with a building_id column (and optionally design_delta_t_c)",pgo:"Rank my portfolio",pdemo:"Try a demo portfolio",
   h_title:"See where your delta-T penalty comes from.",h_p1:"Start with a simulated building to see how the result reads, or upload your own meter export on the left.",
   h_p2:"The tool reads how delta-T behaves as load rises and falls, then ranks the likely causes by the dirhams they cost each year.",
-  demo_sub:"Simulated example",
   below:"Below contract minimum",ok:"At or above contract minimum",demo_chip:"Simulated building, not real data",
   v_below:(n,dt,sh,mn)=>[`${n} returns ${dt}\u00a0°C, `,`${sh}\u00a0°C under`,` the ${mn}\u00a0°C minimum.`],
   v_ok:(n,dt,mn)=>`${n} returns ${dt}\u00a0°C, at or above the ${mn}\u00a0°C minimum.`,
   g_actual:"Actual",g_min:"Contract minimum",g_design:"Design",g_cap:"Flow-weighted delta-T over the period, on a scale from 0 °C.",
-  k_sur:"Surcharge, estimated per year",k_first:"First fix",k_sav:"Expected saving per year",k_conf:"Confidence in the first fix",
+  k_sur:"Surcharge, estimated per year",k_first:"First fix",k_sav:"Expected saving per year",k_conf:"Model probability band for the first fix (simulated)",
   conf:{High:"High",Medium:"Medium",Low:"Low",NA:"Not available"},
   illustrative:"Illustrative rate. Enter your contract rate for real figures.",
   basis:(a,b,days,cov,mode)=>`Based on ${a} to ${b}, ${days} days, ${cov}% of hours had data. ${mode==="informed"?"Informed diagnosis using your design delta-T.":"Blind diagnosis: no design delta-T entered."}`,
@@ -238,7 +237,7 @@ const I = {
   e_file:"Choose a CSV file first.",e_pf:"Choose a portfolio CSV first.",e_srv:"Could not reach the server.",e_rep:"The report could not be built.",e_read:"The file could not be read.",
   tier:{likely:"Likely",possible:"Possible",weak:"Weak evidence",unsupported:"Unconfirmed by the data"},weak_sig:"Meter data barely shows this cause, so it is never rated more than possible.",
   ev_h:"Measured against healthy buildings",ev_row:(v,lo,hi)=>`${v} measured; healthy buildings ${lo} to ${hi}`,outside:"outside the healthy range",
-  trend_h:"Delta-T over time",trend_none:"No clear trend in high-load delta-T across the windows.",
+  s_start:"Window start",s_hi:"Delta-T at 60-100% load (°C)",trend_h:"Delta-T over time",trend_none:"No clear trend in high-load delta-T across the windows.",
   gloss_ets:"Energy transfer station: the plate heat exchanger and meter where the district cooling network meets your building.",
   demos:{healthy:["Healthy building","No fault built in"],fouled_coils:["Fouled coils","Coils lose delta-T at high load"],idle_coils_leaking:["Leaking idle coils","Water passes through stopped coils"],three_way_valves:["3-way valves","Water bypasses the coil"],excess_pressure:["Excess pressure","Too much flow at part load"],mixed_problems:["Fouling and leaks","Two faults at once"]}},
  ar:{skip:"انتقل إلى النتائج",tagline:"لماذا تعود مياه التبريد باردة أكثر من اللازم، وماذا نصلح أولاً",inputs:"المدخلات",theme_d:"داكن",theme_l:"فاتح",
@@ -248,12 +247,11 @@ const I = {
   go:"شخّص هذا الملف",f_many:"عدة مبانٍ؟",f_pfile:"ملف CSV واحد بعمود building_id (واختيارياً design_delta_t_c)",pgo:"رتّب محفظتي",pdemo:"جرّب محفظة تجريبية",
   h_title:"اعرف مصدر غرامة فرق الحرارة.",h_p1:"ابدأ بمبنى محاكى لترى شكل النتيجة، أو ارفع ملف عدّادك من القائمة الجانبية.",
   h_p2:"تقرأ الأداة سلوك فرق الحرارة مع ارتفاع الحمل وانخفاضه، ثم ترتّب الأسباب المحتملة حسب كلفتها السنوية بالدرهم.",
-  demo_sub:"مثال محاكى",
   below:"دون الحد الأدنى للعقد",ok:"عند الحد الأدنى للعقد أو أعلى",demo_chip:"مبنى محاكى وليس بيانات حقيقية",
   v_below:(n,dt,sh,mn)=>[`${n} يعيد ${dt}\u00a0°م، `,`${sh}\u00a0°م دون`,` الحد الأدنى ${mn}\u00a0°م.`],
   v_ok:(n,dt,mn)=>`${n} يعيد ${dt}\u00a0°م، وهو عند الحد الأدنى ${mn}\u00a0°م أو أعلى.`,
   g_actual:"الفعلي",g_min:"حد العقد",g_design:"التصميمي",g_cap:"فرق الحرارة المرجَّح بالتدفق خلال الفترة، على مقياس يبدأ من 0 °م.",
-  k_sur:"الغرامة التقديرية سنوياً",k_first:"أول إصلاح",k_sav:"الوفر المتوقع سنوياً",k_conf:"الثقة في أول إصلاح",
+  k_sur:"الغرامة التقديرية سنوياً",k_first:"أول إصلاح",k_sav:"الوفر المتوقع سنوياً",k_conf:"نطاق احتمال النموذج لأول إصلاح (محاكى)",
   conf:{High:"عالية",Medium:"متوسطة",Low:"منخفضة",NA:"غير متاحة"},
   illustrative:"سعر توضيحي. أدخل سعر عقدك لأرقام فعلية.",
   basis:(a,b,days,cov,mode)=>`بالاعتماد على الفترة من ${a} إلى ${b}، ${days} يوماً، وتوفرت بيانات في ${cov}% من الساعات. ${mode==="informed"?"تشخيص مُستنير بفرق الحرارة التصميمي.":"تشخيص بدون فرق حرارة تصميمي."}`,
@@ -277,7 +275,7 @@ const I = {
   e_file:"اختر ملف CSV أولاً.",e_pf:"اختر ملف CSV للمحفظة أولاً.",e_srv:"تعذّر الوصول إلى الخادم.",e_rep:"تعذّر إنشاء التقرير.",e_read:"تعذّرت قراءة الملف.",
   tier:{likely:"مرجّح",possible:"محتمل",weak:"دليل ضعيف",unsupported:"غير مؤكد بالبيانات"},weak_sig:"بيانات العدّاد لا تُظهر هذا السبب بوضوح، لذا لا يُصنَّف أعلى من محتمل.",
   ev_h:"القياس مقابل المباني السليمة",ev_row:(v,lo,hi)=>`المقيس ${v}؛ المباني السليمة من ${lo} إلى ${hi}`,outside:"خارج النطاق السليم",
-  trend_h:"فرق الحرارة عبر الزمن",trend_none:"لا اتجاه واضح في فرق الحرارة عند الأحمال العالية عبر النوافذ.",
+  s_start:"بداية النافذة",s_hi:"فرق الحرارة عند حمل 60-100% (°م)",trend_h:"فرق الحرارة عبر الزمن",trend_none:"لا اتجاه واضح في فرق الحرارة عند الأحمال العالية عبر النوافذ.",
   gloss_ets:"محطة نقل الطاقة: المبادل الحراري الصفائحي والعدّاد الذي تلتقي عنده شبكة التبريد المركزي بمبناك.",
   demos:{healthy:["مبنى سليم","بلا أعطال مُدرجة"],fouled_coils:["ملفات متّسخة","تفقد الملفات فرق الحرارة عند الحمل العالي"],idle_coils_leaking:["ملفات متوقفة متسرّبة","يمر الماء عبر ملفات متوقفة"],three_way_valves:["صمامات ثلاثية الاتجاه","يتجاوز الماء الملف"],excess_pressure:["ضغط زائد","تدفق زائد عند الحمل الجزئي"],mixed_problems:["اتساخ وتسرّب","عطلان معاً"]}}
 };
@@ -439,7 +437,17 @@ function render(d,demo,focus){
 
   const cw=el("figure",{class:"chartwrap",style:"margin:0 0 26px"}); cw.append(el("h3",{style:"padding:0 6px"},t("h_chart")),chart(d.signature,d.min_delta_t_c),el("p",{class:"hint",style:"padding:0 6px"},t("c_cap")),sigTable(d.signature)); root.append(cw);
 
+  if(d.series&&d.series.length>=2){
+    root.append(el("h3",{},t("trend_h")));
+    const sc=el("div",{class:"scroll"}),tb=el("table"),hr=el("tr");
+    [["s_start",""],["c_dt","n"],["s_hi","n"]].forEach(([k,c])=>hr.append(el("th",c?{class:c}:{},t(k))));
+    tb.append(el("thead")); tb.firstChild.append(hr); const bd=el("tbody");
+    d.series.forEach(w=>{const r=el("tr");r.append(el("td",{},w.start.slice(0,10)),el("td",{class:"n"},w.dt_c.toFixed(2)),el("td",{class:"n"},w.dt_high_load_c==null?"-":w.dt_high_load_c.toFixed(2)));bd.append(r);});
+    tb.append(bd); sc.append(tb); root.append(sc);
+    if(!(d.trend&&d.trend.significant)) root.append(el("p",{class:"hint"},t("trend_none")));
+  }
   (ar?d.notes_ar||d.notes:d.notes).forEach(n=>root.append(el("div",{class:"note"},n)));
+  if(!rel&&!d.findings.length) root.append(el("p",{class:"basis"},t("unrel_b")));
   if(rel&&d.findings.length){
     root.append(el("h2",{},t("h_first")));
     const major=d.findings.filter(f=>f.probability>=0.05), minor=d.findings.filter(f=>f.probability<0.05);

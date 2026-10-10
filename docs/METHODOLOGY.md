@@ -61,5 +61,5 @@ author. See [CROSS_SIMULATOR.md](CROSS_SIMULATOR.md).
 
 Each cause also has quantile gain models (10th, 50th, 90th percentile). Because the saving is a monotone function of the gain, its
 10th and 90th percentiles are the saving at those gain percentiles; its mean is taken over the gain distribution so that the
-tariff's hinge (no saving above the contract minimum) does not bias it upward. The 10-90 range is widened by a conformal margin,
+tariff's hinge (no saving above the contract minimum) does not bias it upward. The 10-90 range is with a conformal margin (fitted; 0.0 on the shipped data, so effectively raw quantiles),
 computed separately for "active" intervals (upper end of 0.2 C or more) and the rest, using out-of-fold predictions from held-out buildings.

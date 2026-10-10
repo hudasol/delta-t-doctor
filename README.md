@@ -34,7 +34,7 @@ temperature). You get:
 4. **Open benchmark**: the simulator, labels and evaluation scripts, so the approach can be tested and criticised.
 
 Also: **portfolio mode** (one file, many buildings, ranked by saving), a **printable owner report**, an optional
-**design delta-T** input that gives a more reliable diagnosis, and a **"not reliable" warning** when a building looks
+**design delta-T** input that gives a slightly better diagnosis in simulation (about +0.005 AUROC), and a **"not reliable" warning** when a building looks
 unlike anything the model was trained on. Accepts messy real-world exports (any delimiter, degF, L/s, RT, MW, cumulative
 kWh registers, .xlsx).
 
@@ -78,8 +78,7 @@ healthy buildings as faulty; the reverse direction scores 0.77. One prediction f
 The shipped model is trained on both simulators, which closes the gap for those two worlds and proves nothing about a real building.
 Expect the unseen-world numbers until the pilot shows otherwise.
 
-Savings carry ranges: each cause has 10th/50th/90th percentile gains (conformal-widened; 82% to 85% coverage of the true gain on
-held-out simulated buildings, nominal 80%), and the report shows an AED range next to the point estimate.
+Savings carry ranges: each cause has 10th/50th/90th percentile gains from quantile boosting, and the report shows an AED range next to the point estimate. A conformal margin is fitted but came out 0.0 on simulated data, so the ranges are the raw quantiles. Coverage of the true gain on held-out simulated buildings is 82% to 85% among windows where a cause is predicted active, but only 55% to 76% among windows where the cause is truly present (`results/uncertainty.json`), so treat the lower end as optimistic.
 
 **External check (LBNL chiller-plant benchmark, CC-BY).** I wrote predictions before running it and again before
 the follow-up ([docs/EXTERNAL_CHECK.md](docs/EXTERNAL_CHECK.md)). Outcome:
@@ -95,7 +94,7 @@ the follow-up ([docs/EXTERNAL_CHECK.md](docs/EXTERNAL_CHECK.md)). Outcome:
 That dataset has no building-side labels, so it cannot measure accuracy.
 
 **Open-set guard (v1.1).** The first guard checked each feature against its own range and missed combinations it had never seen.
-It is replaced by a Mahalanobis-distance guard over all 42 shape features, and when it trips the tool **withholds the cause ranking**
+It is joined by a Mahalanobis-distance guard over all 42 shape features (the building is withheld if either fires), and when a guard trips the tool **withholds the cause ranking**
 instead of printing it with a warning. Measured as a leave-one-world-out estimate (`results/openset.json`): fit on simulator A, it
 flags 71% of simulator B (the old box: 37%) at a 6.6% false-flag rate on held-out A buildings. Fit on B, it flags only 25% of A
 (old box: 7%), so the guard is weaker when the training world is small. It is built and tested on simulated data only.
@@ -111,7 +110,7 @@ pip install -e ".[api,dev]"
 deltat-doctor serve                         # web app on http://127.0.0.1:8000
 deltat-doctor simulate --causes fouling --out demo_ets.csv
 deltat-doctor diagnose demo_ets.csv --rate 0.40
-pytest                                      # 82 tests
+pytest                                      # 98 tests
 deltat-doctor portfolio fleet.csv --out ranked.csv
 deltat-doctor diagnose demo_ets.csv --design-dt 9.0 --html report.html
 docker build -t delta-t-doctor . && docker run -p 8000:8000 delta-t-doctor
