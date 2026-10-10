@@ -2,6 +2,15 @@
 
 Versions are git tags. All accuracy figures are simulator results unless stated.
 
+## Unreleased - Round 4 (ADEO review)
+
+- Arabic and English UI and report (RTL, bundled IBM Plex Sans Arabic); `lang` parameter on report endpoints, `--lang` on the CLI. See docs/I18N.md (machine-drafted, needs native review).
+- Provenance block on every result: report ID, input SHA-256, model identity, parameters, quality flags.
+- Web UI rebuilt: executive summary with delta-T gauge, saving range and confidence word, reliability banner, dark mode, skip link, chart data table, collapsed negligible causes, portfolio heat-map and ranges.
+- Owner report rewritten (summary first, ranges, provenance, `@page` print).
+- Demo portfolio frame cached (about 8 s to 1.5 s).
+- Tests: tests/test_round4_i18n_report.py.
+
 ## Unreleased: engineering round 1 (Google ML review)
 Measured before and after are in `results/metrics.md`. Changes:
 * Evaluation: building-level bootstrap 95% intervals and paired differences; season hold-out now also holds out the test buildings (macro AUROC 0.941 summer, 0.960 winter); feature-group ablation (`results/ablation.json`); calibration folds are grouped by building. README table is generated from `results/metrics.json` by `scripts/update_readme.py`. The previous README stress range (0.947 to 0.982) was from an older dataset; the current one is 0.902 to 0.978.

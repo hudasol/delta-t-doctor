@@ -7,6 +7,7 @@ import pandas as pd
 
 from . import CAUSES, CAUSE_LABELS
 from .diagnose import diagnose_frame
+from .i18n import CAUSE_LABELS_AR, note, note_ar
 from .io import DataError
 from .penalty import ContractTerms
 
@@ -31,6 +32,10 @@ class BuildingRow:
     top_cause_saving_aed: float | None = None
     mode: str = "blind"
     findings: list = field(default_factory=list)
+    reliable: bool = True
+    top_cause_saving_low_aed: float | None = None
+    top_cause_saving_high_aed: float | None = None
+    top_cause_label_ar: str = ""
 
 
 @dataclass
@@ -44,6 +49,9 @@ class PortfolioReport:
     buildings: list                  # ranked BuildingRow dicts
     terms: dict
     notes: list
+    notes_ar: list = field(default_factory=list)
+    provenance: dict = field(default_factory=dict)
+    is_demo: bool = False
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -86,7 +94,7 @@ def diagnose_portfolio(df: pd.DataFrame, terms: ContractTerms | None = None,
             if len(v):
                 design = float(v.median())
                 if v.max() - v.min() > 0.5:
-                    design_notes.append(f"Design delta-T differs within the file for {bid} (from {v.min():.1f} to {v.max():.1f}); the median was used.")
+                    design_notes.append(note("design_differs", bid=bid, lo=f"{v.min():.1f}", hi=f"{v.max():.1f}"))
                 else:
                     pass
             else:
@@ -104,8 +112,11 @@ def diagnose_portfolio(df: pd.DataFrame, terms: ContractTerms | None = None,
             annual_surcharge_aed=rep.annual_surcharge_aed_estimate, p_any_cause=rep.p_any_cause,
             top_cause=top["cause"], top_cause_label=top["label"], top_cause_probability=top["probability"],
             top_cause_saving_aed=top["expected_saving_aed_per_year"], mode=rep.mode,
-            findings=[{k: f[k] for k in ("cause", "probability", "expected_dt_gain_c",
-                                          "expected_saving_aed_per_year")} for f in rep.findings],
+            reliable=bool(rep.data_quality.get("reliable", True)),
+            top_cause_saving_low_aed=top.get("saving_low_aed_per_year"), top_cause_saving_high_aed=top.get("saving_high_aed_per_year"),
+            top_cause_label_ar=CAUSE_LABELS_AR[top["cause"]],
+            findings=[{k: f.get(k) for k in ("cause", "probability", "expected_dt_gain_c", "expected_saving_aed_per_year",
+                                             "saving_low_aed_per_year", "saving_high_aed_per_year")} for f in rep.findings],
         ))
 
     ok = [r for r in rows if r.status == "ok"]
@@ -116,27 +127,26 @@ def diagnose_portfolio(df: pd.DataFrame, terms: ContractTerms | None = None,
     for c in CAUSES:
         sav = sum(f["expected_saving_aed_per_year"] for r in ok for f in r.findings if f["cause"] == c)
         tops = sum(1 for r in ok if r.top_cause == c)
-        by_cause.append({"cause": c, "label": CAUSE_LABELS[c], "buildings_where_top": tops,
+        by_cause.append({"cause": c, "label": CAUSE_LABELS[c], "label_ar": CAUSE_LABELS_AR[c], "buildings_where_top": tops,
                          "expected_saving_aed_per_year": float(sav)})
     by_cause.sort(key=lambda d: d["expected_saving_aed_per_year"], reverse=True)
 
     notes = list(design_notes)
     if n_null:
-        notes.append(f"{n_null} rows had no building id and were grouped as '(no building id)'.")
+        notes.append(note("null_ids", n=n_null))
     if skipped:
-        notes.append(f"{len(skipped)} building(s) were skipped; see the reason on each row.")
+        notes.append(note("skipped", n=len(skipped)))
     blind = sum(1 for r in ok if r.mode == "blind")
     if blind:
-        notes.append(f"{blind} building(s) were diagnosed without a design delta-T. Add a design_delta_t_c "
-                     f"column for a more reliable result.")
-    notes.append("Savings are model estimates, summed over causes that may overlap. Treat the total as an upper "
-                 "bound on what fixing everything would recover.")
+        notes.append(note("blind_count", n=blind))
+    notes.append(note("savings_overlap"))
 
     return PortfolioReport(
         n_buildings=len(rows), n_diagnosed=len(ok), n_skipped=len(skipped),
         total_surcharge_aed=float(sum(r.annual_surcharge_aed or 0.0 for r in ok)),
         total_expected_saving_aed=float(sum(f["expected_saving_aed_per_year"] for r in ok for f in r.findings)),
-        by_cause=by_cause, buildings=[asdict(r) for r in ok + skipped], terms=terms.to_dict(), notes=notes,
+        by_cause=by_cause, buildings=[asdict(r) for r in ok + skipped], terms=terms.to_dict(),
+        notes=[str(n) for n in notes], notes_ar=[note_ar(n) for n in notes],
     )
 
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import logging
 import os
-from dataclasses import dataclass, field, asdict
+from dataclasses import asdict, dataclass, field
 
 import numpy as np
 import pandas as pd
@@ -12,6 +12,7 @@ from . import CAUSES, CAUSE_LABELS, CP_KJ_KG_K
 from .features import FEATURE_NAMES, augment, extract, to_vector
 from .io import DataError, canonicalise
 from .models import Diagnoser
+from .i18n import CAUSE_LABELS_AR, CAUSE_SHORT_AR, CHECKS_AR, DISCLAIMER_AR, note, note_ar
 from .penalty import saving_interval, ContractTerms, KW_PER_RT, monthly_table, saving_from_gain, window_penalty
 
 WINDOW_DAYS = 30
@@ -45,10 +46,7 @@ CHECKS = {
 
 DOMAIN_MIN_DT_C = 3.0   # revisited after v0.2 training; see docs/EXTERNAL_CHECK.md
 
-AMBIGUITY_NOTE = (
-    "From meter data alone, constant-flow coils and leaking/passing valves can look alike "
-    "(both keep water moving when load is low). Treat these two as a pair to inspect together."
-)
+AMBIGUITY_NOTE = note("ambiguity")
 
 DISCLAIMER = (
     "Statistical diagnosis from ETS meter data. It ranks likely causes to inspect first; it does not "
@@ -69,6 +67,8 @@ class CauseFinding:
     saving_high_aed_per_year: float | None = None    # 90th percentile
     dt_gain_low_c: float | None = None
     dt_gain_high_c: float | None = None
+    label_ar: str = ""
+    checks_ar: list = field(default_factory=list)
 
 
 @dataclass
@@ -89,6 +89,10 @@ class Report:
     mode: str = "blind"                      # "informed" when a design delta-T was supplied
     design_delta_t_c: float | None = None
     disclaimer: str = DISCLAIMER
+    notes_ar: list = field(default_factory=list)
+    disclaimer_ar: str = DISCLAIMER_AR
+    provenance: dict = field(default_factory=dict)   # filled by the API/CLI: file hash, model identity, parameters
+    is_demo: bool = False
 
     def to_dict(self) -> dict:
         d = asdict(self)
@@ -244,6 +248,8 @@ def diagnose_frame(df: pd.DataFrame, terms: ContractTerms | None = None,
         else:
             sav = sum(saving_from_gain(dts[i], pred.gain[i, k], rt_hr[i], terms) for i in range(len(wins))) * scale
             findings.append(CauseFinding(c, CAUSE_LABELS[c], p, gain, float(sav), CHECKS[c]))
+    for f in findings:
+        f.label_ar, f.checks_ar = CAUSE_LABELS_AR[f.cause], list(CHECKS_AR[f.cause])
     findings.sort(key=lambda f: (f.expected_saving_aed_per_year, f.probability), reverse=True)
 
     mt = monthly_table(h, terms)
@@ -253,46 +259,35 @@ def diagnose_frame(df: pd.DataFrame, terms: ContractTerms | None = None,
     notes = list(in_notes)
     has_oat = bool(h["t_outdoor_c"].notna().mean() > 0.5)
     if not has_oat:
-        notes.append("No outdoor temperature supplied; diagnosis is less certain (add t_outdoor_c).")
+        notes.append(note("no_oat"))
     if len(findings) > 1 and findings[0].saving_low_aed_per_year is not None:
         a, b = findings[0], findings[1]
         if b.saving_high_aed_per_year > a.saving_low_aed_per_year and b.expected_saving_aed_per_year > 0.5 * a.expected_saving_aed_per_year:
-            notes.append(f"The order of the top two fixes is uncertain: the ranges for '{a.label.split(' (')[0]}' and "
-                         f"'{b.label.split(' (')[0]}' overlap. Check both.")
+            notes.append(note("order_uncertain", a=a.label.split(' (')[0], b=b.label.split(' (')[0],
+                              a_ar=CAUSE_SHORT_AR[a.cause], b_ar=CAUSE_SHORT_AR[b.cause]))
     top2 = {f.cause for f in findings[:2] if f.probability > 0.4}
     if {"passing_valves", "constant_flow"} <= top2:
-        notes.append(AMBIGUITY_NOTE)
+        notes.append(note("ambiguity"))
     if len(wins) == 1 and days.sum() < 25:
-        notes.append("Under 25 days of data; use 30+ days (ideally a full year) for a firmer diagnosis.")
+        notes.append(note("under25"))
     if dt_all >= terms.min_delta_t_c:
-        notes.append("Delta-T is at or above the contract minimum over this period; no surcharge exposure "
-                     "expected, but listed causes may still cost energy.")
+        notes.append(note("above_min"))
 
     out_of_range = ood_limit is not None and n_ood > ood_limit
     if out_of_range:
-        notes.append(
-            f"This building's behaviour is unlike anything the model was trained on ({n_ood:.0f} of "
-            f"{len(FEATURE_NAMES)} shape measurements are outside the training range; a normal building "
-            f"shows {ood_limit} or fewer). The ranking below is NOT reliable. Typical reasons: variable "
-            f"flow that does not follow load, a plant-side loop rather than a building ETS, or a different system type.")
+        notes.append(note("ood", n=f"{n_ood:.0f}", total=len(FEATURE_NAMES), limit=ood_limit))
     if dt_all < DOMAIN_MIN_DT_C and not informed:
-        notes.append(
-            f"Average delta-T ({dt_all:.1f} C) is below the range the model was trained on. If this building "
-            f"was designed for a low delta-T, the ranking will be overconfident: a design shortfall looks like "
-            f"fouling. Enter the design delta-T to get an informed diagnosis.")
+        notes.append(note("low_dt", dt=f"{dt_all:.1f}"))
     elif not informed:
-        notes.append("No design delta-T supplied. If you know it, enter it: the diagnosis separates a design "
-                     "shortfall from a fault and is more reliable.")
+        notes.append(note("no_design"))
     span_h = max((h["timestamp"].iloc[-1] - h["timestamp"].iloc[0]).total_seconds() / 3600.0, 1.0)
     coverage = float(min(len(h) / (span_h + 1.0), 1.0))
     if coverage < 0.85:
-        notes.append(f"Only {coverage:.0%} of the hours between the first and last reading have data. "
-                     f"Gaps weaken the diagnosis; check the export for missing periods.")
+        notes.append(note("coverage", p=f"{coverage:.0%}"))
     if days.sum() < 330:
-        notes.append(f"The yearly figures are scaled up from {days.sum():.0f} days of data. Cooling demand is seasonal, "
-                     f"so a summer-only file overstates and a winter-only file understates the year.")
+        notes.append(note("seasonal", d=f"{days.sum():.0f}"))
     if float(np.nanstd(h["flow_kgs"])) < 1e-6:
-        notes.append("Flow never changes in this file. Check that the flow column is the real meter reading.")
+        notes.append(note("flat_flow"))
     signature = _signature(h)
     quality = {
         "coverage": coverage,
@@ -304,13 +299,15 @@ def diagnose_frame(df: pd.DataFrame, terms: ContractTerms | None = None,
                          and q_in.get("outlier_fraction", 0) < 0.02 and q_in.get("bad_timestamp_fraction", 0) < 0.02
                          and q_in.get("longest_flatline_readings", 0) < 48),
         "input": q_in, "annualised_from_days": float(days.sum()),
+        "start": h["timestamp"].iloc[0].isoformat(), "end": h["timestamp"].iloc[-1].isoformat(),
     }
     return Report(
         n_days=float(days.sum()), n_windows=len(wins), delta_t_c=dt_all,
         min_delta_t_c=terms.min_delta_t_c, below_minimum=bool(dt_all < terms.min_delta_t_c),
         annual_surcharge_aed_estimate=annual_sur, p_any_cause=float(np.average(pred.p_any, weights=days)),
         findings=[asdict(f) for f in findings], monthly=mt.to_dict(orient="records"),
-        notes=notes, terms=terms.to_dict(), data_quality=quality, signature=signature,
+        notes=[str(n) for n in notes], notes_ar=[note_ar(n) for n in notes], terms=terms.to_dict(),
+        data_quality=quality, signature=signature,
         mode="informed" if informed else "blind", design_delta_t_c=design_delta_t_c,
     )
 
