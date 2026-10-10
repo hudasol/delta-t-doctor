@@ -21,6 +21,7 @@ import warnings
 import numpy as np
 import pandas as pd
 
+from .i18n import note
 from .sim.coil import CP_W
 
 _ALIASES = {
@@ -222,7 +223,7 @@ def _parse_time(series: pd.Series, notes: list | None = None) -> pd.Series:
         pick = a if ma > mb else b
     else:
         pick = b
-        notes.append("Dates are ambiguous (day/month order); read as day first. Check the first and last date in the report.")
+        notes.append(note("date_ambiguous"))
     return pick
 
 
@@ -360,24 +361,24 @@ def canonicalise(df: pd.DataFrame, min_hours: int = MIN_HOURS) -> pd.DataFrame:
                         f"the building behaves through the day.")
     dup = int(out["timestamp"].duplicated().sum())
     if dup:
-        notes.append(f"{dup} duplicate timestamps were averaged (daylight-saving or export overlap).")
+        notes.append(note("duplicates", n=dup))
     out = _to_hourly(out)
     if len(out) < min_hours:
         raise DataError(
             f"Need at least {min_hours // 24} days of data ({min_hours} hourly rows); got {len(out)}.")
     if dropped > 0.005:
-        notes.append(f"{dropped:.1%} of rows had a missing flow or temperature and were left out.")
+        notes.append(note("dropped", p=f"{dropped:.1%}"))
     outlier = float((n_spike + n_range) / max(n_raw, 1))
     if outlier > 0.001:
-        notes.append(f"{outlier:.1%} of rows had an impossible flow, temperature or delta-T (spikes, sensor codes) and were left out.")
+        notes.append(note("outlier", p=f"{outlier:.1%}"))
     if bad_ts > 0.005:
-        notes.append(f"{bad_ts:.1%} of timestamps could not be read; those rows were left out.")
+        notes.append(note("bad_ts", p=f"{bad_ts:.1%}"))
     if counts["coerced"] or counts["sentinel"]:
-        notes.append(f"{counts['coerced']} non-numeric cells and {counts['sentinel']} sensor-code values (such as -999) were treated as missing.")
+        notes.append(note("coerced", c=counts["coerced"], s=counts["sentinel"]))
     if run_len >= FLATLINE_HOURS:
-        notes.append(f"The flow reading repeats exactly for {run_len} consecutive readings: a stuck or frozen meter. Check the export.")
+        notes.append(note("flatline", n=run_len))
     if neg_dt > 0.005:
-        notes.append(f"{neg_dt:.1%} of running hours show the return colder than the supply (treated as zero delta-T).")
+        notes.append(note("neg_dt", p=f"{neg_dt:.1%}"))
     out = out.reset_index(drop=True)
     out.attrs["quality"] = {"rows_raw": int(n_raw), "dropped_fraction": dropped, "negative_dt_fraction": neg_dt,
                             "negative_flow_fraction": neg_flow, "median_step_h": step_h, "duplicate_timestamps": dup,

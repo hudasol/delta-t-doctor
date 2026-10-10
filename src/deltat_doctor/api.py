@@ -5,6 +5,7 @@ import contextvars
 import hashlib
 import json
 import logging
+import functools
 import math
 import os
 import threading
@@ -20,6 +21,7 @@ from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse, HTM
 from . import CAUSES, __version__
 from .diagnose import diagnose_frame, load_default_model
 from .io import DataError, read_table
+from . import provenance
 from .penalty import ContractTerms
 from .report import render_report
 from .portfolio import diagnose_portfolio
@@ -98,6 +100,19 @@ def _terms(min_dt: float, pct: float, rate: float) -> ContractTerms:
     return ContractTerms(min_dt, pct, rate)
 
 
+def _finish(rep, *, filename=None, raw=None, demo=False) -> dict:
+    d = rep.to_dict()
+    d["provenance"] = provenance.build(d, filename=filename, raw=raw)
+    d["is_demo"] = demo
+    audit("report", report_id=d["provenance"]["report_id"], input_sha=(d["provenance"]["input"]["sha256"] or "")[:16],
+          reliable=d["data_quality"].get("reliable"), mode=d.get("mode"))
+    return d
+
+
+def _lang(lang: str) -> str:
+    return "ar" if str(lang).lower().startswith("ar") else "en"
+
+
 def _run(df, terms, design_dt):
     if design_dt is not None and not math.isfinite(design_dt):
         raise HTTPException(422, "Design delta-T must be a finite number.")
@@ -113,16 +128,16 @@ def _run(df, terms, design_dt):
         _slots.release()
 
 
-def _read_upload(file: UploadFile) -> pd.DataFrame:
+def _read_upload(file: UploadFile):
     """Read at most MAX_BYTES from the upload (never buffers more), then parse."""
     raw = file.file.read(MAX_BYTES + 1)
     if len(raw) > MAX_BYTES:
         raise HTTPException(413, "File is larger than 25 MB.")
     audit("upload", bytes=len(raw), sha256=hashlib.sha256(raw).hexdigest()[:16], filename=(file.filename or "")[:80])
     try:
-        return read_table(raw, file.filename or "")
+        return read_table(raw, file.filename or ""), {"filename": file.filename or "", "raw": raw}
     except DataError as e:
-        raise HTTPException(422, str(e))
+        raise HTTPException(422, str(e)) from None
 
 
 @app.get("/api/health")
@@ -154,7 +169,7 @@ def demo(name: str, min_dt: float = 8.9, pct: float = 0.10, rate: float = 0.40,
         raise HTTPException(404, f"Unknown demo. Choose from: {', '.join(DEMOS)}")
     df, true_design = _demo(name)
     rep = _run(df, _terms(min_dt, pct, rate), design_dt)
-    d = rep.to_dict()
+    d = _finish(rep, filename=f"simulated demo: {name}", demo=True)
     d["demo_true_design_dt"] = round(true_design, 1)
     d["truth_for_demo"] = list(DEMOS[name]) or ["none"]
     return JSONResponse(d)
@@ -162,19 +177,23 @@ def demo(name: str, min_dt: float = 8.9, pct: float = 0.10, rate: float = 0.40,
 
 @app.get("/api/demo/{name}/report", response_class=HTMLResponse)
 def demo_report(name: str, min_dt: float = 8.9, pct: float = 0.10, rate: float = 0.40,
-                design_dt: float | None = None):
+                design_dt: float | None = None, lang: str = "en"):
     if name not in DEMOS:
         raise HTTPException(404, "Unknown demo.")
     df, _ = _demo(name)
-    return render_report(_run(df, _terms(min_dt, pct, rate), design_dt).to_dict(), f"Simulated building ({name.replace('_', ' ')})")
+    rep = _run(df, _terms(min_dt, pct, rate), design_dt)
+    return render_report(_finish(rep, filename=f"simulated demo: {name}", demo=True),
+                         f"Simulated building ({name.replace('_', ' ')})", _lang(lang))
 
 
 @app.post("/api/report", response_class=HTMLResponse)
 def report(file: UploadFile = File(...), name: str = Form("Your building"), min_dt: float = Form(8.9),
-                 pct: float = Form(0.10), rate: float = Form(0.40), design_dt: float | None = Form(None)):
+                 pct: float = Form(0.10), rate: float = Form(0.40), design_dt: float | None = Form(None),
+                 lang: str = Form("en")):
     terms = _terms(min_dt, pct, rate)
-    df = _read_upload(file)
-    return render_report(_run(df, terms, design_dt).to_dict(), name[:80])
+    df, info = _read_upload(file)
+    rep = _run(df, terms, design_dt)
+    return render_report(_finish(rep, filename=info["filename"], raw=info["raw"]), name[:80], _lang(lang))
 
 
 @app.post("/api/diagnose")
@@ -182,10 +201,11 @@ def diagnose(file: UploadFile = File(...), min_dt: float = Form(8.9),
                    pct: float = Form(0.10), rate: float = Form(0.40),
                    design_dt: float | None = Form(None)):
     terms = _terms(min_dt, pct, rate)
-    df = _read_upload(file)
-    return JSONResponse(_run(df, terms, design_dt).to_dict())
+    df, info = _read_upload(file)
+    return JSONResponse(_finish(_run(df, terms, design_dt), filename=info["filename"], raw=info["raw"]))
 
 
+@functools.lru_cache(maxsize=2)
 def _portfolio_frame(n: int = 12, seed: int = 21) -> pd.DataFrame:
     """A made-up portfolio of simulated buildings with a mix of faults, for the demo."""
     from .sim.scenarios import draw_cause_set, make_sample, sample_building
@@ -205,14 +225,14 @@ def _portfolio_frame(n: int = 12, seed: int = 21) -> pd.DataFrame:
 
 @app.get("/api/demo-portfolio.csv", response_class=PlainTextResponse)
 def demo_portfolio_csv():
-    return _portfolio_frame().to_csv(index=False)
+    return _portfolio_frame().copy().to_csv(index=False)
 
 
 @app.post("/api/portfolio")
 def portfolio(file: UploadFile = File(...), min_dt: float = Form(8.9), pct: float = Form(0.10),
                     rate: float = Form(0.40), design_dt: float | None = Form(None)):
     terms = _terms(min_dt, pct, rate)
-    df = _read_upload(file)
+    df, info = _read_upload(file)
     if design_dt is not None and not math.isfinite(design_dt):
         raise HTTPException(422, "Design delta-T must be a finite number.")
     if not _slots.acquire(blocking=False):
@@ -223,14 +243,19 @@ def portfolio(file: UploadFile = File(...), min_dt: float = Form(8.9), pct: floa
         raise HTTPException(422, str(e))
     finally:
         _slots.release()
-    log.info("portfolio buildings=%d", len(rep.buildings) if hasattr(rep, "buildings") else -1)
-    return JSONResponse(rep.to_dict())
+    d = rep.to_dict()
+    d["provenance"] = provenance.build(d, filename=info["filename"], raw=info["raw"], rows=len(df), kind="portfolio")
+    audit("portfolio", report_id=d["provenance"]["report_id"], buildings=d["n_buildings"], diagnosed=d["n_diagnosed"])
+    return JSONResponse(d)
 
 
 @app.get("/api/demo-portfolio")
 def demo_portfolio(min_dt: float = 8.9, pct: float = 0.10, rate: float = 0.40):
-    rep = diagnose_portfolio(_portfolio_frame(), _terms(min_dt, pct, rate))
-    return JSONResponse(rep.to_dict())
+    rep = diagnose_portfolio(_portfolio_frame().copy(), _terms(min_dt, pct, rate))
+    d = rep.to_dict()
+    d["provenance"] = provenance.build(d, filename="simulated demo portfolio", kind="portfolio")
+    d["is_demo"] = True
+    return JSONResponse(d)
 
 
 app.mount("/fonts", StaticFiles(directory=os.path.join(WEB_DIR, "fonts")), name="fonts")

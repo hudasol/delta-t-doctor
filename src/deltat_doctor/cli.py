@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import json
 import sys
 
@@ -35,8 +36,12 @@ def cmd_diagnose(a):
     terms = ContractTerms(a.min_dt, a.pct, a.rate)
     rep = diagnose_csv(a.csv, terms, design_delta_t_c=a.design_dt)
     if a.html:
+        from . import provenance
         from .report import render_report
-        open(a.html, "w", encoding="utf-8").write(render_report(rep.to_dict(), a.name))
+        d = rep.to_dict()
+        d["provenance"] = provenance.build(d, filename=os.path.basename(a.csv), raw=open(a.csv, "rb").read())
+        d["is_demo"] = False
+        open(a.html, "w", encoding="utf-8").write(render_report(d, a.name, a.lang))
         print(f"wrote {a.html}")
     print(json.dumps(rep.to_dict(), indent=2, default=float) if a.json else _fmt_report(rep))
 
@@ -102,6 +107,7 @@ def main(argv=None):
     d.add_argument("--rate", type=float, default=0.40, help="AED per RT-hr (illustrative default)")
     d.add_argument("--html", help="also write a printable owner report to this file")
     d.add_argument("--name", default="Your building", help="building name for the report heading")
+    d.add_argument("--lang", choices=["en", "ar"], default="en", help="language of the --html report")
     d.add_argument("--json", action="store_true")
     d.set_defaults(fn=cmd_diagnose)
 
