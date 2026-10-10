@@ -2,7 +2,15 @@
 
 Versions are git tags. All accuracy figures are simulator results unless stated.
 
-## Unreleased - Round 4 (ADEO review)
+## Unreleased - Round 5 (ATRC review)
+
+- Open-set guard (Mahalanobis, `openset.py`) replaces the per-feature box as the abstention rule; ranking is withheld (`abstained`, empty `findings`) when it trips. Benchmark: `scripts/openset_eval.py`, `results/openset.json`.
+- Evidence against healthy buildings per finding (`evidence.py`), data-driven from simulated single-cause windows; tiers (likely / possible / weak / unsupported); weak-signature causes capped at "possible"; worst-world AUROC stored in the model card.
+- Per-window `series` and a Kendall / Theil-Sen `trend` on high-load delta-T.
+- Savings capped at the annual surcharge (per finding and in the portfolio total); ties broken by delta-T gain.
+- Models retrained (guard, healthy reference, evidence spec). Tests: tests/test_round5_openset_evidence.py.
+
+## Round 4 (ADEO review)
 
 - Arabic and English UI and report (RTL, bundled IBM Plex Sans Arabic); `lang` parameter on report endpoints, `--lang` on the CLI. See docs/I18N.md (machine-drafted, needs native review).
 - Provenance block on every result: report ID, input SHA-256, model identity, parameters, quality flags.

@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 
 from . import CAUSES, CAUSE_LABELS, CP_KJ_KG_K
+from . import evidence as evidence_mod
 from .features import FEATURE_NAMES, augment, extract, to_vector
 from .io import DataError, canonicalise
 from .models import Diagnoser
@@ -69,6 +70,8 @@ class CauseFinding:
     dt_gain_high_c: float | None = None
     label_ar: str = ""
     checks_ar: list = field(default_factory=list)
+    tier: str = ""                       # likely / possible / weak / unsupported
+    evidence: dict | None = None         # measured features vs healthy range (see evidence.py)
 
 
 @dataclass
@@ -93,6 +96,10 @@ class Report:
     disclaimer_ar: str = DISCLAIMER_AR
     provenance: dict = field(default_factory=dict)   # filled by the API/CLI: file hash, model identity, parameters
     is_demo: bool = False
+    abstained: bool = False              # True when the open-set guard withheld the cause ranking
+    guard: dict = field(default_factory=dict)
+    series: list = field(default_factory=list)   # per-window delta-T and cause probabilities
+    trend: dict = field(default_factory=dict)    # onset / drift of high-load delta-T
 
     def to_dict(self) -> dict:
         d = asdict(self)
@@ -198,6 +205,56 @@ def _signature(h: pd.DataFrame) -> list:
     return rows
 
 
+_card_cache: dict = {}
+
+
+def _worst_world_auroc() -> dict:
+    """Per-cause AUROC in the harder direction of the cross-simulator test (from the model card), or {}."""
+    if "w" not in _card_cache:
+        import json
+        try:
+            _card_cache["w"] = json.load(open(os.path.join(_ASSETS, "model_card.json"))).get("worst_world_auroc", {})
+        except (OSError, ValueError):
+            _card_cache["w"] = {}
+    return _card_cache["w"]
+
+
+def _tier(p: float, e, worst) -> str:
+    supported = None if e is None else e["supported"]
+    weak_sig = bool(e and e.get("weak_signature"))
+    if p >= 0.5 and supported is False and not weak_sig:
+        return "unsupported"
+    if p >= 0.7 and not weak_sig and (worst is None or worst >= 0.75):
+        return "likely"
+    return "possible" if p >= 0.4 else "weak"
+
+
+def _series_and_trend(wins, X, pred, dts):
+    """Per-window delta-T and cause probabilities, and a Kendall/Theil-Sen test on high-load delta-T over time."""
+    from scipy.stats import kendalltau, theilslopes
+    ix = {n: i for i, n in enumerate(FEATURE_NAMES)}
+    bins = [ix[f"dt_bin{i}"] for i in (5, 6, 7)]
+    hi = []
+    for row in X:
+        v = [row[j] for j in bins if row[j] > 0.05]
+        hi.append(float(np.mean(v)) if v else np.nan)
+    hi = np.array(hi)
+    t0 = wins[0]["timestamp"].iloc[0]
+    mid = np.array([((w["timestamp"].iloc[0] - t0) + (w["timestamp"].iloc[-1] - t0)).total_seconds() / 2 / 86400.0 for w in wins])
+    series = [{"start": w["timestamp"].iloc[0].isoformat(), "end": w["timestamp"].iloc[-1].isoformat(),
+               "days": len(w) / 24.0, "dt_c": float(dts[i]), "dt_high_load_c": None if np.isnan(hi[i]) else float(hi[i]),
+               "p": {c: float(pred.prob[i, k]) for k, c in enumerate(CAUSES)}} for i, w in enumerate(wins)]
+    ok = np.isfinite(hi)
+    trend = {"n_windows": int(ok.sum()), "metric": "delta-T at 60-100% load", "significant": False}
+    if ok.sum() >= 5 and np.ptp(mid[ok]) >= 90:
+        tau, pv = kendalltau(mid[ok], hi[ok])
+        slope = float(theilslopes(hi[ok], mid[ok])[0]) * 30.0
+        trend.update({"kendall_tau": float(tau), "p_value": float(pv), "slope_c_per_month": slope,
+                      "significant": bool(pv < 0.1 and abs(slope) * np.ptp(mid[ok]) / 30.0 >= 0.3),
+                      "direction": "falling" if slope < 0 else "rising"})
+    return series, trend
+
+
 def diagnose_frame(df: pd.DataFrame, terms: ContractTerms | None = None,
                    model: Diagnoser | None = None,
                    design_delta_t_c: float | None = None) -> Report:
@@ -227,6 +284,9 @@ def diagnose_frame(df: pd.DataFrame, terms: ContractTerms | None = None,
     ood = getattr(model, "ood_count", None)
     n_ood = float(np.average(ood(X), weights=[len(w) for w in wins])) if ood else 0.0
     ood_limit = getattr(model, "ood_threshold", None)
+    guard = getattr(model, "guard", None)
+    g_score = float(np.median(guard.score(X[:, :len(FEATURE_NAMES)]))) if guard is not None else None
+    g_flag = bool(guard is not None and g_score > guard.threshold)
 
     # per-window energy, delta-T
     rt_hr = np.array([w["heat_kw"].sum() / KW_PER_RT for w in wins])
@@ -248,12 +308,21 @@ def diagnose_frame(df: pd.DataFrame, terms: ContractTerms | None = None,
         else:
             sav = sum(saving_from_gain(dts[i], pred.gain[i, k], rt_hr[i], terms) for i in range(len(wins))) * scale
             findings.append(CauseFinding(c, CAUSE_LABELS[c], p, gain, float(sav), CHECKS[c]))
-    for f in findings:
-        f.label_ar, f.checks_ar = CAUSE_LABELS_AR[f.cause], list(CHECKS_AR[f.cause])
-    findings.sort(key=lambda f: (f.expected_saving_aed_per_year, f.probability), reverse=True)
-
+    ev = evidence_mod.build(X, days, getattr(model, "healthy_ref", {}), getattr(model, "evidence_spec", {}))
+    worst = _worst_world_auroc()
     mt = monthly_table(h, terms)
     annual_sur = float(sum(window_penalty(dts[i], rt_hr[i], terms)["surcharge_aed"] for i in range(len(wins))) * scale)
+    for f in findings:
+        f.label_ar, f.checks_ar = CAUSE_LABELS_AR[f.cause], list(CHECKS_AR[f.cause])
+        e = ev.get(f.cause)
+        f.evidence = e
+        f.tier = _tier(f.probability, e, worst.get(f.cause))
+        # A fix cannot recover more than the surcharge being paid.
+        f.expected_saving_aed_per_year = min(f.expected_saving_aed_per_year, annual_sur)
+        if f.saving_high_aed_per_year is not None:
+            f.saving_high_aed_per_year = min(f.saving_high_aed_per_year, annual_sur)
+            f.saving_low_aed_per_year = min(f.saving_low_aed_per_year, annual_sur)
+    findings.sort(key=lambda f: (round(f.expected_saving_aed_per_year, 2), f.expected_dt_gain_c, f.probability), reverse=True)
     dt_all = float(h["heat_kw"].sum() / (CP_KJ_KG_K * max(h["flow_kgs"].sum(), 1e-9)))
 
     notes = list(in_notes)
@@ -276,6 +345,16 @@ def diagnose_frame(df: pd.DataFrame, terms: ContractTerms | None = None,
     out_of_range = ood_limit is not None and n_ood > ood_limit
     if out_of_range:
         notes.append(note("ood", n=f"{n_ood:.0f}", total=len(FEATURE_NAMES), limit=ood_limit))
+    elif g_flag:
+        notes.append(note("openset", s=f"{g_score:.0f}", t=f"{guard.threshold:.0f}"))
+    abstain = bool(out_of_range or g_flag)
+    for f in findings:
+        if f.tier == "unsupported" and not abstain:
+            notes.append(note("physics_unsupported", c=f.label.split(" (")[0], c_ar=CAUSE_SHORT_AR[f.cause]))
+    series, trend = _series_and_trend(wins, X, pred, dts)
+    if trend.get("significant") and not abstain:
+        notes.append(note("trend", direction=trend["direction"], direction_ar="ينخفض" if trend["direction"] == "falling" else "يرتفع",
+                          slope=f"{abs(trend['slope_c_per_month']):.2f}", n=trend["n_windows"], p=f"{trend['p_value']:.2f}"))
     if dt_all < DOMAIN_MIN_DT_C and not informed:
         notes.append(note("low_dt", dt=f"{dt_all:.1f}"))
     elif not informed:
@@ -294,7 +373,7 @@ def diagnose_frame(df: pd.DataFrame, terms: ContractTerms | None = None,
         "hours": int(len(h)), "has_outdoor_temp": has_oat,
         "zero_flow_fraction": float((h["flow_kgs"] <= 1e-6).mean()),
         "windows": len(wins), "features_out_of_range": n_ood, "out_of_range_limit": ood_limit,
-        "reliable": bool(not out_of_range and q_in.get("dropped_fraction", 0) < 0.05
+        "reliable": bool(not abstain and q_in.get("dropped_fraction", 0) < 0.05
                          and q_in.get("negative_dt_fraction", 0) < 0.02 and coverage >= MIN_COVERAGE
                          and q_in.get("outlier_fraction", 0) < 0.02 and q_in.get("bad_timestamp_fraction", 0) < 0.02
                          and q_in.get("longest_flatline_readings", 0) < 48),
@@ -305,10 +384,13 @@ def diagnose_frame(df: pd.DataFrame, terms: ContractTerms | None = None,
         n_days=float(days.sum()), n_windows=len(wins), delta_t_c=dt_all,
         min_delta_t_c=terms.min_delta_t_c, below_minimum=bool(dt_all < terms.min_delta_t_c),
         annual_surcharge_aed_estimate=annual_sur, p_any_cause=float(np.average(pred.p_any, weights=days)),
-        findings=[asdict(f) for f in findings], monthly=mt.to_dict(orient="records"),
+        findings=[] if abstain else [asdict(f) for f in findings], monthly=mt.to_dict(orient="records"),
         notes=[str(n) for n in notes], notes_ar=[note_ar(n) for n in notes], terms=terms.to_dict(),
         data_quality=quality, signature=signature,
         mode="informed" if informed else "blind", design_delta_t_c=design_delta_t_c,
+        abstained=abstain, series=series, trend=trend,
+        guard={"open_set_score": g_score, "open_set_threshold": getattr(guard, "threshold", None), "open_set_flag": g_flag,
+               "box_features_out": n_ood, "box_limit": ood_limit},
     )
 
 

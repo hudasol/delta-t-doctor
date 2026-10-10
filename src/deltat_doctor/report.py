@@ -120,6 +120,30 @@ def _arabic_font_css() -> str:
     return "".join(out)
 
 
+TIER = {"en": {"likely": "Likely", "possible": "Possible", "weak": "Weak evidence", "unsupported": "Unconfirmed by the data",
+               "weak_sig": "Meter data barely shows this cause, so it is never rated more than possible.",
+               "ev": "Measured against healthy buildings", "ev_row": "{v} measured; healthy buildings {lo} to {hi}",
+               "outside": "outside the healthy range"},
+        "ar": {"likely": "مرجّح", "possible": "محتمل", "weak": "دليل ضعيف", "unsupported": "غير مؤكد بالبيانات",
+               "weak_sig": "بيانات العدّاد لا تُظهر هذا السبب بوضوح، لذا لا يُصنَّف أعلى من محتمل.",
+               "ev": "القياس مقابل المباني السليمة", "ev_row": "المقيس {v}؛ المباني السليمة من {lo} إلى {hi}",
+               "outside": "خارج النطاق السليم"}}
+
+
+def _evidence_html(f: dict, ar: bool) -> str:
+    ev, tt = f.get("evidence"), TIER["ar" if ar else "en"]
+    if not ev:
+        return ""
+    rows = []
+    for it in ev["items"]:
+        lbl = it["label_ar"] if ar else it["label"]
+        txt = tt["ev_row"].format(v=f'{it["value"]:.2f}', lo=f'{it["healthy_p5"]:.2f}', hi=f'{it["healthy_p95"]:.2f}')
+        flag = f' <b>({tt["outside"]})</b>' if it["outside_healthy"] else ""
+        rows.append(f"<li>{escape(lbl)}: {escape(txt)}{flag}</li>")
+    weak = f'<p class="sub">{escape(tt["weak_sig"])}</p>' if ev.get("weak_signature") else ""
+    return f'<b>{escape(tt["ev"])}</b><ul>' + "".join(rows) + "</ul>" + weak
+
+
 def confidence(d: dict) -> str:
     """High / Medium / Low / NA for the top finding. Not reliable data gives NA."""
     if not d.get("data_quality", {}).get("reliable", True) or not d.get("findings"):
@@ -246,6 +270,7 @@ def render_report(d: dict, building_name: str = "Building", lang: str = "en") ->
         out.append(f'<div class="cause"><h3><span>{e(label)}</span><span>{_money(f["expected_saving_aed_per_year"], ar)} {e(t["a_year"])}</span></h3>'
                    f'<div class="bar"><i style="width:{max(f["probability"]*100, 1):.0f}%"></i></div>{_whisker(f, scale)}'
                    f'<div class="sub">{e(prob)}. {e(t["recover"])} {f["expected_dt_gain_c"]:.1f} °{"م" if ar else "C"}{e(rng)}</div>'
+                   f'<p class="sub"><b>{e(TIER["ar" if ar else "en"].get(f.get("tier", ""), ""))}</b></p>' + _evidence_html(f, ar) +
                    f'<b>{e(t["check"])}</b><ul>' + "".join(f"<li>{e(c)}</li>" for c in checks) + "</ul></div>")
     if minor:
         names = "؛ ".join((f["label_ar"] if ar and f.get("label_ar") else f["label"]).split(" (")[0] for f in minor) if ar else "; ".join(f["label"].split(" (")[0] for f in minor)

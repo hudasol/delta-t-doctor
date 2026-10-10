@@ -105,6 +105,12 @@ def diagnose_portfolio(df: pd.DataFrame, terms: ContractTerms | None = None,
         except DataError as e:
             rows.append(BuildingRow(bid, "skipped", str(e)))
             continue
+        if not rep.findings:     # the open-set guard withheld the ranking
+            rows.append(BuildingRow(bid, "ok", n_days=rep.n_days, delta_t_c=rep.delta_t_c,
+                                    below_minimum_c=max(rep.min_delta_t_c - rep.delta_t_c, 0.0),
+                                    annual_surcharge_aed=rep.annual_surcharge_aed_estimate, p_any_cause=rep.p_any_cause,
+                                    mode=rep.mode, reliable=False, findings=[]))
+            continue
         top = rep.findings[0]
         rows.append(BuildingRow(
             building_id=bid, status="ok", n_days=rep.n_days, delta_t_c=rep.delta_t_c,
@@ -144,7 +150,9 @@ def diagnose_portfolio(df: pd.DataFrame, terms: ContractTerms | None = None,
     return PortfolioReport(
         n_buildings=len(rows), n_diagnosed=len(ok), n_skipped=len(skipped),
         total_surcharge_aed=float(sum(r.annual_surcharge_aed or 0.0 for r in ok)),
-        total_expected_saving_aed=float(sum(f["expected_saving_aed_per_year"] for r in ok for f in r.findings)),
+        # per building the savings of overlapping causes cannot exceed that building's surcharge
+        total_expected_saving_aed=float(sum(min(sum(f["expected_saving_aed_per_year"] for f in r.findings), r.annual_surcharge_aed or 0.0)
+                                            for r in ok)),
         by_cause=by_cause, buildings=[asdict(r) for r in ok + skipped], terms=terms.to_dict(),
         notes=[str(n) for n in notes], notes_ar=[note_ar(n) for n in notes],
     )
