@@ -13,7 +13,7 @@ Read this before trusting any number from the tool.
 2. **Only variable-flow building loops of the kind simulated.** On the LBNL plant (flow barely follows load, and
    delta-T is about 2.6 C with no fault) the model reports a fault with near-certainty, even when told the design
    delta-T. The tool now counts how many of its 42 measurements fall outside the training range and says "not
-   reliable" when too many do. That guard was built after seeing this failure, so it is untested on real ETS data.
+   reliable" when too many do. That guard was built after seeing this failure, so it is untested on real ETS data. Since v1.1 a second, joint-distribution guard also runs (item 10).
    See [EXTERNAL_CHECK.md](EXTERNAL_CHECK.md) sections 4 and 6.
 3. **Four causes only.** Fouling, passing valves, constant-flow valves and excess pressure. Control
    problems, sensor errors, bad set-points, pump staging and the plant side are not modelled.

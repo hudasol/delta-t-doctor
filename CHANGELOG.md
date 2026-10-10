@@ -2,7 +2,19 @@
 
 Versions are git tags. All accuracy figures are simulator results unless stated.
 
-## Unreleased - Round 5 (ATRC review)
+## v1.1.0
+
+Rounds 1 to 6 of the multi-reviewer upgrade (Google, Edge, TII, ADEO, ATRC, final Google check). Figures quoted in the older entries below were
+measured at the time and some are superseded by `results/metrics.json`.
+
+### Round 6 (final review)
+
+- Report no longer prints a ranking when the result is flagged unreliable; abstained results say so.
+- Heavy routes (including demos and CSV exports) share the concurrency limit; POST bodies over 25 MB (+1 MB) are rejected from Content-Length. Chunked uploads without Content-Length are still bounded only by the read cap, so put a body limit on the reverse proxy.
+- Docs corrected: the conformal margin is 0.0 (intervals are raw quantiles; coverage 55% to 76% when a cause is truly present), both guards run, API schema updated.
+- Confidence label renamed "model probability band (simulated)". Per-window series and trend now shown in the UI and the report.
+
+### Round 5 (ATRC review)
 
 - Open-set guard (Mahalanobis, `openset.py`) replaces the per-feature box as the abstention rule; ranking is withheld (`abstained`, empty `findings`) when it trips. Benchmark: `scripts/openset_eval.py`, `results/openset.json`.
 - Evidence against healthy buildings per finding (`evidence.py`), data-driven from simulated single-cause windows; tiers (likely / possible / weak / unsupported); weak-signature causes capped at "possible"; worst-world AUROC stored in the model card.
@@ -10,7 +22,7 @@ Versions are git tags. All accuracy figures are simulator results unless stated.
 - Savings capped at the annual surcharge (per finding and in the portfolio total); ties broken by delta-T gain.
 - Models retrained (guard, healthy reference, evidence spec). Tests: tests/test_round5_openset_evidence.py.
 
-## Round 4 (ADEO review)
+### Round 4 (ADEO review)
 
 - Arabic and English UI and report (RTL, bundled IBM Plex Sans Arabic); `lang` parameter on report endpoints, `--lang` on the CLI. See docs/I18N.md (machine-drafted, needs native review).
 - Provenance block on every result: report ID, input SHA-256, model identity, parameters, quality flags.
@@ -23,7 +35,7 @@ Versions are git tags. All accuracy figures are simulator results unless stated.
 Measured before and after are in `results/metrics.md`. Changes:
 * Evaluation: building-level bootstrap 95% intervals and paired differences; season hold-out now also holds out the test buildings (macro AUROC 0.941 summer, 0.960 winter); feature-group ablation (`results/ablation.json`); calibration folds are grouped by building. README table is generated from `results/metrics.json` by `scripts/update_readme.py`. The previous README stress range (0.947 to 0.982) was from an older dataset; the current one is 0.902 to 0.978.
 * Input handling: NaN rows are dropped and reported, swapped supply/return, implausible temperatures and ΔT above 25 C are rejected, day-first dates and latin-1 files parse correctly, windows need 80% coverage, informed mode validates the design ΔT range, data-quality `reliable` flag and seasonal-annualisation note.
-* Service: the `.csv` demo route was shadowed by the `{name}` route (fixed, tested); uploads parsed in worker threads with a concurrency limit and streaming size cap; NaN/inf parameters rejected (422).
+* Service: the `.csv` demo route was shadowed by the `{name}` route (fixed, tested); uploads parsed in worker threads with a concurrency limit and a 25 MB read cap (v1.1 adds a Content-Length check); NaN/inf parameters rejected (422).
 * Reproducibility: bundled model hash checked against the model card; model card records git commit, data hash and sklearn version; lock file; one specific-heat constant; ruff and coverage in CI.
 * Docs: corrected the claim that the two valve faults overlap (measured confusion is 2 to 5%; overflow is the hard cause).
 

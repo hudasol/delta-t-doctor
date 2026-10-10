@@ -6,7 +6,7 @@ delta-T if fixed) and the delta-T it would recover.
 
 **Model.** Calibrated gradient-boosted classifiers and regressors on 42 scale-free shape features, one set per cause,
 plus an any-fault classifier. Two variants: blind, and informed (adds the building's design delta-T and the shortfall
-against it). Trained with a fixed seed in under a minute.
+against it). Trained with a fixed seed in about a minute.
 
 **Training data.** 6,500 simulated 30-day windows from 650 simulated buildings, from two different simulators: A (5,000 windows;
 office, hotel, residential, mall; coil-level physics with injected faults) and B (1,500 windows; seven building classes with
@@ -15,7 +15,7 @@ Design delta-T 4.7-12.8 C. Each label comes from a counterfactual re-simulation 
 See [CROSS_SIMULATOR.md](CROSS_SIMULATOR.md).
 
 **Uncertainty.** Besides the expected gain, each cause has a 10th, 50th and 90th percentile of recoverable delta-T (quantile
-boosting, widened by a conformal margin fitted on held-out buildings). Savings in AED are computed from those percentiles, so
+boosting, with a conformal margin fitted on held-out buildings; it came out 0.0 for every cause, so the intervals are the raw quantiles). Savings in AED are computed from those percentiles, so
 the report shows a range as well as a number. On held-out simulated buildings the 10-90 range covered the true gain 82% to 85% of
 the time where it mattered (nominal 80%; `results/uncertainty.json`). Where a cause was truly present but the model had predicted
 almost no gain, coverage was lower (55% to 76%). Ranges assume the windows of one building move together, so they are wide; they
@@ -43,7 +43,7 @@ ranking has safety consequences, or buildings the tool marks "not reliable".
   signatures by construction. Whether real valves separate so cleanly is unknown, so the report still warns when both rank highly.
 * Unmodelled causes (controls, sensors, set-points, pump staging) are forced into the nearest of the four.
 
-**Open-set guard (v1.1).** In addition to the per-feature range check below, a Mahalanobis-distance score over all 42 features (median across windows against the 95th percentile of training scores) decides abstention; when it trips the ranking is withheld. Leave-one-world-out estimate in `results/openset.json`: 71% of B flagged when fit on A, 25% of A when fit on B.
+**Open-set guard (v1.1).** Two guards run and the ranking is withheld if either fires. The first is the per-feature range check described below. The second is a Mahalanobis-distance score over all 42 features (median across windows against the 95th percentile of training scores) decides abstention; when it trips the ranking is withheld. Leave-one-world-out estimate in `results/openset.json`: 71% of B flagged when fit on A, 25% of A when fit on B.
 
 **Out-of-range guard.** The model stores the 1st-99th percentile range of each feature. A window with more out-of-range
 features than 95% of training windows (4 of 42) is reported as "not reliable". On the simulator-A stress sets (fresh buildings,

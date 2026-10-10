@@ -14,7 +14,7 @@ import uuid
 
 import numpy as np
 import pandas as pd
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import Depends, FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse, HTMLResponse
 
@@ -31,6 +31,16 @@ MAX_BYTES = 25 * 1024 * 1024
 MAX_CONCURRENT = int(os.environ.get("DTD_MAX_CONCURRENT", "4"))
 log = logging.getLogger("deltat_doctor.api")
 _slots = threading.BoundedSemaphore(MAX_CONCURRENT)
+
+
+def _slot():
+    """Dependency: at most MAX_CONCURRENT heavy requests (parse, simulate, diagnose) at once; others get a 503."""
+    if not _slots.acquire(blocking=False):
+        raise HTTPException(503, "Server is busy. Try again in a few seconds.")
+    try:
+        yield
+    finally:
+        _slots.release()
 
 app = FastAPI(title="delta-t-doctor", version=__version__,
               description="Diagnose low delta-T in district-cooled buildings from ETS meter data. "
@@ -50,6 +60,9 @@ async def security_headers(request, call_next):
     rid = uuid.uuid4().hex[:12]
     _rid.set(rid)
     t0 = time.perf_counter()
+    cl = request.headers.get("content-length")
+    if request.method == "POST" and cl and cl.isdigit() and int(cl) > MAX_BYTES + 1024 * 1024:
+        return JSONResponse({"detail": "File is larger than 25 MB."}, status_code=413)
     resp = await call_next(request)
     if request.url.path.startswith("/api/"):
         audit("request", method=request.method, path=request.url.path, status=resp.status_code,
@@ -116,16 +129,12 @@ def _lang(lang: str) -> str:
 def _run(df, terms, design_dt):
     if design_dt is not None and not math.isfinite(design_dt):
         raise HTTPException(422, "Design delta-T must be a finite number.")
-    if not _slots.acquire(blocking=False):
-        raise HTTPException(503, "Server is busy. Try again in a few seconds.")
     try:
         return diagnose_frame(df, terms, design_delta_t_c=design_dt)
     except DataError as e:
         raise HTTPException(422, str(e))
     except FileNotFoundError:
         raise HTTPException(503, "The informed model is not installed on this server.")
-    finally:
-        _slots.release()
 
 
 def _read_upload(file: UploadFile):
@@ -155,14 +164,14 @@ def demos():
     return {"demos": list(DEMOS)}
 
 
-@app.get("/api/demo/{name}.csv", response_class=PlainTextResponse)
+@app.get("/api/demo/{name}.csv", response_class=PlainTextResponse, dependencies=[Depends(_slot)])
 def demo_csv(name: str):
     if name not in DEMOS:
         raise HTTPException(404, "Unknown demo.")
     return _demo(name)[0].to_csv(index=False)
 
 
-@app.get("/api/demo/{name}")
+@app.get("/api/demo/{name}", dependencies=[Depends(_slot)])
 def demo(name: str, min_dt: float = 8.9, pct: float = 0.10, rate: float = 0.40,
          design_dt: float | None = None):
     if name not in DEMOS:
@@ -175,7 +184,7 @@ def demo(name: str, min_dt: float = 8.9, pct: float = 0.10, rate: float = 0.40,
     return JSONResponse(d)
 
 
-@app.get("/api/demo/{name}/report", response_class=HTMLResponse)
+@app.get("/api/demo/{name}/report", response_class=HTMLResponse, dependencies=[Depends(_slot)])
 def demo_report(name: str, min_dt: float = 8.9, pct: float = 0.10, rate: float = 0.40,
                 design_dt: float | None = None, lang: str = "en"):
     if name not in DEMOS:
@@ -186,7 +195,7 @@ def demo_report(name: str, min_dt: float = 8.9, pct: float = 0.10, rate: float =
                          f"Simulated building ({name.replace('_', ' ')})", _lang(lang))
 
 
-@app.post("/api/report", response_class=HTMLResponse)
+@app.post("/api/report", response_class=HTMLResponse, dependencies=[Depends(_slot)])
 def report(file: UploadFile = File(...), name: str = Form("Your building"), min_dt: float = Form(8.9),
                  pct: float = Form(0.10), rate: float = Form(0.40), design_dt: float | None = Form(None),
                  lang: str = Form("en")):
@@ -196,7 +205,7 @@ def report(file: UploadFile = File(...), name: str = Form("Your building"), min_
     return render_report(_finish(rep, filename=info["filename"], raw=info["raw"]), name[:80], _lang(lang))
 
 
-@app.post("/api/diagnose")
+@app.post("/api/diagnose", dependencies=[Depends(_slot)])
 def diagnose(file: UploadFile = File(...), min_dt: float = Form(8.9),
                    pct: float = Form(0.10), rate: float = Form(0.40),
                    design_dt: float | None = Form(None)):
@@ -223,33 +232,29 @@ def _portfolio_frame(n: int = 12, seed: int = 21) -> pd.DataFrame:
     return pd.concat(parts, ignore_index=True)
 
 
-@app.get("/api/demo-portfolio.csv", response_class=PlainTextResponse)
+@app.get("/api/demo-portfolio.csv", response_class=PlainTextResponse, dependencies=[Depends(_slot)])
 def demo_portfolio_csv():
     return _portfolio_frame().copy().to_csv(index=False)
 
 
-@app.post("/api/portfolio")
+@app.post("/api/portfolio", dependencies=[Depends(_slot)])
 def portfolio(file: UploadFile = File(...), min_dt: float = Form(8.9), pct: float = Form(0.10),
                     rate: float = Form(0.40), design_dt: float | None = Form(None)):
     terms = _terms(min_dt, pct, rate)
     df, info = _read_upload(file)
     if design_dt is not None and not math.isfinite(design_dt):
         raise HTTPException(422, "Design delta-T must be a finite number.")
-    if not _slots.acquire(blocking=False):
-        raise HTTPException(503, "Server is busy. Try again in a few seconds.")
     try:
         rep = diagnose_portfolio(df, terms, design_dt)
     except DataError as e:
         raise HTTPException(422, str(e))
-    finally:
-        _slots.release()
     d = rep.to_dict()
     d["provenance"] = provenance.build(d, filename=info["filename"], raw=info["raw"], rows=len(df), kind="portfolio")
     audit("portfolio", report_id=d["provenance"]["report_id"], buildings=d["n_buildings"], diagnosed=d["n_diagnosed"])
     return JSONResponse(d)
 
 
-@app.get("/api/demo-portfolio")
+@app.get("/api/demo-portfolio", dependencies=[Depends(_slot)])
 def demo_portfolio(min_dt: float = 8.9, pct: float = 0.10, rate: float = 0.40):
     rep = diagnose_portfolio(_portfolio_frame().copy(), _terms(min_dt, pct, rate))
     d = rep.to_dict()

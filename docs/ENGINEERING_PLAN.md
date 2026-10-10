@@ -12,7 +12,7 @@ usability or maintainability.
 |---|---|---|---|
 | L1 | **Simulator-only, and circular.** The same physics model generates the data and defines the labels | S1 | No field data. External check has no building-side labels |
 | L2 | **Closed world.** Four causes. A fifth cause is forced into the nearest one, with a confident number | S1 | By construction (softmax-free but still four heads, no reject option) |
-| L3 | **Out-of-range guard is crude.** Counts features outside a 1-99% box. It was built after the LBNL failure and has never seen real ETS data | S1 | LBNL: 9 of 42 out of range in the cooling season; box test ignores correlations between features |
+| L3 | **Out-of-range guard is crude.** Counts features outside a 1-99% box. It was built after the LBNL failure and has never seen real ETS data | S1 | LBNL: 9 of 42 out of range in the cooling season; box test ignores correlations between features; mitigated in v1.1 by a Mahalanobis guard (`openset.py`), still untested on real data |
 | L4 | **Scope: variable-flow building loops behind an ETS.** Constant-flow systems, plant-side loops and chiller plants are out of scope | S2 | LBNL false alarm (p_any 1.00 fault-free) |
 | L5 | **Multi-fault degradation.** Exact-match falls from 0.86 (one cause) to 0.38 (two) and 0.05 (three) | S2 | `results/error_analysis.json` |
 | L6 | **Weak faults are missed.** Recall at p>=0.5 for true gains of 0.2-0.4 C: passing valves 0.29, overflow 0.29, fouling 0.52 | S2 | same |

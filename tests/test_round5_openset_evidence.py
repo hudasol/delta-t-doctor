@@ -1,6 +1,5 @@
 """Round 5 (ATRC): open-set abstention, evidence vs healthy, tiers, trend, savings cap."""
 import numpy as np
-import pytest
 
 from deltat_doctor.api import _demo
 from deltat_doctor.diagnose import diagnose_frame

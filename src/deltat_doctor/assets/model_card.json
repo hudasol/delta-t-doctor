@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "causes": [
     "fouling",
     "passing_valves",
@@ -45,8 +45,8 @@
     "data/main.npz": 5000,
     "data_b/main.npz": 1500
   },
-  "train_seconds": 72.8,
-  "git_commit_at_training": "bc40e83",
+  "train_seconds": 74.0,
+  "git_commit_at_training": "98f583a",
   "sklearn_version": "1.9.1",
   "training_data_sha256": {
     "results/data/main.npz": "680dca730791e99037cdeec583ca32e279e5732bc2a9d367ae557aa6ce2b82ce",
