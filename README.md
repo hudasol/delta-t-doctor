@@ -94,6 +94,16 @@ the follow-up ([docs/EXTERNAL_CHECK.md](docs/EXTERNAL_CHECK.md)). Outcome:
 
 That dataset has no building-side labels, so it cannot measure accuracy.
 
+**Open-set guard (v1.1).** The first guard checked each feature against its own range and missed combinations it had never seen.
+It is replaced by a Mahalanobis-distance guard over all 42 shape features, and when it trips the tool **withholds the cause ranking**
+instead of printing it with a warning. Measured as a leave-one-world-out estimate (`results/openset.json`): fit on simulator A, it
+flags 71% of simulator B (the old box: 37%) at a 6.6% false-flag rate on held-out A buildings. Fit on B, it flags only 25% of A
+(old box: 7%), so the guard is weaker when the training world is small. It is built and tested on simulated data only.
+
+Every finding now carries evidence against healthy buildings (measured value next to the healthy 5th to 95th percentile), a tier
+(likely / possible / weak / unsupported), and the report shows per-window delta-T with a trend test. Overflow has a weak signature
+in meter data (largest effect 1.2 healthy spreads) and is never rated above "possible".
+
 ## Quick start
 
 ```bash

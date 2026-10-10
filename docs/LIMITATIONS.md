@@ -34,3 +34,13 @@ Read this before trusting any number from the tool.
    (or energy) and ideally outdoor temperature; 30+ days is better. Without outdoor temperature,
    accuracy drops (see the stress results).
 9. **Not a substitute for a site survey.** The output is a ranked list of where to look first.
+10. **Open-set guard is a simulator-measured estimate.** Fit on A it flags 71% of B; fit on B it flags 25% of A (`results/openset.json`).
+    In-world false-flag rate is 6.6% to 7%, so about one in fifteen normal windows is flagged (the building-level test uses the
+    median window, which is stricter). On real buildings the rates are unknown.
+11. **Evidence is a physics-consistency flag, not proof.** The features and directions are chosen from simulated single-cause
+    windows. When two faults are present they can mask each other (the mixed demo shows fouling as "unconfirmed" for this reason).
+12. **Trend is confounded by season.** The test uses delta-T at 60-100% load, which is roughly load-matched, but a half-year file
+    cannot separate a fault developing from a seasonal shift. It is reported only when it passes a significance and size threshold.
+13. **Savings are capped at the surcharge being paid.** Overlapping causes cannot add up to more than the building pays, but the
+    per-cause figures are still marginal counterfactuals and are not additive.
+14. **Tariff shape.** Only the linear surcharge is modelled (no tiers, deadbands, caps or demand charges).

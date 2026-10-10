@@ -236,6 +236,9 @@ const I = {
   demo_truth:(x)=>`Simulated building. The fault that was built in: ${x}. The tool saw only the meter data.`,demo_des:d=>` It was designed for ${d} °C: enter that as the design delta-T to see the informed diagnosis.`,
   s_sim:"Simulating and diagnosing a building…",s_read:"Reading your file…",s_pf:"Diagnosing every building…",s_pfd:"Simulating twelve buildings…",
   e_file:"Choose a CSV file first.",e_pf:"Choose a portfolio CSV first.",e_srv:"Could not reach the server.",e_rep:"The report could not be built.",e_read:"The file could not be read.",
+  tier:{likely:"Likely",possible:"Possible",weak:"Weak evidence",unsupported:"Unconfirmed by the data"},weak_sig:"Meter data barely shows this cause, so it is never rated more than possible.",
+  ev_h:"Measured against healthy buildings",ev_row:(v,lo,hi)=>`${v} measured; healthy buildings ${lo} to ${hi}`,outside:"outside the healthy range",
+  trend_h:"Delta-T over time",trend_none:"No clear trend in high-load delta-T across the windows.",
   gloss_ets:"Energy transfer station: the plate heat exchanger and meter where the district cooling network meets your building.",
   demos:{healthy:["Healthy building","No fault built in"],fouled_coils:["Fouled coils","Coils lose delta-T at high load"],idle_coils_leaking:["Leaking idle coils","Water passes through stopped coils"],three_way_valves:["3-way valves","Water bypasses the coil"],excess_pressure:["Excess pressure","Too much flow at part load"],mixed_problems:["Fouling and leaks","Two faults at once"]}},
  ar:{skip:"انتقل إلى النتائج",tagline:"لماذا تعود مياه التبريد باردة أكثر من اللازم، وماذا نصلح أولاً",inputs:"المدخلات",theme_d:"داكن",theme_l:"فاتح",
@@ -272,6 +275,9 @@ const I = {
   demo_truth:x=>`مبنى محاكى. العطل المُدرَج: ${x}. لم تر الأداة سوى بيانات العدّاد.`,demo_des:d=>` صُمّم لفرق ${d} °م: أدخله كفرق حرارة تصميمي لترى التشخيص المُستنير.`,
   s_sim:"جارٍ محاكاة مبنى وتشخيصه…",s_read:"جارٍ قراءة الملف…",s_pf:"جارٍ تشخيص كل مبنى…",s_pfd:"جارٍ محاكاة اثني عشر مبنى…",
   e_file:"اختر ملف CSV أولاً.",e_pf:"اختر ملف CSV للمحفظة أولاً.",e_srv:"تعذّر الوصول إلى الخادم.",e_rep:"تعذّر إنشاء التقرير.",e_read:"تعذّرت قراءة الملف.",
+  tier:{likely:"مرجّح",possible:"محتمل",weak:"دليل ضعيف",unsupported:"غير مؤكد بالبيانات"},weak_sig:"بيانات العدّاد لا تُظهر هذا السبب بوضوح، لذا لا يُصنَّف أعلى من محتمل.",
+  ev_h:"القياس مقابل المباني السليمة",ev_row:(v,lo,hi)=>`المقيس ${v}؛ المباني السليمة من ${lo} إلى ${hi}`,outside:"خارج النطاق السليم",
+  trend_h:"فرق الحرارة عبر الزمن",trend_none:"لا اتجاه واضح في فرق الحرارة عند الأحمال العالية عبر النوافذ.",
   gloss_ets:"محطة نقل الطاقة: المبادل الحراري الصفائحي والعدّاد الذي تلتقي عنده شبكة التبريد المركزي بمبناك.",
   demos:{healthy:["مبنى سليم","بلا أعطال مُدرجة"],fouled_coils:["ملفات متّسخة","تفقد الملفات فرق الحرارة عند الحمل العالي"],idle_coils_leaking:["ملفات متوقفة متسرّبة","يمر الماء عبر ملفات متوقفة"],three_way_valves:["صمامات ثلاثية الاتجاه","يتجاوز الماء الملف"],excess_pressure:["ضغط زائد","تدفق زائد عند الحمل الجزئي"],mixed_problems:["اتساخ وتسرّب","عطلان معاً"]}}
 };
@@ -457,8 +463,15 @@ function findingBox(f){
   h.append(el("div",{class:"fname"},lab(f)),el("div",{class:"fmoney"},`${t("aed")} ${nf(f.expected_saving_aed_per_year)}`));
   box.append(h);
   const p=Math.round(100*f.probability), bar=el("div",{class:"bar",role:"img","aria-label":`${p}%`}),i=el("i"); i.style.width=Math.max(2,p)+"%"; bar.append(i); box.append(bar);
+  if(f.tier){const tr=el("div",{class:"fmeta"});tr.append(el("b",{},t("tier")[f.tier]||""));box.append(tr);}
   box.append(el("div",{class:"fmeta"},t("pct_likely")(p,d1(f.expected_dt_gain_c))));
   if(f.saving_low_aed_per_year!=null) box.append(el("div",{class:"fmeta"},t("range")(nf(f.saving_low_aed_per_year),nf(f.saving_high_aed_per_year))));
+  if(f.evidence){
+    const ed=el("details"); ed.append(el("summary",{},t("ev_h"))); const eu=el("ul");
+    f.evidence.items.forEach(it=>{const li=el("li",{},`${lang==="ar"?it.label_ar:it.label}: ${t("ev_row")(it.value.toFixed(2),it.healthy_p5.toFixed(2),it.healthy_p95.toFixed(2))}`);
+      if(it.outside_healthy) li.append(el("b",{},` (${t("outside")})`)); eu.append(li);});
+    ed.append(eu); if(f.evidence.weak_signature) ed.append(el("p",{class:"hint"},t("weak_sig"))); box.append(ed);
+  }
   const det=el("details"); det.append(el("summary",{},t("checks"))); const ul=el("ul");
   (lang==="ar"?(f.checks_ar||f.checks):f.checks).forEach(c=>ul.append(el("li",{},c))); det.append(ul); box.append(det); return box;
 }

@@ -88,6 +88,26 @@ class Diagnoser:
         self.feat_lo = np.percentile(X, 1, axis=0)
         self.feat_hi = np.percentile(X, 99, axis=0)
         self.ood_threshold = int(np.percentile(self.ood_count(X), 95))
+        # Healthy reference: distribution of every shape feature on windows with no material fault (for evidence statements).
+        healthy = X[(Y.sum(axis=1) == 0)][:, :len(FEATURE_NAMES)]
+        self.healthy_ref = ({n: [float(v) for v in np.percentile(healthy[:, i], [5, 25, 50, 75, 95])] for i, n in enumerate(FEATURE_NAMES)}
+                            if len(healthy) >= 50 else {})
+        # Evidence spec: per cause, the shape features whose median moves most (in healthy-spread units) when that cause is the only one present.
+        self.evidence_spec = {}
+        if len(healthy) >= 50:
+            Xb = X[:, :len(FEATURE_NAMES)]
+            hmed = np.median(healthy, axis=0)
+            sc = np.maximum(np.subtract(*np.percentile(healthy, [95, 5], axis=0)) / 3.3, 0.25 * Xb.std(axis=0)) + 1e-9
+            for k, c in enumerate(CAUSES):
+                only = (Y[:, k] == 1) & (Y.sum(axis=1) == 1)
+                if only.sum() < 30:
+                    continue
+                eff = (np.median(Xb[only], axis=0) - hmed) / sc
+                order = [i for i in np.argsort(-np.abs(eff)) if abs(eff[i]) >= 0.5][:4]
+                self.evidence_spec[c] = {"strength": float(np.abs(eff).max()),
+                                         "features": [(FEATURE_NAMES[i], int(np.sign(eff[i])), float(eff[i])) for i in order]}
+        from .openset import OpenSetGuard
+        self.guard = OpenSetGuard().fit(X[:, :len(FEATURE_NAMES)])
         return self
 
     def _quantiles(self, X: np.ndarray, margin: bool = True) -> np.ndarray:

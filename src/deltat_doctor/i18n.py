@@ -26,6 +26,10 @@ EN = {
             "are outside the training range; a normal building shows {limit} or fewer). The ranking below is NOT reliable. "
             "Typical reasons: variable flow that does not follow load, a plant-side loop rather than a building ETS, or a "
             "different system type."),
+    "openset": ("This building's combination of behaviours is unlike any building the model was trained on (distance score {s} "
+                "against {t} for a normal training building). The cause ranking is withheld because it would not be reliable."),
+    "physics_unsupported": "{c}: the model rates this cause likely, but the measured shape does not show the expected signs. Treat it as unconfirmed.",
+    "trend": "High-load delta-T is {direction} by about {slope} C per month over {n} windows (Kendall p={p}). Seasonal swings can mimic a trend; check against load and weather.",
     "low_dt": ("Average delta-T ({dt} C) is below the range the model was trained on. If this building was designed for a "
                "low delta-T, the ranking will be overconfident: a design shortfall looks like fouling. Enter the design "
                "delta-T to get an informed diagnosis."),
@@ -61,6 +65,10 @@ AR = {
     "ood": ("سلوك هذا المبنى يختلف عمّا تدرّب عليه النموذج ({n} من أصل {total} مؤشراً خارج نطاق التدريب، بينما يُظهر المبنى "
             "المعتاد {limit} أو أقل). الترتيب أدناه غير موثوق. من الأسباب المعتادة: تدفق متغير لا يتبع الحمل، أو دورة على جانب "
             "المحطة بدلاً من محطة نقل الطاقة في المبنى، أو نوع نظام مختلف."),
+    "openset": ("مجموعة سلوكيات هذا المبنى لا تشبه أي مبنى تدرّب عليه النموذج (درجة البعد {s} مقابل {t} لمبنى تدريب اعتيادي). "
+                "حُجب ترتيب الأسباب لأنه لن يكون موثوقاً."),
+    "physics_unsupported": "{c_ar}: يرى النموذج أن هذا السبب مرجّح، لكن الشكل المقيس لا يُظهر العلامات المتوقعة. اعتبره غير مؤكد.",
+    "trend": "فرق الحرارة عند الأحمال العالية {direction_ar} بنحو {slope} °م في الشهر عبر {n} نوافذ (قيمة كندال p={p}). التقلبات الموسمية قد تحاكي اتجاهاً؛ قارنه بالحمل والطقس.",
     "low_dt": ("متوسط فرق الحرارة ({dt} °م) أقل من النطاق الذي تدرّب عليه النموذج. إذا صُمّم المبنى لفرق حرارة منخفض فسيكون "
                "الترتيب مبالغاً في ثقته، إذ يشبه القصور التصميمي اتساخ الملفات. أدخل فرق الحرارة التصميمي للحصول على تشخيص مُستنير."),
     "no_design": "لم يُدخل فرق الحرارة التصميمي. إن كنت تعرفه فأدخله: فهو يميّز القصور التصميمي عن العطل ويزيد الموثوقية.",

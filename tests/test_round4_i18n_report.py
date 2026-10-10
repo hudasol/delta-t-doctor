@@ -29,8 +29,8 @@ def test_every_english_note_has_arabic_with_same_params():
     assert set(i18n.EN) == set(i18n.AR) - set()  # same keys
     for k in i18n.EN:
         en = set(re.findall(r"{(\w+)}", i18n.EN[k]))
-        ar = set(re.findall(r"{(\w+)}", i18n.AR[k]))
-        assert en <= ar or k == "order_uncertain", k
+        ar = {a[:-3] if a.endswith("_ar") else a for a in re.findall(r"{(\w+)}", i18n.AR[k])}
+        assert en <= ar, k
 
 
 def test_api_returns_provenance_and_arabic_fields(demo):

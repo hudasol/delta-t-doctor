@@ -45,15 +45,21 @@
     "data/main.npz": 5000,
     "data_b/main.npz": 1500
   },
-  "train_seconds": 70.7,
-  "git_commit_at_training": "2634e34",
+  "train_seconds": 72.8,
+  "git_commit_at_training": "bc40e83",
   "sklearn_version": "1.9.1",
   "training_data_sha256": {
     "results/data/main.npz": "680dca730791e99037cdeec583ca32e279e5732bc2a9d367ae557aa6ce2b82ce",
     "results/data_b/main.npz": "e93a8f17aeb765065f13b6bad4192cc63124de558347e057570d894be467ffdb"
   },
   "sha256": {
-    "diagnoser.joblib": "6119ef0687025098e3e2333398861627ba90047a99b68a30f8c5d2295533907f",
-    "diagnoser_informed.joblib": "52f8323582449562f3fc15a6bf3656941270353f09eb59797e5723273e563973"
+    "diagnoser.joblib": "f13e5ab959f93b6582b8cfd7ea3980ef3d1e9f33f8afd8ecbeb3fdcb8c12ca21",
+    "diagnoser_informed.joblib": "2d8e6d9842db2d477b294aed0d0e5d4cfaea2e725156ac8db7f7cb4832aa62c4"
+  },
+  "worst_world_auroc": {
+    "fouling": 0.633,
+    "passing_valves": 0.678,
+    "constant_flow": 0.858,
+    "overflow": 0.502
   }
 }
