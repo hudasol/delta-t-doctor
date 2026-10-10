@@ -47,6 +47,25 @@ def saving_from_gain(dt_c: float, gain_c: float, rt_hr: float, terms: ContractTe
     return max(before - after, 0.0)
 
 
+def saving_interval(dt_c: float, gain_q, rt_hr: float, terms: ContractTerms, n: int = 400, seed: int = 0):
+    """Expected saving and a 10-90 interval for one window, from the gain quantiles (q10, q50, q90).
+
+    The gain distribution is the piecewise-linear curve through (0.1, q10), (0.5, q50), (0.9, q90) with tails of half a
+    spread beyond q10 (floored at 0) and q90. The saving is monotone in the gain, so its quantiles are the saving at the
+    gain quantiles; its mean is taken over the curve so the hinge in the tariff does not bias it upward.
+    """
+    q10, q50, q90 = (float(x) for x in gain_q)
+    u = (np.arange(n) + 0.5) / n
+    lo_tail = max(q10 - 0.5 * (q50 - q10), 0.0)
+    hi_tail = q90 + 0.5 * (q90 - q50)
+    g = np.interp(u, [0.0, 0.1, 0.5, 0.9, 1.0], [lo_tail, q10, q50, q90, hi_tail])
+    s = np.array([saving_from_gain(dt_c, x, rt_hr, terms) for x in np.unique(np.round(g, 3))])
+    # saving is cheap but not free: evaluate on a grid and interpolate
+    grid = np.unique(np.round(g, 3))
+    sav = np.interp(g, grid, s)
+    return (float(sav.mean()), saving_from_gain(dt_c, q10, rt_hr, terms), saving_from_gain(dt_c, q90, rt_hr, terms))
+
+
 def monthly_table(h: pd.DataFrame, terms: ContractTerms) -> pd.DataFrame:
     """Calendar-month penalty table from a canonical hourly frame."""
     d = h.copy()

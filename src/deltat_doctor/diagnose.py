@@ -12,7 +12,7 @@ from . import CAUSES, CAUSE_LABELS, CP_KJ_KG_K
 from .features import FEATURE_NAMES, augment, extract, to_vector
 from .io import DataError, canonicalise
 from .models import Diagnoser
-from .penalty import ContractTerms, KW_PER_RT, monthly_table, saving_from_gain, window_penalty
+from .penalty import saving_interval, ContractTerms, KW_PER_RT, monthly_table, saving_from_gain, window_penalty
 
 WINDOW_DAYS = 30
 MIN_WINDOW_DAYS = 14
@@ -65,6 +65,10 @@ class CauseFinding:
     expected_dt_gain_c: float
     expected_saving_aed_per_year: float
     checks: list
+    saving_low_aed_per_year: float | None = None     # 10th percentile
+    saving_high_aed_per_year: float | None = None    # 90th percentile
+    dt_gain_low_c: float | None = None
+    dt_gain_high_c: float | None = None
 
 
 @dataclass
@@ -230,8 +234,16 @@ def diagnose_frame(df: pd.DataFrame, terms: ContractTerms | None = None,
     for k, c in enumerate(CAUSES):
         p = float(np.average(pred.prob[:, k], weights=days))
         gain = float(np.average(pred.gain[:, k], weights=days))
-        sav = sum(saving_from_gain(dts[i], pred.gain[i, k], rt_hr[i], terms) for i in range(len(wins))) * scale
-        findings.append(CauseFinding(c, CAUSE_LABELS[c], p, gain, float(sav), CHECKS[c]))
+        if pred.gain_q is not None:
+            parts = [saving_interval(dts[i], pred.gain_q[i, k], rt_hr[i], terms) for i in range(len(wins))]
+            sav = sum(x[0] for x in parts) * scale
+            lo, hi = sum(x[1] for x in parts) * scale, sum(x[2] for x in parts) * scale   # windows move together: a wide, safe interval
+            g_lo = float(np.average(pred.gain_q[:, k, 0], weights=days))
+            g_hi = float(np.average(pred.gain_q[:, k, -1], weights=days))
+            findings.append(CauseFinding(c, CAUSE_LABELS[c], p, gain, float(sav), CHECKS[c], float(lo), float(hi), g_lo, g_hi))
+        else:
+            sav = sum(saving_from_gain(dts[i], pred.gain[i, k], rt_hr[i], terms) for i in range(len(wins))) * scale
+            findings.append(CauseFinding(c, CAUSE_LABELS[c], p, gain, float(sav), CHECKS[c]))
     findings.sort(key=lambda f: (f.expected_saving_aed_per_year, f.probability), reverse=True)
 
     mt = monthly_table(h, terms)
@@ -242,6 +254,11 @@ def diagnose_frame(df: pd.DataFrame, terms: ContractTerms | None = None,
     has_oat = bool(h["t_outdoor_c"].notna().mean() > 0.5)
     if not has_oat:
         notes.append("No outdoor temperature supplied; diagnosis is less certain (add t_outdoor_c).")
+    if len(findings) > 1 and findings[0].saving_low_aed_per_year is not None:
+        a, b = findings[0], findings[1]
+        if b.saving_high_aed_per_year > a.saving_low_aed_per_year and b.expected_saving_aed_per_year > 0.5 * a.expected_saving_aed_per_year:
+            notes.append(f"The order of the top two fixes is uncertain: the ranges for '{a.label.split(' (')[0]}' and "
+                         f"'{b.label.split(' (')[0]}' overlap. Check both.")
     top2 = {f.cause for f in findings[:2] if f.probability > 0.4}
     if {"passing_valves", "constant_flow"} <= top2:
         notes.append(AMBIGUITY_NOTE)

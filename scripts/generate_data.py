@@ -19,18 +19,20 @@ STRESS = {
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default="results/data")
-    ap.add_argument("--buildings", type=int, default=400)
+    ap.add_argument("--buildings", type=int, default=500)
     ap.add_argument("--per", type=int, default=10)
     ap.add_argument("--stress-buildings", type=int, default=80)
     ap.add_argument("--stress-per", type=int, default=6)
     ap.add_argument("--jobs", type=int, default=2)
+    ap.add_argument("--sim", default="A", choices=["A", "B"], help="B = structurally different hydraulic simulator (no stress sets)")
+    ap.add_argument("--seed", type=int, default=11)
     a = ap.parse_args()
     os.makedirs(a.out, exist_ok=True)
     t = time.time()
-    ds = generate(a.buildings, a.per, seed=11, n_jobs=a.jobs)
+    ds = generate(a.buildings, a.per, seed=a.seed, n_jobs=a.jobs, sim=a.sim)
     ds.save(os.path.join(a.out, "main.npz"))
     print(f"main {len(ds.X)} samples in {time.time()-t:.0f}s", flush=True)
-    for i, (name, kw) in enumerate(STRESS.items()):
+    for i, (name, kw) in enumerate(STRESS.items() if a.sim == "A" else []):
         t = time.time()
         d = generate(a.stress_buildings, a.stress_per, seed=1000 + i, n_jobs=a.jobs, **kw)
         d.save(os.path.join(a.out, f"stress_{name}.npz"))

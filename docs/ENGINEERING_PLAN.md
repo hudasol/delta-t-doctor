@@ -16,7 +16,7 @@ usability or maintainability.
 | L4 | **Scope: variable-flow building loops behind an ETS.** Constant-flow systems, plant-side loops and chiller plants are out of scope | S2 | LBNL false alarm (p_any 1.00 fault-free) |
 | L5 | **Multi-fault degradation.** Exact-match falls from 0.86 (one cause) to 0.38 (two) and 0.05 (three) | S2 | `results/error_analysis.json` |
 | L6 | **Weak faults are missed.** Recall at p>=0.5 for true gains of 0.2-0.4 C: passing valves 0.29, overflow 0.29, fouling 0.52 | S2 | same |
-| L7 | **Overflow is barely identifiable.** Recall plateaus at 0.77 even for gains above 1.6 C. It looks like passing and constant-flow valves in meter data | S2 | AUROC 0.953; same file |
+| L7 | **Overflow is barely identifiable.** Recall plateaus at 0.77 even for gains above 1.6 C. It looks like passing and constant-flow valves in meter data | S2 | AUROC 0.92 at v1.1 (0.953 at v1.0); same file |
 | L8 | **Building-type gap.** Held-out type: hotel 0.930, residential 0.939, mall 0.958, office 0.965; in-sample slices hotel 0.946 vs office 0.983 | S2 | `results/metrics.md` section C |
 | L9 | **No time dimension.** 30-day windows are scored independently. No onset, trend or season-aware view | S2 | by design |
 | L10 | **Savings are point estimates with no uncertainty, and per-cause gains overlap** | S2 | `penalty.py`, portfolio note |
@@ -25,7 +25,7 @@ usability or maintainability.
 | L13 | **No explanation.** The tool says what, not why. Engineers cannot check the claim against the data | S2 | report and UI |
 | L14 | **Service hardening.** No auth, rate limiting, request logging or metrics. Heavy compute runs inside an async handler and blocks the event loop | S2 | `api.py` |
 | L15 | **No governance.** No model registry metadata, data lineage, audit trail in outputs, or drift monitoring | S2 | `models.py`, reports |
-| L16 | **Evaluation lacks statistics.** No confidence intervals, no significance tests, no learning curves, no feature ablation | S2 | `scripts/evaluate.py` |
+| L16 | **Evaluation lacked statistics.** Bootstrap intervals, seed replication and ablation added in v1.1; no learning curves or significance tests yet | S2 | `scripts/evaluate.py` |
 | L17 | **Synthetic Dubai weather, no humidity.** Latent (dehumidification) load is a main driver of Gulf cooling demand and is not modelled | S2 | `sim/weather.py` |
 | L18 | **UI.** English only, no right-to-left layout, no time view, no uncertainty display, limited accessibility checking | S3 | `web/index.html` |
 
@@ -33,8 +33,8 @@ usability or maintainability.
 
 **Root cause A: the label is defined by the model.** Everything the classifier knows comes from one simulator written by one person. A
 classifier trained on it learns the simulator's fingerprints (L1, L3, L4, L8, L17). Widening the design delta-T range in v0.2 is the
-visible example of a regression from this: macro AUROC fell from 0.974 to 0.967 because low-design buildings have less delta-T
-headroom, so a fault moves the signature less (false alarms 7% at design 5-7 C against 1% at 9-11 C).
+visible example of a regression from this: macro AUROC fell from 0.974 to 0.967 (the two runs also differ in dataset size, so the comparison is indicative only) because low-design buildings have less delta-T
+headroom, so a fault moves the signature less (false alarms 13% at design 5-7 C against 3% at 9-11 C, v1.1 data).
 *Tackle:* a structurally different second simulator, a cross-simulator experiment (train on one, test on the other), domain randomisation,
 and a labelled-data path for the pilot.
 

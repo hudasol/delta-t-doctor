@@ -5,8 +5,8 @@
 ![The diagnosis screen for a simulated building with fouled coils](docs/img/ui_fouled.png)
 
 > **Status: a research prototype validated in simulation.** Trained and tested on a physics simulator.
-> It has **not** been validated on real UAE building data, and one prediction in the external check failed
-> (see [Results](#results) and [Limitations](docs/LIMITATIONS.md)). Treat its output as a ranked inspection list.
+> It has **not** been validated on real UAE building data, one prediction in the external check failed, and a cross-simulator
+> test showed it generalises poorly to a differently built simulator (see [Results](#results) and [Limitations](docs/LIMITATIONS.md)). Treat its output as a ranked inspection list.
 
 Product plan, market research and roadmap: [plan.md](plan.md). Draft pilot protocol: [docs/PILOT.md](docs/PILOT.md).
 
@@ -51,25 +51,35 @@ simulate again, and the delta-T difference is that cause's gain. Details: [docs/
 ## Results
 
 <!--results:start-->
-All simulated, 5000 samples across 500 buildings, 5-fold CV grouped by building. Intervals resample whole buildings.
+All simulated, 6500 samples across 650 buildings, 5-fold CV grouped by building. Intervals resample whole buildings.
 
 | model | macro AUROC (95% CI) | any-fault AUROC | macro F1 | fix #1 gain captured* |
 |---|---|---|---|---|
-| **delta-t-doctor (blind)** | 0.967 [0.963, 0.969] | 0.995 | 0.833 | 0.970 |
-| delta-t-doctor (informed, design delta-T given) | 0.979 [0.976, 0.981] | 0.998 | 0.873 | 0.975 |
-| logistic regression | 0.922 [0.916, 0.927] | 0.985 | 0.690 | 0.910 |
-| hand-written expert rules | 0.601 [0.593, 0.609] | 0.675 | 0.362 | 0.410 |
-| class prior | 0.478 [0.468, 0.486] | 0.480 | 0.000 | 0.530 |
+| **delta-t-doctor (blind)** | 0.966 [0.963, 0.969] | 0.990 | 0.818 | 0.970 |
+| delta-t-doctor (informed, design delta-T given) | 0.971 [0.968, 0.974] | 0.994 | 0.841 | 0.969 |
+| logistic regression | 0.915 [0.908, 0.920] | 0.967 | 0.642 | 0.906 |
+| hand-written expert rules | 0.581 [0.572, 0.589] | 0.656 | 0.324 | 0.379 |
+| class prior | 0.478 [0.468, 0.487] | 0.483 | 0.000 | 0.543 |
 <!--results:end-->
 
 \*Share of the achievable delta-T gain recovered by fixing the tool's top-ranked cause, without access to the true fault list.
 
 Under stress (3x sensor noise, 2-hour data, +/-3 C climate, no outdoor temperature, energy-only meter,
-21-day window, half and 1.5x fault severity) macro AUROC ranges from 0.90 (3x sensor noise) to 0.98 (fresh buildings, no shift).
-Noise and missing outdoor temperature cost the most. Leaving out a whole building type costs 0.01 to 0.04 (hotel held out: 0.930).
-Holding out a season as well as the test buildings gives 0.941 (June-August) and 0.960 (December-February).
-A feature ablation shows delta-T shape and flow shape each carry most of the signal; delta-T alone scores 0.68 ([results/ablation.json](results/ablation.json)).
-Those are still simulator results.
+21-day window, half and 1.5x fault severity) macro AUROC ranges from 0.91 (3x sensor noise, no outdoor temperature) to 0.98 (fresh
+buildings, no shift). Holding out a whole building type costs 0.00 to 0.03 (hotel held out: 0.934). Holding out a season as well as
+the test buildings gives 0.952 (June-August) and 0.957 (December-February). Regenerating the data and retraining under 4 different
+seeds (smaller 2,000-window sets) gives 0.959 +/- 0.003. A feature ablation shows delta-T shape (18 features) and flow shape each carry most of the signal; the
+single average delta-T feature scores 0.64 ([results/ablation.json](results/ablation.json)).
+
+**Those numbers are all inside one simulator, and they are the optimistic ones.** I wrote a second, structurally different simulator
+(valves and pressure, a humidity-driven wet coil, a plate-exchanger ETS; [docs/CROSS_SIMULATOR.md](docs/CROSS_SIMULATOR.md)) and wrote
+predictions before running it. A model trained on the first and tested on the second scores **0.68** macro AUROC and flags 88% of
+healthy buildings as faulty; the reverse direction scores 0.77. One prediction failed (any-fault AUROC fell to 0.70, I expected 0.80).
+The shipped model is trained on both simulators, which closes the gap for those two worlds and proves nothing about a real building.
+Expect the unseen-world numbers until the pilot shows otherwise.
+
+Savings carry ranges: each cause has 10th/50th/90th percentile gains (conformal-widened; 82% to 85% coverage of the true gain on
+held-out simulated buildings, nominal 80%), and the report shows an AED range next to the point estimate.
 
 **External check (LBNL chiller-plant benchmark, CC-BY).** I wrote predictions before running it and again before
 the follow-up ([docs/EXTERNAL_CHECK.md](docs/EXTERNAL_CHECK.md)). Outcome:
@@ -91,7 +101,7 @@ pip install -e ".[api,dev]"
 deltat-doctor serve                         # web app on http://127.0.0.1:8000
 deltat-doctor simulate --causes fouling --out demo_ets.csv
 deltat-doctor diagnose demo_ets.csv --rate 0.40
-pytest                                      # 59 tests
+pytest                                      # 82 tests
 deltat-doctor portfolio fleet.csv --out ranked.csv
 deltat-doctor diagnose demo_ets.csv --design-dt 9.0 --html report.html
 docker build -t delta-t-doctor . && docker run -p 8000:8000 delta-t-doctor

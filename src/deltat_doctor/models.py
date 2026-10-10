@@ -29,11 +29,21 @@ def _gbr(seed):
                                          random_state=seed)
 
 
+QUANTILES = (0.1, 0.5, 0.9)
+ACTIVE_Q90_C = 0.2   # intervals whose upper end reaches the 'present' threshold are 'active' and get their own margin
+
+
+def _gbq(seed, q):
+    return HistGradientBoostingRegressor(loss="quantile", quantile=q, max_iter=200, learning_rate=0.06, max_leaf_nodes=15,
+                                         min_samples_leaf=20, l2_regularization=1.0, random_state=seed)
+
+
 @dataclass
 class Prediction:
     prob: np.ndarray      # (n, 4) probability each cause is materially present
     gain: np.ndarray      # (n, 4) expected delta-T recovery if that cause is fixed, deg C
     p_any: np.ndarray     # (n,) probability any cause present
+    gain_q: np.ndarray | None = None   # (n, 4, 3) 10th, 50th, 90th percentile of the recoverable delta-T (includes the chance it is 0)
 
 
 class Diagnoser:
@@ -44,6 +54,8 @@ class Diagnoser:
         self.clf = {}
         self.reg = {}
         self.any_clf = None
+        self.regq = {}
+        self.q_margin = {c: {"active": 0.0, "inactive": 0.0} for c in CAUSES}
         self.feature_names = list(FEATURE_NAMES)
         self.trained_on = 0
 
@@ -67,6 +79,7 @@ class Diagnoser:
                 else:
                     self.clf[c] = None
                 self.reg[c] = _gbr(self.seed).fit(X, G[:, k])
+                self.regq[c] = [_gbq(self.seed, q).fit(X, G[:, k]) for q in QUANTILES]
             y_any = (Y.sum(axis=1) > 0).astype(int)
             self.any_clf = self._calibrated(X, y_any, groups)
         self.trained_on = len(X)
@@ -75,6 +88,42 @@ class Diagnoser:
         self.feat_lo = np.percentile(X, 1, axis=0)
         self.feat_hi = np.percentile(X, 99, axis=0)
         self.ood_threshold = int(np.percentile(self.ood_count(X), 95))
+        return self
+
+    def _quantiles(self, X: np.ndarray, margin: bool = True) -> np.ndarray:
+        out = np.zeros((len(X), len(CAUSES), len(QUANTILES)))
+        for k, c in enumerate(CAUSES):
+            qs = np.column_stack([r.predict(X) for r in self.regq[c]])
+            qs = np.sort(np.clip(qs, 0.0, None), axis=1)
+            if margin:
+                mg = self.q_margin.get(c, {"active": 0.0, "inactive": 0.0})
+                act = qs[:, -1] >= ACTIVE_Q90_C
+                m = np.where(act, mg["active"], mg["inactive"])
+                qs[:, 0] = np.clip(qs[:, 0] - m, 0.0, None)
+                qs[:, -1] = qs[:, -1] + m
+            out[:, k, :] = qs
+        return out
+
+    def fit_quantile_margin(self, X: np.ndarray, G: np.ndarray, groups: np.ndarray, target: float = 0.8, n_splits: int = 5):
+        """Conformalised quantile regression: widen the 10-90 interval by the amount that makes out-of-fold
+        coverage reach `target`, separately per cause. Out-of-fold means whole buildings are held out."""
+        oof = np.zeros((len(X), len(CAUSES), len(QUANTILES)))
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            for tr, te in GroupKFold(n_splits).split(X, G[:, 0], groups):
+                for k, c in enumerate(CAUSES):
+                    qs = np.column_stack([_gbq(self.seed, q).fit(X[tr], G[tr, k]).predict(X[te]) for q in QUANTILES])
+                    oof[te, k, :] = np.sort(np.clip(qs, 0.0, None), axis=1)
+        for k, c in enumerate(CAUSES):
+            score = np.maximum(oof[:, k, 0] - G[:, k], G[:, k] - oof[:, k, -1])
+            act = oof[:, k, -1] >= ACTIVE_Q90_C
+            for name, sel in (("active", act), ("inactive", ~act)):
+                sc = score[sel]
+                if len(sc) < 30:
+                    self.q_margin[c][name] = 0.0
+                    continue
+                level = min(1.0, np.ceil((len(sc) + 1) * target) / len(sc))
+                self.q_margin[c][name] = float(max(np.quantile(sc, level), 0.0))
         return self
 
     def ood_count(self, X: np.ndarray) -> np.ndarray:
@@ -91,7 +140,8 @@ class Diagnoser:
                 prob[:, k] = self.clf[c].predict_proba(X)[:, 1]
             gain[:, k] = np.clip(self.reg[c].predict(X), 0.0, None)
         p_any = self.any_clf.predict_proba(X)[:, 1]
-        return Prediction(prob, gain, p_any)
+        gq = self._quantiles(X) if self.regq else None
+        return Prediction(prob, gain, p_any, gq)
 
     def save(self, path: str) -> None:
         joblib.dump(self, path, compress=3)
