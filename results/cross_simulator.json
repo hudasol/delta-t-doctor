@@ -1,0 +1,262 @@
+{
+  "n_A": 5000,
+  "n_B": 1500,
+  "buildings_A": 500,
+  "buildings_B": 150,
+  "prevalence_A": {
+    "fouling": 0.24,
+    "passing_valves": 0.203,
+    "constant_flow": 0.2518,
+    "overflow": 0.1814
+  },
+  "prevalence_B": {
+    "fouling": 0.194,
+    "passing_valves": 0.05466666666666667,
+    "constant_flow": 0.25533333333333336,
+    "overflow": 0.202
+  },
+  "within_A": {
+    "n": 5000,
+    "macro_auroc": 0.9663550660984493,
+    "any_fault_auroc": 0.9898948058776597,
+    "macro_f1": 0.8178079451390805,
+    "per_cause_auroc": {
+      "fouling": 0.9876700657894737,
+      "passing_valves": 0.9636199788616178,
+      "constant_flow": 0.9954872896964896,
+      "overflow": 0.9186429300462161
+    },
+    "per_cause_brier": {
+      "fouling": 0.03248768153933581,
+      "passing_valves": 0.057200462180350346,
+      "constant_flow": 0.019336071746785047,
+      "overflow": 0.07903890363904018
+    },
+    "prevalence": {
+      "fouling": 0.24,
+      "passing_valves": 0.203,
+      "constant_flow": 0.2518,
+      "overflow": 0.1814
+    },
+    "top1_fix_gain_captured_blind": 0.9704182777757061
+  },
+  "within_B": {
+    "n": 1500,
+    "macro_auroc": 0.8835710604271116,
+    "any_fault_auroc": 0.9347133757961783,
+    "macro_f1": 0.6223616020070365,
+    "per_cause_auroc": {
+      "fouling": 0.6752150963990007,
+      "passing_valves": 0.9650271767174653,
+      "constant_flow": 0.9698944159921087,
+      "overflow": 0.9241475525998715
+    },
+    "per_cause_brier": {
+      "fouling": 0.1417134896705529,
+      "passing_valves": 0.017762185346916256,
+      "constant_flow": 0.05865999370200605,
+      "overflow": 0.08740523873612087
+    },
+    "prevalence": {
+      "fouling": 0.194,
+      "passing_valves": 0.05466666666666667,
+      "constant_flow": 0.25533333333333336,
+      "overflow": 0.202
+    },
+    "top1_fix_gain_captured_blind": 0.8521842315537468
+  },
+  "A_to_B": {
+    "model": {
+      "n": 1500,
+      "macro_auroc": 0.6831666591794772,
+      "any_fault_auroc": 0.7039220913925086,
+      "macro_f1": 0.3921802362796045,
+      "per_cause_auroc": {
+        "fouling": 0.632931990597438,
+        "passing_valves": 0.7403763459355328,
+        "constant_flow": 0.8576778063210155,
+        "overflow": 0.5016804938639228
+      },
+      "per_cause_brier": {
+        "fouling": 0.2391201149294471,
+        "passing_valves": 0.05127187926246153,
+        "constant_flow": 0.13552722711195145,
+        "overflow": 0.32958353134241514
+      },
+      "prevalence": {
+        "fouling": 0.194,
+        "passing_valves": 0.05466666666666667,
+        "constant_flow": 0.25533333333333336,
+        "overflow": 0.202
+      },
+      "top1_fix_gain_captured_blind": 0.6199838099574669
+    },
+    "ece": 0.15901187692314908,
+    "ci": {
+      "macro_auroc": {
+        "ci95": [
+          0.6549402700706398,
+          0.7098063808848486
+        ],
+        "mean": 0.6817992185591302
+      },
+      "any_fault_auroc": {
+        "ci95": [
+          0.6731112529974838,
+          0.7371095427151606
+        ],
+        "mean": 0.7046070761328126
+      }
+    },
+    "ood_fire_rate": 0.36466666666666664,
+    "healthy_false_alarm_rate": 0.8773885350318471,
+    "healthy_n": 628,
+    "logistic": {
+      "n": 1500,
+      "macro_auroc": 0.657678653990539,
+      "any_fault_auroc": 0.7417040407877051,
+      "macro_f1": 0.39231789946042844,
+      "per_cause_auroc": {
+        "fouling": 0.5616325440070037,
+        "passing_valves": 0.7077642849771234,
+        "constant_flow": 0.7619977045938511,
+        "overflow": 0.5993200823841782
+      },
+      "per_cause_brier": {
+        "fouling": 0.32802401662983044,
+        "passing_valves": 0.051108258544610104,
+        "constant_flow": 0.1653831636262626,
+        "overflow": 0.1991581142330067
+      },
+      "prevalence": {
+        "fouling": 0.194,
+        "passing_valves": 0.05466666666666667,
+        "constant_flow": 0.25533333333333336,
+        "overflow": 0.202
+      },
+      "top1_fix_gain_captured_blind": 0.4082444635322825
+    }
+  },
+  "B_to_A": {
+    "model": {
+      "n": 5000,
+      "macro_auroc": 0.7697934978075052,
+      "any_fault_auroc": 0.8696199614754422,
+      "macro_f1": 0.35712300054020957,
+      "per_cause_auroc": {
+        "fouling": 0.889360855263158,
+        "passing_valves": 0.6784477504929198,
+        "constant_flow": 0.9661072727577692,
+        "overflow": 0.5452581127161737
+      },
+      "per_cause_brier": {
+        "fouling": 0.1092359182524456,
+        "passing_valves": 0.18098327575578718,
+        "constant_flow": 0.06635776503391028,
+        "overflow": 0.18268959918546784
+      },
+      "prevalence": {
+        "fouling": 0.24,
+        "passing_valves": 0.203,
+        "constant_flow": 0.2518,
+        "overflow": 0.1814
+      },
+      "top1_fix_gain_captured_blind": 0.700218859966949
+    },
+    "ece": 0.07213584181639066,
+    "ci": {
+      "macro_auroc": {
+        "ci95": [
+          0.7600470486268548,
+          0.7784562362831859
+        ],
+        "mean": 0.7700286041124285
+      },
+      "any_fault_auroc": {
+        "ci95": [
+          0.8562128886570524,
+          0.8793817672380305
+        ],
+        "mean": 0.8694030957398519
+      }
+    },
+    "ood_fire_rate": 0.072,
+    "healthy_false_alarm_rate": 0.24862216778934476,
+    "healthy_n": 1633,
+    "logistic": {
+      "n": 5000,
+      "macro_auroc": 0.7487914335493808,
+      "any_fault_auroc": 0.8341070557849491,
+      "macro_f1": 0.3601496960895558,
+      "per_cause_auroc": {
+        "fouling": 0.7092991228070176,
+        "passing_valves": 0.7164487517847098,
+        "constant_flow": 0.9831290092249992,
+        "overflow": 0.5862888503807964
+      },
+      "per_cause_brier": {
+        "fouling": 0.16929293529848183,
+        "passing_valves": 0.14396796664293307,
+        "constant_flow": 0.04961565370914045,
+        "overflow": 0.1640009430616779
+      },
+      "prevalence": {
+        "fouling": 0.24,
+        "passing_valves": 0.203,
+        "constant_flow": 0.2518,
+        "overflow": 0.1814
+      },
+      "top1_fix_gain_captured_blind": 0.7043000747962561
+    }
+  },
+  "pooled_on_A": {
+    "n": 5000,
+    "macro_auroc": 0.9645954852273333,
+    "any_fault_auroc": 0.9892862553609645,
+    "macro_f1": 0.8101113349721004,
+    "per_cause_auroc": {
+      "fouling": 0.9864539473684211,
+      "passing_valves": 0.9622192829020156,
+      "constant_flow": 0.9949762405680437,
+      "overflow": 0.9147324700708527
+    },
+    "per_cause_brier": {
+      "fouling": 0.03642159238123521,
+      "passing_valves": 0.05800425965523318,
+      "constant_flow": 0.020725942372978635,
+      "overflow": 0.0824485236815434
+    },
+    "prevalence": {
+      "fouling": 0.24,
+      "passing_valves": 0.203,
+      "constant_flow": 0.2518,
+      "overflow": 0.1814
+    },
+    "top1_fix_gain_captured_blind": 0.9644113052608508
+  },
+  "pooled_on_B": {
+    "n": 1500,
+    "macro_auroc": 0.8767380951529479,
+    "any_fault_auroc": 0.9313442266113482,
+    "macro_f1": 0.5958443633649746,
+    "per_cause_auroc": {
+      "fouling": 0.6969492835804775,
+      "passing_valves": 0.9577126836148473,
+      "constant_flow": 0.9651633548459483,
+      "overflow": 0.8871270585705188
+    },
+    "per_cause_brier": {
+      "fouling": 0.14262387411477212,
+      "passing_valves": 0.02319234915923033,
+      "constant_flow": 0.06362169106485568,
+      "overflow": 0.0977300175494524
+    },
+    "prevalence": {
+      "fouling": 0.194,
+      "passing_valves": 0.05466666666666667,
+      "constant_flow": 0.25533333333333336,
+      "overflow": 0.202
+    },
+    "top1_fix_gain_captured_blind": 0.8491543967828918
+  }
+}

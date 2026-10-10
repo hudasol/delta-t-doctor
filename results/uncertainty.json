@@ -1,0 +1,55 @@
+{
+  "nominal": 0.8,
+  "per_cause": {
+    "fouling": {
+      "coverage_active_calibrated": 0.8363201911589009,
+      "coverage_active_raw": 0.8363201911589009,
+      "n_active": 1674,
+      "coverage_raw": 0.9224,
+      "coverage_calibrated": 0.9224,
+      "coverage_calibrated_when_present": 0.7275,
+      "median_width_c": 0.05571709712682241
+    },
+    "passing_valves": {
+      "coverage_active_calibrated": 0.8405645582854155,
+      "coverage_active_raw": 0.8405645582854155,
+      "n_active": 1913,
+      "coverage_raw": 0.9142,
+      "coverage_calibrated": 0.9142,
+      "coverage_calibrated_when_present": 0.6640394088669951,
+      "median_width_c": 0.09016702557498163
+    },
+    "constant_flow": {
+      "coverage_active_calibrated": 0.8214723926380368,
+      "coverage_active_raw": 0.8214723926380368,
+      "n_active": 1630,
+      "coverage_raw": 0.9374,
+      "coverage_calibrated": 0.9374,
+      "coverage_calibrated_when_present": 0.7585385226370135,
+      "median_width_c": 1.1175446286735832e-05
+    },
+    "overflow": {
+      "coverage_active_calibrated": 0.8485485906604964,
+      "coverage_active_raw": 0.8485485906604964,
+      "n_active": 2377,
+      "coverage_raw": 0.8982,
+      "coverage_calibrated": 0.8982,
+      "coverage_calibrated_when_present": 0.5534729878721059,
+      "median_width_c": 0.18372375869697494
+    }
+  },
+  "saving": {
+    "fouling": {
+      "coverage": 0.9404
+    },
+    "passing_valves": {
+      "coverage": 0.9324
+    },
+    "constant_flow": {
+      "coverage": 0.9574
+    },
+    "overflow": {
+      "coverage": 0.9176
+    }
+  }
+}

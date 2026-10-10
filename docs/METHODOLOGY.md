@@ -28,7 +28,7 @@ Real buildings do not come with root-cause labels, so the training data are simu
 * **Faults:** fouling (extra thermal resistance), passing valves (leak flow at low delta-T through idle
   coils), constant flow (3-way valve or stuck-open actuator), overflow (extra flow at part load from excess
   differential pressure). Causes can combine (30% healthy, 40% one, 22% two, 8% three).
-* **Buildings:** office, hotel, residential and mall schedules; design delta-T drawn from 9.0-12.2 C.
+* **Buildings:** office, hotel, residential and mall schedules; design delta-T drawn from 5.0-12.2 C (simulator A) and 4.5-13 C (simulator B); the healthy part-load ceiling on coil delta-T may sit below design (from v1.1).
 * **Weather:** Dubai-like monthly means with a daily cycle and correlated noise. Synthetic, not measured.
 * **Labels by counterfactual.** For each simulated sample, each cause is removed in turn and the building is
   simulated again. The delta-T improvement is that cause's ground-truth gain. A cause is "present" if
@@ -51,3 +51,15 @@ All results are in [results/metrics.md](../results/metrics.md) and are simulator
 Simulator-only validation means the numbers measure self-consistency under a physical model I chose. The
 external check ([EXTERNAL_CHECK.md](EXTERNAL_CHECK.md)) was designed in advance, and it showed a real
 weakness, documented there. See [LIMITATIONS.md](LIMITATIONS.md).
+
+
+## Simulator B and the gain intervals (v1.1)
+
+A second generator, `sim/hydraulic.py`, models valves, differential pressure, a wet coil and a plate-exchanger ETS so that fault
+signatures emerge instead of being injected. It exists to test generalisation, not to replace simulator A. Both are written by the same
+author. See [CROSS_SIMULATOR.md](CROSS_SIMULATOR.md).
+
+Each cause also has quantile gain models (10th, 50th, 90th percentile). Because the saving is a monotone function of the gain, its
+10th and 90th percentiles are the saving at those gain percentiles; its mean is taken over the gain distribution so that the
+tariff's hinge (no saving above the contract minimum) does not bias it upward. The 10-90 range is widened by a conformal margin,
+computed separately for "active" intervals (upper end of 0.2 C or more) and the rest, using out-of-fold predictions from held-out buildings.

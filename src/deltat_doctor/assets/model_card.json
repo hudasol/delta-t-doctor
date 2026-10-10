@@ -6,29 +6,54 @@
     "constant_flow",
     "overflow"
   ],
-  "trained_on_samples": 5000,
-  "n_buildings": 500,
+  "trained_on_samples": 6500,
+  "n_buildings": 650,
   "prevalence": {
-    "fouling": 0.2522,
-    "passing_valves": 0.2132,
-    "constant_flow": 0.262,
-    "overflow": 0.2026
+    "fouling": 0.22938461538461538,
+    "passing_valves": 0.16876923076923078,
+    "constant_flow": 0.25261538461538463,
+    "overflow": 0.18615384615384614
   },
   "design_dt_training_range_c": [
-    5.0,
-    12.2
+    4.7,
+    12.8
   ],
+  "gain_interval_margin_c": {
+    "fouling": {
+      "active": 0.0,
+      "inactive": 0.0
+    },
+    "passing_valves": {
+      "active": 0.0,
+      "inactive": 0.0
+    },
+    "constant_flow": {
+      "active": 0.0,
+      "inactive": 0.0
+    },
+    "overflow": {
+      "active": 0.0,
+      "inactive": 0.0
+    }
+  },
   "modes": [
     "blind",
     "informed"
   ],
-  "data": "simulated (deltat_doctor.sim); no field data",
-  "train_seconds": 21.3,
-  "git_commit_at_training": "fe118aa",
+  "data": "simulated (deltat_doctor.sim, simulators A and B); no field data",
+  "training_sets": {
+    "data/main.npz": 5000,
+    "data_b/main.npz": 1500
+  },
+  "train_seconds": 70.7,
+  "git_commit_at_training": "2634e34",
   "sklearn_version": "1.9.1",
-  "training_data_sha256": "ba9cc0872fe3f36f7643e17892175ae3d8edba6131de3c7e59f2e514a3682f32",
+  "training_data_sha256": {
+    "results/data/main.npz": "680dca730791e99037cdeec583ca32e279e5732bc2a9d367ae557aa6ce2b82ce",
+    "results/data_b/main.npz": "e93a8f17aeb765065f13b6bad4192cc63124de558347e057570d894be467ffdb"
+  },
   "sha256": {
-    "diagnoser.joblib": "05b1666a0cbf514c353ecf14c4d1c714887bb7fb8c20ddb8b73199923d86d0fe",
-    "diagnoser_informed.joblib": "8a78fcd1ef15d93cff67f84eb774ff30535c34d69995364194e245fecbb9506c"
+    "diagnoser.joblib": "6119ef0687025098e3e2333398861627ba90047a99b68a30f8c5d2295533907f",
+    "diagnoser_informed.joblib": "52f8323582449562f3fc15a6bf3656941270353f09eb59797e5723273e563973"
   }
 }

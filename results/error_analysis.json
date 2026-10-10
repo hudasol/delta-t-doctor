@@ -1,151 +1,151 @@
 {
   "ece": {
-    "fouling": 0.006651889424206372,
-    "passing_valves": 0.008501390990171106,
-    "constant_flow": 0.0032057582932014813,
-    "overflow": 0.016653976725052137
+    "fouling": 0.005591688084390093,
+    "passing_valves": 0.007959557433711696,
+    "constant_flow": 0.0054300310094430055,
+    "overflow": 0.01239602517051384
   },
   "by_design_band": {
     "0": {
       "n": 1570,
-      "macro_auroc": 0.9685273189370178,
+      "macro_auroc": 0.961623982930918,
       "per_cause_auroc": {
-        "fouling": 0.9951169554971973,
-        "passing_valves": 0.9667304779233172,
-        "constant_flow": 0.9978582652157197,
-        "overflow": 0.9144035771118371
+        "fouling": 0.9884563965446318,
+        "passing_valves": 0.9748924572915382,
+        "constant_flow": 0.9935003413387481,
+        "overflow": 0.8896467365487538
       },
-      "error_rate_at_0.5": 0.05493630573248408
+      "error_rate_at_0.5": 0.056847133757961785
     },
     "1": {
       "n": 1260,
-      "macro_auroc": 0.9709573292705723,
+      "macro_auroc": 0.9718120495308471,
       "per_cause_auroc": {
-        "fouling": 0.9898943795304556,
-        "passing_valves": 0.9660631263654176,
-        "constant_flow": 0.9979818315576516,
-        "overflow": 0.9298899796287646
+        "fouling": 0.9878279604890751,
+        "passing_valves": 0.9711535568127106,
+        "constant_flow": 0.9967586007015814,
+        "overflow": 0.9315080801200213
       },
       "error_rate_at_0.5": 0.06011904761904762
     },
     "2": {
       "n": 1310,
-      "macro_auroc": 0.967293287312455,
+      "macro_auroc": 0.9659319222060148,
       "per_cause_auroc": {
-        "fouling": 0.9925044642857143,
-        "passing_valves": 0.946719581467854,
-        "constant_flow": 0.9966962033271387,
-        "overflow": 0.9332529001691131
+        "fouling": 0.9931371127543376,
+        "passing_valves": 0.9473374979913225,
+        "constant_flow": 0.9970844858661608,
+        "overflow": 0.9261685922122379
       },
-      "error_rate_at_0.5": 0.06660305343511451
+      "error_rate_at_0.5": 0.06545801526717557
     },
     "3": {
       "n": 860,
-      "macro_auroc": 0.9650377054494753,
+      "macro_auroc": 0.9642410292768145,
       "per_cause_auroc": {
-        "fouling": 0.9872916666666667,
-        "passing_valves": 0.9401567777706966,
-        "constant_flow": 0.9948926793897968,
-        "overflow": 0.9378096979707409
+        "fouling": 0.985267745758483,
+        "passing_valves": 0.9526577237175063,
+        "constant_flow": 0.994295174549025,
+        "overflow": 0.924743473082244
       },
-      "error_rate_at_0.5": 0.07994186046511628
+      "error_rate_at_0.5": 0.07906976744186046
     }
   },
   "by_building_type": {
     "hotel": {
       "n": 1290,
-      "macro_auroc": 0.9456209244601121,
+      "macro_auroc": 0.948611381668405,
       "per_cause_auroc": {
-        "fouling": 0.9921657337116275,
-        "passing_valves": 0.8929074453946608,
-        "constant_flow": 0.9974652575518016,
-        "overflow": 0.8999452611823585
+        "fouling": 0.9903440449445616,
+        "passing_valves": 0.9121933823895947,
+        "constant_flow": 0.9929510343021734,
+        "overflow": 0.8989570650372902
       },
-      "error_rate_at_0.5": 0.08410852713178295
+      "error_rate_at_0.5": 0.08468992248062016
     },
     "mall": {
       "n": 1450,
-      "macro_auroc": 0.9742748381535644,
+      "macro_auroc": 0.9710100943824946,
       "per_cause_auroc": {
-        "fouling": 0.9885663526626979,
-        "passing_valves": 0.9831702203025732,
-        "constant_flow": 0.9953316370536485,
-        "overflow": 0.930031142595338
+        "fouling": 0.9854276794037821,
+        "passing_valves": 0.9877584751825863,
+        "constant_flow": 0.996132806491309,
+        "overflow": 0.9147214164523014
       },
-      "error_rate_at_0.5": 0.05086206896551724
+      "error_rate_at_0.5": 0.049482758620689654
     },
     "office": {
       "n": 1210,
-      "macro_auroc": 0.9832831870764891,
+      "macro_auroc": 0.9823567598278973,
       "per_cause_auroc": {
-        "fouling": 0.9924355053379776,
-        "passing_valves": 0.9912878016495265,
-        "constant_flow": 0.9996716166141253,
-        "overflow": 0.9497378247043269
+        "fouling": 0.9897930402930403,
+        "passing_valves": 0.9916461330916118,
+        "constant_flow": 0.9994918699186991,
+        "overflow": 0.9484959960082379
       },
-      "error_rate_at_0.5": 0.039462809917355374
+      "error_rate_at_0.5": 0.03801652892561983
     },
     "residential": {
       "n": 1050,
-      "macro_auroc": 0.9521688461889155,
+      "macro_auroc": 0.9476416533192318,
       "per_cause_auroc": {
-        "fouling": 0.9898818612481403,
-        "passing_valves": 0.91313611032014,
-        "constant_flow": 0.9955249920171781,
-        "overflow": 0.9101324211702035
+        "fouling": 0.9844144554373474,
+        "passing_valves": 0.9165405569007264,
+        "constant_flow": 0.990250924931376,
+        "overflow": 0.8993606760074773
       },
-      "error_rate_at_0.5": 0.0838095238095238
+      "error_rate_at_0.5": 0.08738095238095238
     }
   },
   "by_n_ahu": {
     "0": {
       "n": 800,
-      "macro_auroc": 0.968474934647896,
+      "macro_auroc": 0.9641896919733969,
       "per_cause_auroc": {
-        "fouling": 0.9884307969414352,
-        "passing_valves": 0.9612384877063915,
-        "constant_flow": 0.9911166666666666,
-        "overflow": 0.9331137872770907
+        "fouling": 0.9854857142857143,
+        "passing_valves": 0.9657557675496939,
+        "constant_flow": 0.9896921397192205,
+        "overflow": 0.9158251463389586
       },
-      "error_rate_at_0.5": 0.060625
+      "error_rate_at_0.5": 0.065625
     },
     "1": {
       "n": 1250,
-      "macro_auroc": 0.971408275274658,
+      "macro_auroc": 0.972711563816377,
       "per_cause_auroc": {
-        "fouling": 0.9911139006342494,
-        "passing_valves": 0.9628495842781557,
-        "constant_flow": 0.9975569505013963,
-        "overflow": 0.9341126656848306
+        "fouling": 0.9896139749114446,
+        "passing_valves": 0.969894897512484,
+        "constant_flow": 0.9969591493268055,
+        "overflow": 0.9343782335147737
       },
-      "error_rate_at_0.5": 0.0608
+      "error_rate_at_0.5": 0.0554
     },
     "2": {
       "n": 1410,
-      "macro_auroc": 0.9681332985199992,
+      "macro_auroc": 0.9658305504293323,
       "per_cause_auroc": {
-        "fouling": 0.9938956390594132,
-        "passing_valves": 0.9569551366342315,
-        "constant_flow": 0.9980628586819151,
-        "overflow": 0.9236195597044365
+        "fouling": 0.9932635055847712,
+        "passing_valves": 0.9636242316402459,
+        "constant_flow": 0.9956701645471732,
+        "overflow": 0.9107642999451391
       },
-      "error_rate_at_0.5": 0.06400709219858156
+      "error_rate_at_0.5": 0.06329787234042553
     },
     "3": {
       "n": 1540,
-      "macro_auroc": 0.963299848372388,
+      "macro_auroc": 0.9627461755075024,
       "per_cause_auroc": {
-        "fouling": 0.9912939779840276,
-        "passing_valves": 0.9505084347263857,
-        "constant_flow": 0.9988288050646268,
-        "overflow": 0.9125681757145117
+        "fouling": 0.9834594769963735,
+        "passing_valves": 0.9585022841797814,
+        "constant_flow": 0.9970972767334574,
+        "overflow": 0.9119256641203968
       },
-      "error_rate_at_0.5": 0.06704545454545455
+      "error_rate_at_0.5": 0.06996753246753247
     }
   },
   "by_n_causes": {
     "0": {
-      "n": 1490,
+      "n": 1633,
       "macro_auroc": NaN,
       "per_cause_auroc": {
         "fouling": NaN,
@@ -153,197 +153,197 @@
         "constant_flow": NaN,
         "overflow": NaN
       },
-      "error_rate_at_0.5": 0.007046979865771812
+      "error_rate_at_0.5": 0.01301285976729945
     },
     "1": {
-      "n": 2499,
-      "macro_auroc": 0.9846121028326653,
+      "n": 2462,
+      "macro_auroc": 0.9823940742896751,
       "per_cause_auroc": {
-        "fouling": 0.9982110610943589,
-        "passing_valves": 0.9731306577363821,
-        "constant_flow": 0.9977221971866337,
-        "overflow": 0.9693844953132864
+        "fouling": 0.9950267957957878,
+        "passing_valves": 0.9790656518563414,
+        "constant_flow": 0.9968052780779993,
+        "overflow": 0.9586785714285715
       },
-      "error_rate_at_0.5": 0.04231692677070829
+      "error_rate_at_0.5": 0.04579610073111292
     },
     "2": {
-      "n": 882,
-      "macro_auroc": 0.9205954330424861,
+      "n": 796,
+      "macro_auroc": 0.9176880566344854,
       "per_cause_auroc": {
-        "fouling": 0.9840840367211973,
-        "passing_valves": 0.8760521712286478,
-        "constant_flow": 0.9895902679537322,
-        "overflow": 0.8326552562663674
+        "fouling": 0.9804288712104344,
+        "passing_valves": 0.874436926264981,
+        "constant_flow": 0.9874543037554006,
+        "overflow": 0.8284321253071254
       },
-      "error_rate_at_0.5": 0.17431972789115646
+      "error_rate_at_0.5": 0.1815326633165829
     },
     "3": {
-      "n": 129,
-      "macro_auroc": 0.8815962356569791,
+      "n": 109,
+      "macro_auroc": 0.8786158181886086,
       "per_cause_auroc": {
-        "fouling": 0.9690067214339059,
-        "passing_valves": 0.6804093567251461,
-        "constant_flow": 0.9942307692307693,
-        "overflow": 0.8827380952380952
+        "fouling": 0.956140350877193,
+        "passing_valves": 0.7418439716312057,
+        "constant_flow": 0.9938983050847457,
+        "overflow": 0.8225806451612903
       },
-      "error_rate_at_0.5": 0.37209302325581395
+      "error_rate_at_0.5": 0.36926605504587157
     }
   },
   "by_season": {
     "0": {
       "n": 1283,
-      "macro_auroc": 0.9747168784430356,
+      "macro_auroc": 0.9706212333046952,
       "per_cause_auroc": {
-        "fouling": 0.9912197437114381,
-        "passing_valves": 0.9746114047745438,
-        "constant_flow": 0.9975587886501025,
-        "overflow": 0.9354775766360575
+        "fouling": 0.9858666110750794,
+        "passing_valves": 0.9796390232393536,
+        "constant_flow": 0.9983889162062882,
+        "overflow": 0.9185903826980596
       },
-      "error_rate_at_0.5": 0.05319563522992985
+      "error_rate_at_0.5": 0.052805923616523774
     },
     "1": {
       "n": 1200,
-      "macro_auroc": 0.9706587427630881,
+      "macro_auroc": 0.9669425653343202,
       "per_cause_auroc": {
-        "fouling": 0.994519753533889,
-        "passing_valves": 0.9670727354042976,
-        "constant_flow": 0.998626525144197,
-        "overflow": 0.9224159569699687
+        "fouling": 0.990495803772917,
+        "passing_valves": 0.9690778947368421,
+        "constant_flow": 0.9933828609044449,
+        "overflow": 0.9148137019230769
       },
-      "error_rate_at_0.5": 0.057916666666666665
+      "error_rate_at_0.5": 0.06229166666666667
     },
     "2": {
       "n": 1242,
-      "macro_auroc": 0.9573931193803067,
+      "macro_auroc": 0.9610118784382657,
       "per_cause_auroc": {
-        "fouling": 0.9864628690625818,
-        "passing_valves": 0.9195109780439121,
-        "constant_flow": 0.9944158780859129,
-        "overflow": 0.9291827523288197
+        "fouling": 0.9845178761297183,
+        "passing_valves": 0.9322749057060797,
+        "constant_flow": 0.9906328269163507,
+        "overflow": 0.9366219050009145
       },
-      "error_rate_at_0.5": 0.07367149758454106
+      "error_rate_at_0.5": 0.0714573268921095
     },
     "3": {
       "n": 1275,
-      "macro_auroc": 0.9653512570470765,
+      "macro_auroc": 0.9642895838892709,
       "per_cause_auroc": {
-        "fouling": 0.9935288679720985,
-        "passing_valves": 0.95670779111036,
-        "constant_flow": 0.9970574600149381,
-        "overflow": 0.9141109090909091
+        "fouling": 0.9901394861798041,
+        "passing_valves": 0.9633059964603743,
+        "constant_flow": 0.9964154485182521,
+        "overflow": 0.9072974043986528
       },
-      "error_rate_at_0.5": 0.0696078431372549
+      "error_rate_at_0.5": 0.06862745098039216
     }
   },
   "recall_by_true_gain": {
     "fouling": {
       "0.2-0.4": {
-        "n": 115,
-        "recall_at_0.5": 0.5217391304347826
+        "n": 188,
+        "recall_at_0.5": 0.5691489361702128
       },
       "0.4-0.8": {
-        "n": 228,
-        "recall_at_0.5": 0.7850877192982456
+        "n": 293,
+        "recall_at_0.5": 0.8737201365187713
       },
       "0.8-1.6": {
-        "n": 368,
-        "recall_at_0.5": 0.9320652173913043
+        "n": 396,
+        "recall_at_0.5": 0.9747474747474747
       },
       "1.6-inf": {
-        "n": 550,
-        "recall_at_0.5": 0.9927272727272727
+        "n": 323,
+        "recall_at_0.5": 0.9969040247678018
       }
     },
     "passing_valves": {
       "0.2-0.4": {
-        "n": 201,
-        "recall_at_0.5": 0.2885572139303483
+        "n": 239,
+        "recall_at_0.5": 0.41422594142259417
       },
       "0.4-0.8": {
-        "n": 318,
-        "recall_at_0.5": 0.5974842767295597
+        "n": 331,
+        "recall_at_0.5": 0.7190332326283988
       },
       "0.8-1.6": {
-        "n": 347,
-        "recall_at_0.5": 0.8789625360230547
+        "n": 302,
+        "recall_at_0.5": 0.8841059602649006
       },
       "1.6-inf": {
-        "n": 200,
-        "recall_at_0.5": 0.975
+        "n": 143,
+        "recall_at_0.5": 0.986013986013986
       }
     },
     "constant_flow": {
       "0.2-0.4": {
-        "n": 36,
-        "recall_at_0.5": 0.5555555555555556
+        "n": 65,
+        "recall_at_0.5": 0.6923076923076923
       },
       "0.4-0.8": {
-        "n": 98,
-        "recall_at_0.5": 0.8469387755102041
+        "n": 146,
+        "recall_at_0.5": 0.863013698630137
       },
       "0.8-1.6": {
-        "n": 250,
-        "recall_at_0.5": 0.932
+        "n": 269,
+        "recall_at_0.5": 0.929368029739777
       },
       "1.6-inf": {
-        "n": 926,
-        "recall_at_0.5": 0.9967602591792657
+        "n": 779,
+        "recall_at_0.5": 1.0
       }
     },
     "overflow": {
       "0.2-0.4": {
-        "n": 226,
-        "recall_at_0.5": 0.28761061946902655
+        "n": 262,
+        "recall_at_0.5": 0.2824427480916031
       },
       "0.4-0.8": {
-        "n": 358,
-        "recall_at_0.5": 0.5810055865921788
+        "n": 322,
+        "recall_at_0.5": 0.453416149068323
       },
       "0.8-1.6": {
-        "n": 324,
-        "recall_at_0.5": 0.7222222222222222
+        "n": 267,
+        "recall_at_0.5": 0.6704119850187266
       },
       "1.6-inf": {
-        "n": 105,
-        "recall_at_0.5": 0.7714285714285715
+        "n": 56,
+        "recall_at_0.5": 0.8035714285714286
       }
     }
   },
   "borderline_labels": {
     "fouling": {
-      "borderline_share_of_errors": 0.23880597014925373,
-      "n_errors": 201,
-      "n_borderline": 117
+      "borderline_share_of_errors": 0.3557692307692308,
+      "n_errors": 208,
+      "n_borderline": 183
     },
     "passing_valves": {
-      "borderline_share_of_errors": 0.21749408983451538,
-      "n_errors": 423,
-      "n_borderline": 216
+      "borderline_share_of_errors": 0.2670157068062827,
+      "n_errors": 382,
+      "n_borderline": 261
     },
     "constant_flow": {
-      "borderline_share_of_errors": 0.18556701030927836,
-      "n_errors": 97,
-      "n_borderline": 35
+      "borderline_share_of_errors": 0.15873015873015872,
+      "n_errors": 126,
+      "n_borderline": 52
     },
     "overflow": {
-      "borderline_share_of_errors": 0.1542649727767695,
-      "n_errors": 551,
-      "n_borderline": 230
+      "borderline_share_of_errors": 0.22182468694096602,
+      "n_errors": 559,
+      "n_borderline": 326
     }
   },
   "valve_confusion": {
-    "passing_true_called_constant": 0.022026431718061675,
-    "constant_true_called_passing": 0.04513888888888889
+    "passing_true_called_constant": 0.026047565118912798,
+    "constant_true_called_passing": 0.038154392191659274
   },
   "healthy": {
-    "n": 1490,
-    "mean_p_any": 0.06194628077478019,
-    "false_alarm_rate_at_0.5": 0.0348993288590604
+    "n": 1633,
+    "mean_p_any": 0.09108086798472548,
+    "false_alarm_rate_at_0.5": 0.07593386405388855
   },
   "exact_match_by_n_causes": {
-    "0": 0.9738255033557047,
-    "1": 0.8575430172068828,
-    "2": 0.37755102040816324,
-    "3": 0.046511627906976744
+    "0": 0.9503980404164115,
+    "1": 0.8480909829406986,
+    "2": 0.3592964824120603,
+    "3": 0.03669724770642202
   }
 }

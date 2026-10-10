@@ -328,7 +328,7 @@ def canonicalise(df: pd.DataFrame, min_hours: int = MIN_HOURS) -> pd.DataFrame:
     n_range += int(too_hot.sum())
     dt_raw = dt_raw.mask(too_hot)
     med_dt = float(dt_raw[out["flow_kgs"] > 1e-6].median()) if (out["flow_kgs"] > 1e-6).any() else float("nan")
-    if np.isfinite(med_dt) and med_dt < 0:
+    if np.isfinite(med_dt) and med_dt < -0.75:   # sensor offsets alone can push a very low delta-T slightly negative
         raise DataError("The return temperature is colder than the supply for most rows, so supply and return look "
                         "swapped. Check the column mapping.")
     if np.isfinite(med_dt) and med_dt > 25:

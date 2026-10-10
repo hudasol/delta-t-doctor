@@ -10,6 +10,7 @@ from joblib import Parallel, delayed
 from .. import CAUSES
 from ..features import extract, to_vector
 from ..io import canonicalise
+from .hydraulic import make_sample_b, sample_building_b
 from .scenarios import Sample, make_sample, sample_building
 
 
@@ -72,12 +73,13 @@ def _one(seed: int, building_id: int, kwargs: dict, new_building_per_sample: boo
     rng = np.random.default_rng(seed)
     kwargs = dict(kwargs)
     post = kwargs.pop("post", "none")
-    s = make_sample(rng, building_id, **kwargs)
+    maker = make_sample_b if kwargs.pop("sim", "A") == "B" else make_sample
+    s = maker(rng, building_id, **kwargs)
     return sample_to_row(s, post)
 
 
 def generate(n_buildings: int, samples_per_building: int, seed: int = 0,
-             n_jobs: int = 2, **kwargs) -> Dataset:
+             n_jobs: int = 2, sim: str = "A", **kwargs) -> Dataset:
     """n_buildings distinct buildings, each observed in several (month, fault) draws.
 
     Grouping by building lets evaluation hold out whole buildings.
@@ -87,11 +89,12 @@ def generate(n_buildings: int, samples_per_building: int, seed: int = 0,
     for b in range(n_buildings):
         bseed = int(master.integers(0, 2**31 - 1))
         brng = np.random.default_rng(bseed)
-        cfg = sample_building(brng, b)
+        cfg = sample_building_b(brng, b) if sim == "B" else sample_building(brng, b)
         for k in range(samples_per_building):
             sseed = int(master.integers(0, 2**31 - 1))
             kw = dict(kwargs)
             kw["cfg"] = cfg
+            kw["sim"] = sim
             jobs.append((sseed, b, kw))
     rows = Parallel(n_jobs=n_jobs)(delayed(_one)(s, b, kw, False) for s, b, kw in jobs)
     X = np.vstack([r[0] for r in rows])

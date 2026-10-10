@@ -7,6 +7,9 @@ Read this before trusting any number from the tool.
    how often it is right on a real building. The only outside check (LBNL, see
    [EXTERNAL_CHECK.md](EXTERNAL_CHECK.md)) has no building-side labels, and one of its three
    predictions failed.
+1b. **Across structurally different simulators it fails.** Trained on one simulator and tested on a second one with different
+   hydraulics, macro AUROC is 0.68 (A to B) and 0.77 (B to A), and the A-trained model flags 88% of B's healthy windows. The shipped
+   model is trained on both, which helps on those two worlds and says nothing about a third. See [CROSS_SIMULATOR.md](CROSS_SIMULATOR.md).
 2. **Only variable-flow building loops of the kind simulated.** On the LBNL plant (flow barely follows load, and
    delta-T is about 2.6 C with no fault) the model reports a fault with near-certainty, even when told the design
    delta-T. The tool now counts how many of its 42 measurements fall outside the training range and says "not

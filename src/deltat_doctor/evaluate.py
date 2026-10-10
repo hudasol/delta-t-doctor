@@ -81,6 +81,10 @@ def cross_validate(ds: Dataset, n_splits: int = 5, models: dict | None = None):
             m = mk().fit(ds.X[tr], ds.Y[tr], ds.G[tr], **({"groups": groups[tr]} if isinstance(mk(), Diagnoser) else {}))
             p = m.predict(ds.X[te])
             preds[name].prob[te], preds[name].gain[te], preds[name].p_any[te] = p.prob, p.gain, p.p_any
+            if p.gain_q is not None:
+                if preds[name].gain_q is None:
+                    preds[name].gain_q = np.zeros((len(ds.Y),) + p.gain_q.shape[1:])
+                preds[name].gain_q[te] = p.gain_q
     return {name: (metrics(ds, p), p) for name, p in preds.items()}
 
 

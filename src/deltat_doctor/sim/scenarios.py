@@ -23,7 +23,9 @@ def sample_building(rng: np.random.Generator, building_id: int = 0) -> BuildingC
     q_d = q_total * share
     dt_d_b = rng.uniform(*DESIGN_DT_RANGE_C)
     dt_d = np.clip(dt_d_b + rng.normal(0, 0.5, n), DESIGN_DT_RANGE_C[0] - 0.5, 13.5)
-    dt_cap = np.clip(dt_d + rng.uniform(0.2, 1.5, n), dt_d, 14.5)
+    # Healthy part-load ceiling on coil delta-T. It may sit BELOW design: real healthy buildings often run under their
+    # design delta-T (valve authority, hysteresis, flow floors). It was always above design before v1.1.
+    dt_cap = np.clip(dt_d + rng.uniform(-1.8, 1.5) + rng.normal(0, 0.3, n), 3.5, 14.5)
     return BuildingConfig(
         building_type=btype, q_design_kw=q_d, dt_design=dt_d, dt_cap=dt_cap,
         t_supply_nom=float(rng.uniform(5.0, 7.0)),

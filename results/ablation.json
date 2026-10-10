@@ -1,98 +1,98 @@
 {
   "all": {
     "n_features": 42,
-    "macro_auroc": 0.9668483029189057,
-    "any_fault_auroc": 0.9952555498193082,
-    "macro_f1": 0.8329861570598622,
+    "macro_auroc": 0.9663550660984493,
+    "any_fault_auroc": 0.9898948058776597,
+    "macro_f1": 0.8178079451390805,
     "per_cause_auroc": {
-      "fouling": 0.991004435108515,
-      "passing_valves": 0.9568898790646034,
-      "constant_flow": 0.9974704689794989,
-      "overflow": 0.9220284285230058
+      "fouling": 0.9876700657894737,
+      "passing_valves": 0.9636199788616178,
+      "constant_flow": 0.9954872896964896,
+      "overflow": 0.9186429300462161
     }
   },
   "only_dt_shape": {
     "n_features": 18,
-    "macro_auroc": 0.9549112792174332,
-    "any_fault_auroc": 0.9942705405457083,
-    "macro_f1": 0.7904680136019367,
+    "macro_auroc": 0.9533609948944373,
+    "any_fault_auroc": 0.9881549079344547,
+    "macro_f1": 0.7634135524502069,
     "per_cause_auroc": {
-      "fouling": 0.9766424546632057,
-      "passing_valves": 0.9439171517658627,
-      "constant_flow": 0.9946301123316578,
-      "overflow": 0.9044553981090072
+      "fouling": 0.970694846491228,
+      "passing_valves": 0.9525293743162475,
+      "constant_flow": 0.9922313950622081,
+      "overflow": 0.8979883637080655
     }
   },
   "without_dt_shape": {
     "n_features": 24,
-    "macro_auroc": 0.9464110879848691,
-    "any_fault_auroc": 0.9843743666226887,
-    "macro_f1": 0.78274073433849,
+    "macro_auroc": 0.9391151776995398,
+    "any_fault_auroc": 0.9710547475397446,
+    "macro_f1": 0.7631484261765865,
     "per_cause_auroc": {
-      "fouling": 0.9853183931125274,
-      "passing_valves": 0.9420556442082352,
-      "constant_flow": 0.9963301888744077,
-      "overflow": 0.8619401257443058
+      "fouling": 0.9826341008771929,
+      "passing_valves": 0.9492296852111675,
+      "constant_flow": 0.994026755024874,
+      "overflow": 0.8305701696849247
     }
   },
   "only_flow_shape": {
     "n_features": 14,
-    "macro_auroc": 0.9449036538795115,
-    "any_fault_auroc": 0.982562286085776,
-    "macro_f1": 0.7821708082914043,
+    "macro_auroc": 0.9376938829779345,
+    "any_fault_auroc": 0.9689664698850248,
+    "macro_f1": 0.7575883622269299,
     "per_cause_auroc": {
-      "fouling": 0.982813450779967,
-      "passing_valves": 0.9412024482764868,
-      "constant_flow": 0.9952543494900599,
-      "overflow": 0.8603443669715322
+      "fouling": 0.9800512061403508,
+      "passing_valves": 0.9491309158111392,
+      "constant_flow": 0.9938288747640883,
+      "overflow": 0.8277645351961601
     }
   },
   "without_flow_shape": {
     "n_features": 28,
-    "macro_auroc": 0.9595727413669368,
-    "any_fault_auroc": 0.99526185969139,
-    "macro_f1": 0.8070968057724289,
+    "macro_auroc": 0.9581707658113792,
+    "any_fault_auroc": 0.9894609453703146,
+    "macro_f1": 0.7822086751033326,
     "per_cause_auroc": {
-      "fouling": 0.9810195553268706,
-      "passing_valves": 0.9496367598203377,
-      "constant_flow": 0.9955545211940667,
-      "overflow": 0.9120801291264724
+      "fouling": 0.9762433114035087,
+      "passing_valves": 0.9564494934823323,
+      "constant_flow": 0.9941289860823508,
+      "overflow": 0.905861272277325
     }
   },
   "only_load_dist": {
     "n_features": 10,
-    "macro_auroc": 0.7455127867270006,
-    "any_fault_auroc": 0.8210452398707432,
-    "macro_f1": 0.32250027257979996,
+    "macro_auroc": 0.7502953920218933,
+    "any_fault_auroc": 0.8124243972376244,
+    "macro_f1": 0.3324873317577713,
     "per_cause_auroc": {
-      "fouling": 0.6671972918074887,
-      "passing_valves": 0.8293234952704617,
-      "constant_flow": 0.8736794306874367,
-      "overflow": 0.6118509291426157
+      "fouling": 0.6794587719298245,
+      "passing_valves": 0.835209004209134,
+      "constant_flow": 0.8734377385258643,
+      "overflow": 0.6130760534227502
     }
   },
   "without_load_dist": {
     "n_features": 32,
-    "macro_auroc": 0.9665847628151178,
-    "any_fault_auroc": 0.9950032505401634,
-    "macro_f1": 0.8329632664585713,
+    "macro_auroc": 0.9661008754670726,
+    "any_fault_auroc": 0.9902977477992787,
+    "macro_f1": 0.8196172251835451,
     "per_cause_auroc": {
-      "fouling": 0.990403359237851,
-      "passing_valves": 0.9570513138454289,
-      "constant_flow": 0.9972477709509918,
-      "overflow": 0.9216366072262
+      "fouling": 0.9873519736842106,
+      "passing_valves": 0.9642317557836961,
+      "constant_flow": 0.9951102131480392,
+      "overflow": 0.9177095592523444
     }
   },
   "dt_period_only": {
     "n_features": 1,
-    "macro_auroc": 0.6777897088431897,
-    "any_fault_auroc": 0.7666583491080136,
-    "macro_f1": 0.16093843395098623,
+    "macro_auroc": 0.6444250464703625,
+    "any_fault_auroc": 0.6549463098758873,
+    "macro_f1": 0.10370917524463083,
     "per_cause_auroc": {
-      "fouling": 0.6560156686947851,
-      "passing_valves": 0.6053302330860703,
-      "constant_flow": 0.8040831419764578,
-      "overflow": 0.6457297916154452
+      "fouling": 0.5899672149122808,
+      "passing_valves": 0.585252702560711,
+      "constant_flow": 0.7563925197015064,
+      "overflow": 0.6460877487069514
     }
   }
 }

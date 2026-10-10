@@ -1,38 +1,58 @@
-"""Train the final Diagnoser on the full simulated pool and save it into the package."""
+"""Train the final Diagnoser (blind and informed) on the pooled simulated data and save it into the package.
+
+usage: python scripts/train.py [data1.npz,data2.npz] [out.joblib]
+Default data: simulator A main set plus simulator B main set, when both exist.
+"""
 import hashlib, json, os, subprocess, sys, time
+import numpy as np
+import pandas as pd
+import sklearn
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 from deltat_doctor import CAUSES, __version__
+from deltat_doctor.features import augment
 from deltat_doctor.models import Diagnoser
 from deltat_doctor.sim.dataset import Dataset
 
-data = sys.argv[1] if len(sys.argv) > 1 else "results/data/main.npz"
+default = "results/data/main.npz" + ("," + "results/data_b/main.npz" if os.path.exists("results/data_b/main.npz") else "")
+paths = (sys.argv[1] if len(sys.argv) > 1 else default).split(",")
 out = sys.argv[2] if len(sys.argv) > 2 else "src/deltat_doctor/assets/diagnoser.joblib"
-from deltat_doctor.features import augment
-ds = Dataset.load(data)
+
+
+def sha(p):
+    return hashlib.sha256(open(p, "rb").read()).hexdigest()
+
+
+parts = [Dataset.load(p) for p in paths]
+X = np.vstack([d.X for d in parts])
+Y = np.vstack([d.Y for d in parts])
+G = np.vstack([d.G for d in parts])
+meta = pd.concat([d.meta.assign(building_id=d.meta["building_id"] + 100000 * i, source=os.path.basename(os.path.dirname(p)))
+                  for i, (d, p) in enumerate(zip(parts, paths))], ignore_index=True)
+bid = meta["building_id"].to_numpy()
+dd = meta["design_dt"].to_numpy()
 t = time.time()
-m = Diagnoser(seed=0).fit(ds.X, ds.Y, ds.G, groups=ds.meta["building_id"].to_numpy())
+m = Diagnoser(seed=0).fit(X, Y, G, groups=bid).fit_quantile_margin(X, G, bid)
 os.makedirs(os.path.dirname(out), exist_ok=True)
 m.save(out)
-mi = Diagnoser(seed=0).fit(augment(ds.X, ds.meta["design_dt"].to_numpy()), ds.Y, ds.G, groups=ds.meta["building_id"].to_numpy())
-mi.save(os.path.join(os.path.dirname(out), "diagnoser_informed.joblib"))
-card = {
-    "version": __version__, "causes": list(CAUSES), "trained_on_samples": int(len(ds.X)),
-    "n_buildings": int(ds.meta["building_id"].nunique()),
-    "prevalence": {c: float(ds.Y[:, k].mean()) for k, c in enumerate(CAUSES)},
-    "design_dt_training_range_c": [5.0, 12.2], "modes": ["blind", "informed"],
-    "data": "simulated (deltat_doctor.sim); no field data",
-    "train_seconds": round(time.time() - t, 1),
-}
-def _sha(p):
-    return hashlib.sha256(open(p, "rb").read()).hexdigest()
-adir = os.path.dirname(out)
+Xi = augment(X, dd)
+mi = Diagnoser(seed=0).fit(Xi, Y, G, groups=bid).fit_quantile_margin(Xi, G, bid)
+informed_path = os.path.join(os.path.dirname(out), "diagnoser_informed.joblib")
+mi.save(informed_path)
 try:
-    sha_git = subprocess.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True).stdout.strip()
+    git = subprocess.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True).stdout.strip()
 except Exception:
-    sha_git = ""
-import sklearn
-card.update({"git_commit_at_training": sha_git, "sklearn_version": sklearn.__version__,
-             "training_data_sha256": _sha(data),
-             "sha256": {os.path.basename(out): _sha(out), "diagnoser_informed.joblib": _sha(os.path.join(adir, "diagnoser_informed.joblib"))}})
+    git = ""
+card = {
+    "version": __version__, "causes": list(CAUSES), "trained_on_samples": int(len(X)), "n_buildings": int(len(np.unique(bid))),
+    "prevalence": {c: float(Y[:, k].mean()) for k, c in enumerate(CAUSES)},
+    "design_dt_training_range_c": [float(np.percentile(dd, 0.5).round(1)), float(np.percentile(dd, 99.5).round(1))],
+    "gain_interval_margin_c": {c: {k: round(v, 3) for k, v in d.items()} for c, d in m.q_margin.items()},
+    "modes": ["blind", "informed"],
+    "data": "simulated (deltat_doctor.sim, simulators A and B); no field data",
+    "training_sets": {os.path.dirname(p).split(os.sep)[-1] + "/" + os.path.basename(p): int(len(d.X)) for p, d in zip(paths, parts)},
+    "train_seconds": round(time.time() - t, 1), "git_commit_at_training": git, "sklearn_version": sklearn.__version__,
+    "training_data_sha256": {p: sha(p) for p in paths},
+    "sha256": {os.path.basename(out): sha(out), "diagnoser_informed.joblib": sha(informed_path)},
+}
 json.dump(card, open(os.path.join(os.path.dirname(out), "model_card.json"), "w"), indent=2)
-print("saved", out, card)
+print("saved", out, json.dumps(card)[:600])
