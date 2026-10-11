@@ -55,6 +55,60 @@ def audit(event: str, **kw) -> None:
     log.info(json.dumps({"event": event, "request_id": _rid.get(), "version": __version__, **kw}, default=str))
 
 
+class BodyLimit:
+    """Pure ASGI middleware: counts the request body as it streams and stops at the limit, with or without Content-Length.
+
+    Starlette would otherwise spool a whole multipart body to disk before any handler could look at it.
+    """
+
+    def __init__(self, app, limit: int):
+        self.app, self.limit = app, limit
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http":
+            return await self.app(scope, receive, send)
+        seen, over, sent413 = 0, False, False
+
+        async def recv():
+            nonlocal seen, over
+            if over:
+                return {"type": "http.disconnect"}
+            msg = await receive()
+            if msg["type"] == "http.request":
+                seen += len(msg.get("body", b""))
+                if seen > self.limit:
+                    over = True
+                    return {"type": "http.disconnect"}
+            return msg
+
+        async def snd(msg):
+            # whatever the app answers after the limit was crossed (its parser sees a disconnect) is replaced by one 413
+            nonlocal sent413
+            if not over:
+                return await send(msg)
+            if not sent413 and msg["type"] == "http.response.start":
+                body = b'{"detail":"File is larger than 25 MB."}'
+                sent413 = True
+                await send({"type": "http.response.start", "status": 413,
+                            "headers": [(b"content-type", b"application/json"), (b"content-length", str(len(body)).encode()),
+                                        (b"connection", b"close")]})
+                await send({"type": "http.response.body", "body": body})
+
+        try:
+            await self.app(scope, recv, snd)
+        except Exception:
+            if not over:
+                raise
+        if over and not sent413:
+            body = b'{"detail":"File is larger than 25 MB."}'
+            await send({"type": "http.response.start", "status": 413,
+                        "headers": [(b"content-type", b"application/json"), (b"content-length", str(len(body)).encode())]})
+            await send({"type": "http.response.body", "body": body})
+
+
+app.add_middleware(BodyLimit, limit=MAX_BYTES + 1024 * 1024)
+
+
 @app.middleware("http")
 async def security_headers(request, call_next):
     rid = uuid.uuid4().hex[:12]

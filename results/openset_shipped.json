@@ -1,0 +1,16 @@
+{
+  "fit_A": {
+    "auroc_window": 0.9004449999999999,
+    "windows_flagged_in_world": 0.055,
+    "windows_flagged_other": 0.6393333333333333,
+    "buildings_flagged_in_world": 0.0,
+    "buildings_flagged_other": 0.62
+  },
+  "fit_B": {
+    "auroc_window": 0.8754723333333333,
+    "windows_flagged_in_world": 0.06,
+    "windows_flagged_other": 0.287,
+    "buildings_flagged_in_world": 0.0,
+    "buildings_flagged_other": 0.166
+  }
+}

@@ -24,7 +24,7 @@ if __name__ == "__main__":
     ap.add_argument("--stress-buildings", type=int, default=80)
     ap.add_argument("--stress-per", type=int, default=6)
     ap.add_argument("--jobs", type=int, default=2)
-    ap.add_argument("--sim", default="A", choices=["A", "B"], help="B = structurally different hydraulic simulator (no stress sets)")
+    ap.add_argument("--sim", default="A", choices=["A", "B", "CA", "CB"], help="B = structurally different hydraulic simulator (no stress sets)")
     ap.add_argument("--seed", type=int, default=11)
     a = ap.parse_args()
     os.makedirs(a.out, exist_ok=True)

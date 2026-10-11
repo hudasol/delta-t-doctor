@@ -29,3 +29,42 @@ A ranked inspection list and an AED business case per building, plus a written a
 ## Data handling
 Files are analysed in memory by the web app and are not stored. A pilot would run the tool inside the partner's own
 environment (Docker) so that no data leaves it.
+
+## Real-data validation: where it stands (v1.1.1)
+
+No real UAE data has been used. Everything in this repository is simulator-validated. This section records what was looked for, what
+the partner needs to supply, and how the result will be scored.
+
+### Search for public real data (no ETS-level labelled set found)
+
+| Candidate | What it is | Why it does not settle the question |
+|---|---|---|
+| LBNL building-side plant data (already used, `docs/EXTERNAL_CHECK.md`) | Real plant, no building-side fault labels | Gave a failed prediction; useful for the guard, not for accuracy |
+| Vanderbilt ESB chiller dataset (reported) | Real campus chiller data | Plant side, not building ETS; I have not verified labels |
+| LBNL FDD datasets | Mostly simulated or lab AHU/RTU faults | Different equipment and fault classes |
+| Recent labelled AHU datasets (Scientific Data, 2025) | Air-handler faults | Existence and labels not confirmed by me; AHU, not ETS |
+
+So a pilot is the only route to field evidence. The data are held by operators and owners, which is the point of proposing one.
+
+### Data request pack (per building)
+
+1. 12 months of hourly (or 2-hourly) ETS data: timestamp, flow, supply and return temperature (or energy), outdoor temperature if available.
+2. Contract terms: minimum delta-T, surcharge rule, rate.
+3. Design delta-T of the secondary loop, if known.
+4. Optional, and the reason overflow is capped today: loop differential pressure or pump speed, and valve positions where the BMS records them.
+5. An inspection record made **without seeing the tool's output**: dominant cause(s) from fouling, passing valves, constant-flow valves, excess pressure, other, none; and whether the inspector ruled out the others.
+
+### Scoring
+
+`python scripts/evaluate_real.py manifest.csv` (template: `examples/real_manifest_template.csv`). It reports abstention rate, top-1 and top-2
+agreement on single-cause buildings, per-cause AUROC, Brier score and reliability bins, healthy false alarms, the number of buildings where
+the tool was confidently wrong (p > 0.8 on a cause the inspection ruled out), and 95% building-bootstrap intervals. With fewer than 10 buildings
+it prints a warning and no intervals, and the numbers must not be quoted. The success criteria above are checked by the same script.
+
+### What the pilot also tells us
+
+* **Fleet calibration.** The few-shot curve (`docs/TRANSFER_V2.md`) says about 20 to 40 labelled buildings from the target fleet are what move
+  cross-physics performance from 0.69 to 0.80 to 0.84 in simulation. A 10 to 20 building pilot is therefore a calibration set as well as a test; keep a
+  held-out half for scoring.
+* **Guard behaviour.** Even unlabelled real files show how often the tool abstains. Report that rate before accuracy.
+* **Overflow.** If DP or pump speed is supplied, check whether it separates overflow from the valve faults; this is the only path to lifting its "possible" cap.

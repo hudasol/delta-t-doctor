@@ -16,20 +16,20 @@ from .features import FEATURE_NAMES, LF_EDGES
 WEAK_SIGNATURE = 1.5
 
 _FIXED = {
-    "dt_period": ("Delta-T over the period", "فرق الحرارة خلال الفترة", "°C"),
-    "dt_p10": ("Delta-T on the worst 10% of hours", "فرق الحرارة في أسوأ 10% من الساعات", "°C"),
-    "dt_p90": ("Delta-T on the best 10% of hours", "فرق الحرارة في أفضل 10% من الساعات", "°C"),
-    "dt_std_loaded": ("Spread of delta-T while loaded", "تشتّت فرق الحرارة أثناء الحمل", "°C"),
+    "dt_period": ("Delta-T over the period", "فرق درجة الحرارة خلال الفترة", "°C"),
+    "dt_p10": ("Delta-T on the worst 10% of hours", "فرق درجة الحرارة في أسوأ 10% من الساعات", "°C"),
+    "dt_p90": ("Delta-T on the best 10% of hours", "فرق درجة الحرارة في أفضل 10% من الساعات", "°C"),
+    "dt_std_loaded": ("Spread of delta-T while loaded", "تشتّت فرق درجة الحرارة أثناء الحمل", "°C"),
     "zero_flow_frac": ("Share of hours with no flow", "حصة الساعات بلا تدفق", ""),
     "flow_lowload_share": ("Share of water used at under 10% load", "حصة الماء المستهلك عند حمل أقل من 10%", ""),
-    "dt_lowload": ("Delta-T at low load", "فرق الحرارة عند الحمل المنخفض", "°C"),
+    "dt_lowload": ("Delta-T at low load", "فرق درجة الحرارة عند الحمل المنخفض", "°C"),
     "flow_intercept_ratio": ("Flow that remains at zero load", "التدفق المتبقي عند حمل صفر", ""),
     "flow_load_corr": ("How closely flow follows load", "مدى تتبع التدفق للحمل", ""),
     "flow_cv_loaded": ("Flow variation while loaded", "تغيّر التدفق أثناء الحمل", ""),
-    "dt_night_minus_day": ("Delta-T at night minus day", "فرق الحرارة ليلاً ناقص نهاراً", "°C"),
-    "dt_weekend_minus_week": ("Delta-T at weekends minus weekdays", "فرق الحرارة في العطلة ناقص أيام العمل", "°C"),
-    "dt_hi_minus_mid": ("Delta-T at high load minus mid load", "فرق الحرارة عند الحمل العالي ناقص المتوسط", "°C"),
-    "dt_vs_oat_slope": ("How delta-T changes with outdoor temperature", "تغيّر فرق الحرارة مع الحرارة الخارجية", "°C per °C"),
+    "dt_night_minus_day": ("Delta-T at night minus day", "فرق درجة الحرارة ليلاً ناقص نهاراً", "°C"),
+    "dt_weekend_minus_week": ("Delta-T at weekends minus weekdays", "فرق درجة الحرارة في العطلة ناقص أيام العمل", "°C"),
+    "dt_hi_minus_mid": ("Delta-T at high load minus mid load", "فرق درجة الحرارة عند الحمل العالي ناقص المتوسط", "°C"),
+    "dt_vs_oat_slope": ("How delta-T changes with outdoor temperature", "تغيّر فرق درجة الحرارة مع الحرارة الخارجية", "°C per °C"),
     "duty_factor": ("Share of hours running", "حصة ساعات التشغيل", ""),
     "flow_p10_over_p95": ("Lowest flows relative to peak flow", "أدنى تدفق نسبةً إلى التدفق الأقصى", ""),
     "flow_p50_over_p95": ("Typical flow relative to peak flow", "التدفق المعتاد نسبةً إلى الأقصى", ""),
@@ -50,7 +50,7 @@ def describe(name: str):
     b = _band(i)
     b_ar = b.replace("over ", "أكثر من ")
     if kind == "dt_":
-        return f"Delta-T at {b} load", f"فرق الحرارة عند حمل {b_ar}", "°C"
+        return f"Delta-T at {b} load", f"فرق درجة الحرارة عند حمل {b_ar}", "°C"
     if kind == "flow_":
         return f"Flow at {b} load, relative to peak", f"التدفق عند حمل {b_ar} نسبةً إلى الأقصى", ""
     return f"Share of hours at {b} load", f"حصة الساعات عند حمل {b_ar}", ""

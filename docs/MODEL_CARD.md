@@ -43,7 +43,7 @@ ranking has safety consequences, or buildings the tool marks "not reliable".
   signatures by construction. Whether real valves separate so cleanly is unknown, so the report still warns when both rank highly.
 * Unmodelled causes (controls, sensors, set-points, pump staging) are forced into the nearest of the four.
 
-**Open-set guard (v1.1).** Two guards run and the ranking is withheld if either fires. The first is the per-feature range check described below. The second is a Mahalanobis-distance score over all 42 features (median across windows against the 95th percentile of training scores) decides abstention; when it trips the ranking is withheld. Leave-one-world-out estimate in `results/openset.json`: 71% of B flagged when fit on A, 25% of A when fit on B.
+**Open-set guard (v1.1).** Two guards run and the ranking is withheld if either fires. The first is the per-feature range check described below. The second averages the training-rank of a Mahalanobis distance and a mean 10-nearest-neighbour distance over all 42 features (median across windows against the 95th percentile of training scores) and decides abstention; when it trips the ranking is withheld. Leave-one-world-out estimate in `results/openset.json`: 64% of B's windows flagged when fit on A, 29% of A's when fit on B (v1.1.0 Mahalanobis-only: 71% and 25%).
 
 **Out-of-range guard.** The model stores the 1st-99th percentile range of each feature. A window with more out-of-range
 features than 95% of training windows (4 of 42) is reported as "not reliable". On the simulator-A stress sets (fresh buildings,

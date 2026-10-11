@@ -2,6 +2,17 @@
 
 Versions are git tags. All accuracy figures are simulator results unless stated.
 
+## v1.1.1
+
+Round 7: turning the six open limitations into measured results. Predictions were written before each experiment; failures are recorded.
+
+- **Chunked uploads capped in the app.** `BodyLimit` ASGI middleware counts bytes as they arrive and answers 413 past 26 MB even without Content-Length (`tests/test_upload_cap.py`). A proxy limit is still advised (`docs/DEPLOYMENT.md`).
+- **Cross-simulator transfer.** New domain-randomised worlds (`sim/worlds.py`, `--sim CA|CB`) and four fixes compared (`scripts/transfer_v2.py`, `docs/TRANSFER_V2.md`): none closes the gap (best 0.715 / 0.784). Few-shot adaptation curve (`scripts/transfer_fewshot.py`): about 20 surveyed buildings lift the weak direction to 0.80, 40 to 0.84; healthy false alarms 82% to 24%. Two of five predictions failed.
+- **Open-set guard.** Six detectors compared in both directions (`scripts/openset_v2.py`); shipped guard is now Mahalanobis plus nearest-neighbour (windows flagged: A to B 64%, B to A 29%, was 71% and 25%; in-world 5.5% to 6%). Asymmetry is partly structural and is documented, not removed. Models retrained.
+- **Overflow.** `docs/OVERFLOW.md`: found at about 0.91 AUROC within one physics, chance across physics. The earlier "barely shows up" wording is corrected; the "possible" cap stays. Two of five predictions failed. DP ceiling test is circular and labelled so.
+- **Arabic.** Terminology normalised to UAE operator usage; `docs/i18n_glossary.csv` and `docs/i18n_review_sheet.csv` (178 strings) prepared for the native-speaker review, which has not happened.
+- **Real data.** `scripts/evaluate_real.py` scores the tool against site-inspection labels (agreement, AUROC, calibration, false alarms, confidently-wrong count, bootstrap intervals, refuses under 10 buildings). `docs/PILOT.md` now has a data-request pack and the dataset search record. No real-data accuracy is claimed.
+
 ## v1.1.0
 
 Rounds 1 to 6 of the multi-reviewer upgrade (Google, Edge, TII, ADEO, ATRC, final Google check). Figures quoted in the older entries below were
