@@ -1,0 +1,76 @@
+{
+  "fit_A": {
+    "box_count": {
+      "auroc_other_vs_in": 0.869785,
+      "flag_in_world": 0.058,
+      "flag_other_world": 0.36866666666666664
+    },
+    "mahalanobis": {
+      "auroc_other_vs_in": 0.9187613333333334,
+      "flag_in_world": 0.066,
+      "flag_other_world": 0.7073333333333334
+    },
+    "pca_mahalanobis": {
+      "auroc_other_vs_in": 0.6630393333333333,
+      "flag_in_world": 0.054,
+      "flag_other_world": 0.2613333333333333
+    },
+    "knn": {
+      "auroc_other_vs_in": 0.8640913333333333,
+      "flag_in_world": 0.084,
+      "flag_other_world": 0.6146666666666667
+    },
+    "isolation_forest": {
+      "auroc_other_vs_in": 0.7548286666666667,
+      "flag_in_world": 0.058,
+      "flag_other_world": 0.266
+    },
+    "one_class_svm": {
+      "auroc_other_vs_in": 0.7565973333333333,
+      "flag_in_world": 0.058,
+      "flag_other_world": 0.404
+    },
+    "maha+knn": {
+      "auroc_other_vs_in": 0.9039303333333333,
+      "flag_in_world": 0.071,
+      "flag_other_world": 0.6813333333333333
+    }
+  },
+  "fit_B": {
+    "box_count": {
+      "auroc_other_vs_in": 0.7540653333333333,
+      "flag_in_world": 0.043333333333333335,
+      "flag_other_world": 0.0748
+    },
+    "mahalanobis": {
+      "auroc_other_vs_in": 0.8586906666666667,
+      "flag_in_world": 0.07,
+      "flag_other_world": 0.2494
+    },
+    "pca_mahalanobis": {
+      "auroc_other_vs_in": 0.8054979999999999,
+      "flag_in_world": 0.06333333333333334,
+      "flag_other_world": 0.0754
+    },
+    "knn": {
+      "auroc_other_vs_in": 0.8814740000000001,
+      "flag_in_world": 0.07333333333333333,
+      "flag_other_world": 0.4002
+    },
+    "isolation_forest": {
+      "auroc_other_vs_in": 0.7884559999999999,
+      "flag_in_world": 0.06666666666666667,
+      "flag_other_world": 0.0866
+    },
+    "one_class_svm": {
+      "auroc_other_vs_in": 0.7840739999999999,
+      "flag_in_world": 0.08,
+      "flag_other_world": 0.3778
+    },
+    "maha+knn": {
+      "auroc_other_vs_in": 0.8753326666666665,
+      "flag_in_world": 0.07,
+      "flag_other_world": 0.3316
+    }
+  }
+}

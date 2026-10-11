@@ -1,30 +1,30 @@
 {
   "fit_A": {
-    "in_world_heldout_flag_rate": 0.066,
-    "other_world_flag_rate": 0.7073333333333334,
+    "in_world_heldout_flag_rate": 0.055,
+    "other_world_flag_rate": 0.6393333333333333,
     "box_in_world": 0.058,
     "box_other_world": 0.36866666666666664,
     "n_train": 4000,
     "n_other": 1500
   },
   "fit_B": {
-    "in_world_heldout_flag_rate": 0.07,
-    "other_world_flag_rate": 0.2494,
+    "in_world_heldout_flag_rate": 0.06,
+    "other_world_flag_rate": 0.287,
     "box_in_world": 0.043333333333333335,
     "box_other_world": 0.0748,
     "n_train": 1200,
     "n_other": 5000
   },
   "fit_A_stress_flag_rate": {
-    "climate_m3": 0.11041666666666666,
-    "climate_p3": 0.0375,
-    "energy_only": 0.06041666666666667,
+    "climate_m3": 0.10416666666666667,
+    "climate_p3": 0.029166666666666667,
+    "energy_only": 0.05416666666666667,
     "fresh": 0.04791666666666667,
-    "no_outdoor": 0.21666666666666667,
-    "noise_x3": 0.20416666666666666,
-    "res_2h": 0.4479166666666667,
-    "severity_x05": 0.04375,
+    "no_outdoor": 0.16458333333333333,
+    "noise_x3": 0.21875,
+    "res_2h": 0.425,
+    "severity_x05": 0.03958333333333333,
     "severity_x15": 0.09375,
-    "window_21d": 0.07916666666666666
+    "window_21d": 0.06458333333333334
   }
 }

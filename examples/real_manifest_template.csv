@@ -1,0 +1,4 @@
+building_id,file,causes,complete,design_dt,min_dt
+B001,B001_ets_hourly.csv,fouling;passing_valves,yes,,8.9
+B002,B002_ets_hourly.csv,none,yes,10,8.9
+B003,B003_ets_hourly.csv,constant_flow,no,,8.9

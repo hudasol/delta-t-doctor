@@ -18,7 +18,7 @@ deltat-doctor serve --host 0.0.0.0 --port 8000
 
 ## Production notes
 
-* Put it behind a reverse proxy that adds TLS, authentication and rate limiting. The app has none.
+* Put it behind a reverse proxy that adds TLS, authentication and rate limiting. The app has none. Also cap the request body there (nginx: `client_max_body_size 26m;`, Caddy: `request_body { max_size 26MB }`, Traefik: `buffering.maxRequestBodyBytes`). The app enforces the same limit itself, including for chunked uploads, but the proxy stops oversize bodies earlier.
 * It is stateless, so run as many copies as you need. Each request takes a few seconds for a year of hourly data.
 * A portfolio of 500 buildings is the upper limit per request and may take minutes. Use `deltat-doctor portfolio` for
   larger batches.

@@ -12,6 +12,7 @@ from ..features import extract, to_vector
 from ..io import canonicalise
 from .hydraulic import make_sample_b, sample_building_b
 from .scenarios import Sample, make_sample, sample_building
+from .worlds import make_sample_world, wide_building_a, wide_building_b
 
 
 @dataclass
@@ -73,7 +74,11 @@ def _one(seed: int, building_id: int, kwargs: dict, new_building_per_sample: boo
     rng = np.random.default_rng(seed)
     kwargs = dict(kwargs)
     post = kwargs.pop("post", "none")
-    maker = make_sample_b if kwargs.pop("sim", "A") == "B" else make_sample
+    sim = kwargs.pop("sim", "A")
+    if sim in ("CA", "CB"):
+        s = make_sample_world(sim[1], rng, building_id, kwargs.pop("cfg"))
+        return sample_to_row(s, post)
+    maker = make_sample_b if sim == "B" else make_sample
     s = maker(rng, building_id, **kwargs)
     return sample_to_row(s, post)
 
@@ -89,7 +94,7 @@ def generate(n_buildings: int, samples_per_building: int, seed: int = 0,
     for b in range(n_buildings):
         bseed = int(master.integers(0, 2**31 - 1))
         brng = np.random.default_rng(bseed)
-        cfg = sample_building_b(brng, b) if sim == "B" else sample_building(brng, b)
+        cfg = {"B": sample_building_b, "CA": wide_building_a, "CB": wide_building_b}.get(sim, sample_building)(brng, b)
         for k in range(samples_per_building):
             sseed = int(master.integers(0, 2**31 - 1))
             kw = dict(kwargs)

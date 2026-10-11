@@ -96,8 +96,8 @@ That dataset has no building-side labels, so it cannot measure accuracy.
 **Open-set guard (v1.1).** The first guard checked each feature against its own range and missed combinations it had never seen.
 It is joined by a Mahalanobis-distance guard over all 42 shape features (the building is withheld if either fires), and when a guard trips the tool **withholds the cause ranking**
 instead of printing it with a warning. Measured as a leave-one-world-out estimate (`results/openset.json`): fit on simulator A, it
-flags 71% of simulator B (the old box: 37%) at a 6.6% false-flag rate on held-out A buildings. Fit on B, it flags only 25% of A
-(old box: 7%), so the guard is weaker when the training world is small. It is built and tested on simulated data only.
+flags 64% of simulator B's windows (the old box: 37%) at a 5.5% false-flag rate on held-out A buildings. Fit on B, it flags 29% of A
+(old box: 7%), so the guard is weaker when the training world is small. (v1.1.0 used Mahalanobis alone: 71% and 25%; v1.1.1 adds a nearest-neighbour score for a more balanced result.) It is built and tested on simulated data only.
 
 Every finding now carries evidence against healthy buildings (measured value next to the healthy 5th to 95th percentile), a tier
 (likely / possible / weak / unsupported), and the report shows per-window delta-T with a trend test. Overflow has a weak signature

@@ -1,0 +1,46 @@
+{
+  "A": {
+    "overflow_vs_all": 0.9181124524484905,
+    "per_cause": {
+      "fouling": 0.9914304513751809,
+      "passing_valves": 0.9732751872973274,
+      "constant_flow": 0.9947722665225031,
+      "overflow": 0.9181124524484905
+    },
+    "overflow_single_fault": 0.9788521076446773,
+    "overflow_cooccurring_vs_negatives": 0.8522041479030726,
+    "overflow_alone_vs_negatives": 0.9785930142666386,
+    "n_pos_single": 85,
+    "n_pos_multi": 78,
+    "pairs_single_fault": {
+      "fouling": 0.9547511312217194,
+      "passing_valves": 0.9596813725490196,
+      "constant_flow": 0.9895348837209302
+    }
+  },
+  "B": {
+    "overflow_vs_all": 0.9136805555555556,
+    "per_cause": {
+      "fouling": 0.70004922990365,
+      "passing_valves": 0.9507705479452054,
+      "constant_flow": 0.968064218064218,
+      "overflow": 0.9136805555555556
+    },
+    "overflow_single_fault": 0.9347826086956522,
+    "overflow_cooccurring_vs_negatives": 0.8853174603174604,
+    "overflow_alone_vs_negatives": 0.9289529914529914,
+    "n_pos_single": 39,
+    "n_pos_multi": 21,
+    "pairs_single_fault": {
+      "fouling": 0.9404019404019404,
+      "passing_valves": 0.9025641025641026,
+      "constant_flow": 0.8231203824424164
+    }
+  },
+  "dp_ceiling": {
+    "A_in_world": 0.9979696696498597,
+    "A_to_B": 0.9981471831393665,
+    "B_in_world": 0.9945833333333334,
+    "B_to_A": 0.9890417150748946
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "version": "1.1.0",
+  "version": "1.1.1",
   "causes": [
     "fouling",
     "passing_valves",
@@ -45,16 +45,16 @@
     "data/main.npz": 5000,
     "data_b/main.npz": 1500
   },
-  "train_seconds": 74.0,
-  "git_commit_at_training": "98f583a",
+  "train_seconds": 86.9,
+  "git_commit_at_training": "04f6933",
   "sklearn_version": "1.9.1",
   "training_data_sha256": {
     "results/data/main.npz": "680dca730791e99037cdeec583ca32e279e5732bc2a9d367ae557aa6ce2b82ce",
     "results/data_b/main.npz": "e93a8f17aeb765065f13b6bad4192cc63124de558347e057570d894be467ffdb"
   },
   "sha256": {
-    "diagnoser.joblib": "f13e5ab959f93b6582b8cfd7ea3980ef3d1e9f33f8afd8ecbeb3fdcb8c12ca21",
-    "diagnoser_informed.joblib": "2d8e6d9842db2d477b294aed0d0e5d4cfaea2e725156ac8db7f7cb4832aa62c4"
+    "diagnoser.joblib": "7995e5efc70501be4e37148a761714b58df5fe32319b31e5d9b982f77369299a",
+    "diagnoser_informed.joblib": "f5b340ef8172dfdc4072fb405c220d534ad03bac437a4cd6237d36da693d5f05"
   },
   "worst_world_auroc": {
     "fouling": 0.633,
