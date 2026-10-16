@@ -1,0 +1,150 @@
+{
+  "note": "Simulation only: world D buildings as a pretend fleet; the shipped model never saw world D.",
+  "runs": {
+    "full": {
+      "kind": "fleet_calibrated",
+      "weakly_calibrated": false,
+      "software_version": "1.1.1",
+      "created_utc": "2026-10-16T07:21:04Z",
+      "base_model": {
+        "file": "diagnoser.joblib",
+        "sha256": "7995e5efc70501be4e37148a761714b58df5fe32319b31e5d9b982f77369299a"
+      },
+      "manifest": {
+        "file": "manifest_full.csv",
+        "sha256": "26a712e75b3d7e7642eb3e33c5018ff5fe64a8a3a41c33d0e4c0cd47be2ed119"
+      },
+      "n_labelled_buildings": 40,
+      "n_fit_buildings": 28,
+      "n_holdout_buildings": 12,
+      "n_fit_windows": 56,
+      "skipped_incomplete": [],
+      "parameters": {
+        "repeat": 5,
+        "holdout": 0.3,
+        "seed": 0,
+        "min_buildings": 10,
+        "weak_below": 20
+      },
+      "holdout": {
+        "base": {
+          "n_buildings": 12,
+          "n_windows": 24,
+          "abstention_rate": 0.5833333333333334,
+          "per_cause_auroc": {
+            "fouling": 0.42142857142857143,
+            "passing_valves": 0.96875,
+            "constant_flow": 0.92578125,
+            "overflow": 0.8125
+          },
+          "macro_auroc": 0.7821149553571429,
+          "n_single_cause": 5,
+          "top1_agreement": 0.6,
+          "top2_agreement": 0.8,
+          "n_healthy": 4,
+          "healthy_false_alarm": 0.75
+        },
+        "calibrated": {
+          "n_buildings": 12,
+          "n_windows": 24,
+          "abstention_rate": 0.5833333333333334,
+          "per_cause_auroc": {
+            "fouling": 0.8214285714285714,
+            "passing_valves": 0.9500000000000001,
+            "constant_flow": 0.8984375,
+            "overflow": 0.6625
+          },
+          "macro_auroc": 0.8330915178571429,
+          "n_single_cause": 5,
+          "top1_agreement": 0.8,
+          "top2_agreement": 0.8,
+          "n_healthy": 4,
+          "healthy_false_alarm": 0.5
+        }
+      },
+      "kept_from_base": [
+        "gain and saving regressors",
+        "evidence statements",
+        "healthy reference"
+      ],
+      "note": "Calibrated on inspected buildings; the holdout figures are from buildings not used for fitting. Delta T gains and savings still come from the simulator trained base model.",
+      "sha256": "a9a1fcec20049f9e612ec41268fd3fface044c6cf5a95ce4dda9104ad19c3fa5"
+    },
+    "weak": {
+      "kind": "fleet_calibrated",
+      "weakly_calibrated": true,
+      "software_version": "1.1.1",
+      "created_utc": "2026-10-16T07:32:56Z",
+      "base_model": {
+        "file": "diagnoser.joblib",
+        "sha256": "7995e5efc70501be4e37148a761714b58df5fe32319b31e5d9b982f77369299a"
+      },
+      "manifest": {
+        "file": "manifest_weak.csv",
+        "sha256": "558131db1289f7aa4939a0395046c17f098acc587bd5d87d70a3fbfc48e9540f"
+      },
+      "n_labelled_buildings": 15,
+      "n_fit_buildings": 11,
+      "n_holdout_buildings": 4,
+      "n_fit_windows": 22,
+      "skipped_incomplete": [],
+      "parameters": {
+        "repeat": 5,
+        "holdout": 0.3,
+        "seed": 0,
+        "min_buildings": 10,
+        "weak_below": 20
+      },
+      "holdout": {
+        "base": {
+          "n_buildings": 4,
+          "n_windows": 8,
+          "abstention_rate": 0.5,
+          "per_cause_auroc": {
+            "fouling": 0.33333333333333337,
+            "passing_valves": 1.0,
+            "constant_flow": 0.90625,
+            "overflow": 0.5833333333333334
+          },
+          "macro_auroc": 0.7057291666666667,
+          "n_single_cause": 2,
+          "top1_agreement": 1.0,
+          "top2_agreement": 1.0,
+          "n_healthy": 1,
+          "healthy_false_alarm": 1.0
+        },
+        "calibrated": {
+          "n_buildings": 4,
+          "n_windows": 8,
+          "abstention_rate": 0.5,
+          "per_cause_auroc": {
+            "fouling": 0.7500000000000001,
+            "passing_valves": 0.9166666666666667,
+            "constant_flow": 0.6875,
+            "overflow": 0.5
+          },
+          "macro_auroc": 0.7135416666666667,
+          "n_single_cause": 2,
+          "top1_agreement": 0.5,
+          "top2_agreement": 1.0,
+          "n_healthy": 1,
+          "healthy_false_alarm": 1.0
+        }
+      },
+      "kept_from_base": [
+        "gain and saving regressors",
+        "evidence statements",
+        "healthy reference"
+      ],
+      "note": "Calibrated on inspected buildings; the holdout figures are from buildings not used for fitting. Delta T gains and savings still come from the simulator trained base model.",
+      "warning": "Weakly calibrated: 15 labelled buildings (at least 20 recommended). The holdout figures rest on very few buildings.",
+      "sha256": "0050d28279b9c86ca12505f019e52473ead1c569299512502dec93ccff59bb6f"
+    }
+  },
+  "label_prevalence": {
+    "fouling": 0.325,
+    "passing_valves": 0.125,
+    "constant_flow": 0.275,
+    "overflow": 0.275
+  }
+}
