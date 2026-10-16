@@ -55,6 +55,7 @@ def test_savings_never_exceed_surcharge():
         df, _ = _demo(name)
         rep = diagnose_frame(df)
         sur = rep.annual_surcharge_aed_estimate
+        assert rep.findings, name      # an abstained demo would make the loop below vacuous
         for f in rep.findings:
             assert f["expected_saving_aed_per_year"] <= sur + 1e-6
             assert (f["saving_high_aed_per_year"] or 0) <= sur + 1e-6

@@ -91,7 +91,7 @@ def test_index_served(client):
 
 def test_demo_csv_route_not_shadowed(client):
     r = client.get("/api/demo/fouled_coils.csv")
-    assert r.status_code == 200 and r.text.startswith("timestamp") or "flow" in r.text.splitlines()[0]
+    assert r.status_code == 200 and (r.text.startswith("timestamp") or "flow" in r.text.splitlines()[0])
 
 
 @pytest.mark.parametrize("field", ["rate", "pct", "min_dt"])
