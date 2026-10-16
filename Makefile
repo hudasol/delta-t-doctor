@@ -1,4 +1,4 @@
-.PHONY: install test data train evaluate lbnl serve demo
+.PHONY: install test data train evaluate lbnl serve demo reproduce reproduce-full lock sbom
 install:
 	pip install -e ".[api,dev]"
 test:
@@ -15,3 +15,11 @@ serve:
 	deltat-doctor serve
 demo:
 	deltat-doctor simulate --causes fouling,passing_valves --out demo_ets.csv && deltat-doctor diagnose demo_ets.csv
+reproduce:
+	python scripts/reproduce.py
+reproduce-full:
+	python scripts/reproduce.py --full
+lock:
+	python scripts/make_lock.py --constraints ci/constraints.txt --extras api,xlsx
+sbom:
+	cyclonedx-py requirements requirements.lock -o sbom.cdx.json
