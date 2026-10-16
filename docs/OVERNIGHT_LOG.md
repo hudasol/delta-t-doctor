@@ -38,3 +38,31 @@ If time runs short: T7 first, then T6 cut to the assurance case table, then T5 c
   Huda Mueen as configured in git.
 * `results/data/` (the simulator A training pool) is not in the repository (gitignored). It must be regenerated with
   `python scripts/generate_data.py`; its sha256 is recorded in the model card, which gives a free reproducibility check.
+* Baseline: `ruff check src tests scripts` passed at 409fc66. The baseline test run did not finish (see machine conditions below); the
+  full suite is run again before the release instead.
+
+### Machine conditions (recorded because they shaped every later decision)
+
+* The machine is shared with several other projects' jobs (other test suites, an install that kept one core busy for hours, a local
+  model server, browsers). CPU was at 100% from about 05:40, and from about 06:40 free memory fell to a few hundred MB with heavy paging
+  (about 9000 pages per second measured at 09:55). Between 06:36 and 09:44 my session itself stalled and background jobs made almost no
+  progress: world D generation (1500 windows) took 12,980 s and the A pool regeneration 12,845 s, against minutes on an idle machine.
+* Decision (two options written down): (a) stop other projects' processes to get CPU back, or (b) leave them alone, lower the priority of
+  my own less urgent jobs and cut scope. I chose (b): those processes are not mine to stop.
+
+### T1 real data contact (05:30 to 06:40, analysis finished later)
+
+* Two openly licensed real datasets were opened, licences read and checksums verified (`docs/REAL_DATA_SEARCH.md`): Danish smart heat
+  meters (Zenodo 6563114, CC BY 4.0; 40 meters read by HTTP range requests because the archive is 3.3 GB and the link ran at about 100 KB/s)
+  and the XAI4HEAT Nis substations (Mendeley, CC BY 4.0, sha256 matched). Dryad hydronic data (CC0) was not reachable without an account
+  token; OpenEI chilled water records returned "No data found". No real district cooling ETS data was found.
+
+### T2 world D (06:00 onwards)
+
+* Design and 13 predictions committed before any D data existed (b457e83). A pre-commit mechanism check found that my first controller
+  (PI on zone temperature) could not hunt; it was replaced by a discharge air cascade before the commit, and the check and its hourly
+  result are written into `docs/WORLD_D.md`.
+* Zero shot on D (`scripts/world_d_eval.py zeroshot`, `results/world_d.json`): macro AUROC 0.705 [0.685, 0.724], any fault 0.648, healthy
+  false alarm 98%, overflow 0.547, fouling 0.577.
+* Regenerating the simulator A pool on this Windows machine gave a file whose sha256 differs from the one in the model card (fa77ca41...
+  against 680dca73...). Being checked at array level next.
