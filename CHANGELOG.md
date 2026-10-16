@@ -1,6 +1,6 @@
 # Changelog
 
-Versions are git tags. All accuracy figures are simulator results unless stated.
+All accuracy figures are simulator results unless stated. Tags exist from v1.1.1 onward; earlier versions were not tagged.
 
 ## v1.1.1
 
@@ -15,7 +15,7 @@ Round 7: turning the six open limitations into measured results. Predictions wer
 
 ## v1.1.0
 
-Rounds 1 to 6 of the multi-reviewer upgrade (Google, Edge, TII, ADEO, ATRC, final Google check). Figures quoted in the older entries below were
+Rounds 1 to 6 of the multi-viewpoint upgrade (review personas written by the author; no organisation reviewed or endorsed this work). Figures quoted in the older entries below were
 measured at the time and some are superseded by `results/metrics.json`.
 
 ### Round 6 (final review)
@@ -25,7 +25,7 @@ measured at the time and some are superseded by `results/metrics.json`.
 - Docs corrected: the conformal margin is 0.0 (intervals are raw quantiles; coverage 55% to 76% when a cause is truly present), both guards run, API schema updated.
 - Confidence label renamed "model probability band (simulated)". Per-window series and trend now shown in the UI and the report.
 
-### Round 5 (ATRC review)
+### Round 5 (abstention and evidence)
 
 - Open-set guard (Mahalanobis, `openset.py`) replaces the per-feature box as the abstention rule; ranking is withheld (`abstained`, empty `findings`) when it trips. Benchmark: `scripts/openset_eval.py`, `results/openset.json`.
 - Evidence against healthy buildings per finding (`evidence.py`), data-driven from simulated single-cause windows; tiers (likely / possible / weak / unsupported); weak-signature causes capped at "possible"; worst-world AUROC stored in the model card.
@@ -33,7 +33,7 @@ measured at the time and some are superseded by `results/metrics.json`.
 - Savings capped at the annual surcharge (per finding and in the portfolio total); ties broken by delta-T gain.
 - Models retrained (guard, healthy reference, evidence spec). Tests: tests/test_round5_openset_evidence.py.
 
-### Round 4 (ADEO review)
+### Round 4 (Arabic, provenance and UI)
 
 - Arabic and English UI and report (RTL, bundled IBM Plex Sans Arabic); `lang` parameter on report endpoints, `--lang` on the CLI. See docs/I18N.md (machine-drafted, needs native review).
 - Provenance block on every result: report ID, input SHA-256, model identity, parameters, quality flags.
@@ -42,7 +42,7 @@ measured at the time and some are superseded by `results/metrics.json`.
 - Demo portfolio frame cached (about 8 s to 1.5 s).
 - Tests: tests/test_round4_i18n_report.py.
 
-## Unreleased: engineering round 1 (Google ML review)
+## Engineering round 1 (evaluation rigour; shipped in v1.1.0)
 Measured before and after are in `results/metrics.md`. Changes:
 * Evaluation: building-level bootstrap 95% intervals and paired differences; season hold-out now also holds out the test buildings (macro AUROC 0.941 summer, 0.960 winter); feature-group ablation (`results/ablation.json`); calibration folds are grouped by building. README table is generated from `results/metrics.json` by `scripts/update_readme.py`. The previous README stress range (0.947 to 0.982) was from an older dataset; the current one is 0.902 to 0.978.
 * Input handling: NaN rows are dropped and reported, swapped supply/return, implausible temperatures and ΔT above 25 C are rejected, day-first dates and latin-1 files parse correctly, windows need 80% coverage, informed mode validates the design ΔT range, data-quality `reliable` flag and seasonal-annualisation note.
@@ -50,7 +50,7 @@ Measured before and after are in `results/metrics.md`. Changes:
 * Reproducibility: bundled model hash checked against the model card; model card records git commit, data hash and sklearn version; lock file; one specific-heat constant; ruff and coverage in CI.
 * Docs: corrected the claim that the two valve faults overlap (measured confusion is 2 to 5%; overflow is the hard cause).
 
-## Unreleased: engineering round 3 (TII review)
+## Engineering round 3 (second simulator and uncertainty; shipped in v1.1.0)
 * **Second simulator** (`sim/hydraulic.py`) with different hydraulics, psychrometrics, ETS and sensor effects, and a cross-simulator experiment with predictions written first ([docs/CROSS_SIMULATOR.md](docs/CROSS_SIMULATOR.md)). Result: A to B macro AUROC 0.683, B to A 0.770, 88% of B's healthy windows falsely flagged by the A-trained model; 7 of 8 predictions held, one failed. The shipped model is now trained on both simulators.
 * **Healthy baseline realism:** simulator A's healthy part-load ceiling may sit below design (it was always above). Effect on A: macro AUROC 0.967 to 0.966; informed-mode gain over blind +0.012 to +0.005; healthy false alarms at design 5-7 C 8% to 13%.
 * **Uncertainty:** quantile gain models and conformal margins; findings carry 10-90 ranges for delta-T gain and AED saving; the mean saving no longer applies the tariff hinge after averaging; the report notes when the top two fixes' ranges overlap. Coverage of the true gain on held-out buildings: 82% to 85% where it matters.
@@ -58,7 +58,7 @@ Measured before and after are in `results/metrics.md`. Changes:
 * Ingestion: supply/return are called swapped only if the median delta-T is below -0.75 C (sensor offsets alone could trip the old threshold on very low delta-T plants).
 * Docs corrected: stale design range, overflow AUROC, false-alarm figures, and the LBNL result re-checked with the new model (still fails; the guard still flags it).
 
-## Unreleased: engineering round 2 (Edge review)
+## Engineering round 2 (robustness and deployment; shipped in v1.1.0)
 * Quality gate: flow spikes (above 6x the running 90th percentile), sensor codes, impossible temperatures and delta-T above 30 C, text and formulas in numeric cells, unreadable timestamps and frozen meters are removed or flagged and counted; `reliable` goes false above 2% (48 repeated flow readings for a frozen meter). Verified: a file with 1% of flow readings at 1e9 changed the annual surcharge estimate from 2.1e10 to within 0.1% of the clean value.
 * Model loading fails closed: bundled models must match their recorded sha256 and sklearn minor version; the hashed bytes are the unpickled bytes.
 * Parsing bounds: row, column and unzipped-size caps, zip magic and zip-bomb check, `.xls` refused, C CSV parser with a sniffed delimiter. The CLI portfolio command uses the same reader.

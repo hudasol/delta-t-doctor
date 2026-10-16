@@ -6,7 +6,7 @@ Status: **predictions written 2026-10-10, before the second simulator was built 
 
 Every earlier "shift" test (3x noise, other climate, other building type, held-out season) changes parameters of the same
 generator. The labels, the fault mechanisms and the healthy baseline all come from one author's model, so a high score
-shows the classifier recovers that model's functions. A TII-style review (see `docs/ENGINEERING_PLAN.md`) asked for a
+shows the classifier recovers that model's functions. A research methodology review pass (see `docs/ENGINEERING_PLAN.md`) asked for a
 structurally different simulator. Simulator B (`src/deltat_doctor/sim/hydraulic.py`) differs from simulator A in these ways:
 
 1. Flow comes from a valve and pump network (equal-percentage valves, valve authority, a differential-pressure set point, a

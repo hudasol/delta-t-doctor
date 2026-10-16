@@ -7,7 +7,12 @@ docker build -t delta-t-doctor .
 docker run -p 8000:8000 delta-t-doctor           # http://localhost:8000
 ```
 
-The CI workflow builds the image and smoke-tests it on every push (it passed for v0.4.0 and v0.5.0).
+The CI workflow builds the image and smoke-tests it on every push. The test job failed on Python 3.10 from Round 4 through v1.1.1 (the
+bundled model needs scikit-learn 1.9, which needs Python 3.11); fixed in v1.2.0, see CHANGELOG.md. Run the image read only:
+
+```bash
+docker run --read-only --tmpfs /tmp:rw,noexec,nosuid,size=64m --cap-drop ALL --security-opt no-new-privileges -p 8000:8000 delta-t-doctor
+```
 
 ## From source
 
@@ -19,7 +24,7 @@ deltat-doctor serve --host 0.0.0.0 --port 8000
 ## Production notes
 
 * Put it behind a reverse proxy that adds TLS, authentication and rate limiting. The app has none. Also cap the request body there (nginx: `client_max_body_size 26m;`, Caddy: `request_body { max_size 26MB }`, Traefik: `buffering.maxRequestBodyBytes`). The app enforces the same limit itself, including for chunked uploads, but the proxy stops oversize bodies earlier.
-* It is stateless, so run as many copies as you need. Each request takes a few seconds for a year of hourly data.
+* It is stateless, so run as many copies as you need. Each request takes well under a second to a few seconds for a year of hourly data, depending on the machine (table below).
 * A portfolio of 500 buildings is the upper limit per request and may take minutes. Use `deltat-doctor portfolio` for
   larger batches.
 * Memory: a few hundred MB per worker.

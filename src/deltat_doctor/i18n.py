@@ -1,8 +1,7 @@
 """English and Arabic text for notes, cause labels and checks.
 
 Notes are created with ``note(key, **params)``. The result is an ordinary English ``str`` that also remembers its key and
-parameters, so the same note can be rendered in Arabic with ``note_ar``. The Arabic text was drafted by the author's
-assistant and needs a review by a native-speaking engineer before it is shown to customers (see docs/I18N.md).
+parameters, so the same note can be rendered in Arabic with ``note_ar``. The Arabic text is a machine draft and needs a review by a native-speaking engineer before it is shown to customers (see docs/I18N.md).
 """
 from __future__ import annotations
 

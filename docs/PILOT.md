@@ -5,7 +5,7 @@
 ## Scope
 * One operator or one property owner. 10-20 penalised buildings. 90 days.
 * Data: 12 months of ETS meter data per building (timestamp, flow, supply and return temperature or energy, outdoor
-  temperature if available). Hourly or 2-hourly is enough.
+  temperature if available). Hourly data are needed for full reliability: 2 hourly data parse, but the open set guard flags 42% of such windows in simulation (`results/openset.json`).
 * Contract terms per building (minimum delta-T, surcharge rule, rate).
 
 ## Method
@@ -43,7 +43,7 @@ table below is the v1.1.1 summary and is kept for history.
 
 | Candidate | What it is | Why it does not settle the question |
 |---|---|---|
-| LBNL building-side plant data (already used, `docs/EXTERNAL_CHECK.md`) | Real plant, no building-side fault labels | Gave a failed prediction; useful for the guard, not for accuracy |
+| LBNL building-side plant data (already used, `docs/EXTERNAL_CHECK.md`) | Simulated plant data (EnergyPlus and Modelica, different team), no building-side fault labels | Gave a failed prediction; useful for the guard, not for accuracy |
 | Vanderbilt ESB chiller dataset (reported) | Real campus chiller data | Plant side, not building ETS; I have not verified labels |
 | LBNL FDD datasets | Mostly simulated or lab AHU/RTU faults | Different equipment and fault classes |
 | Recent labelled AHU datasets (Scientific Data, 2025) | Air-handler faults | Existence and labels not confirmed by me; AHU, not ETS |
@@ -76,7 +76,7 @@ calibrated model is used only with `--model`.
 ### What the pilot also tells us
 
 * **Fleet calibration.** The few-shot curve (`docs/TRANSFER_V2.md`) says about 20 to 40 labelled buildings from the target fleet are what move
-  cross-physics performance from 0.69 to 0.80 to 0.84 in simulation. A 10 to 20 building pilot is therefore a calibration set as well as a test; keep a
+  cross-physics performance from 0.69 to 0.80 (20 buildings) and 0.836 (40) in simulation. A 10 to 20 building pilot is therefore a calibration set as well as a test; keep a
   held-out half for scoring.
 * **Guard behaviour.** Even unlabelled real files show how often the tool abstains. Report that rate before accuracy.
 * **Overflow.** If DP or pump speed is supplied, check whether it separates overflow from the valve faults; this is the only path to lifting its "possible" cap.
