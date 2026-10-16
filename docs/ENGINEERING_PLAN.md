@@ -102,17 +102,19 @@ training plane never ships anything to production without a registry entry and a
 
 ## 4. Upgrade rounds
 
-Each round: an independent reviewer agent criticises the current code and docs from a stated viewpoint; I turn the criticism into a
+Each round: a separate review pass criticises the current code and docs from a stated viewpoint; I turn the criticism into a
 checklist, implement it, and verify with tests and measurements. Items I decide not to do are listed with the reason.
 
 | Round | Viewpoint | Main workstreams |
 |---|---|---|
-| 1 | Google ML engineer | Evaluation rigour (CIs, slices, ablation, ECE), code quality gates, reproducibility, non-blocking service |
-| 2 | Edge | Robustness to corrupted inputs, quality gate, offline and hardened deployment, performance budget |
-| 3 | TII | Uncertainty, second simulator and cross-simulator generalisation, research-grade write-up |
-| 4 | ADEO | Arabic and right-to-left, executive summary, audit trail, accessibility, UI rebuild |
-| 5 | ATRC | Evidence-based explanation, open-set abstention, physics-informed checks |
-| 6 | Senior Google | Whole-system review, regression run, final polish |
+| 1 | Machine learning engineering | Evaluation rigour (CIs, slices, ablation, ECE), code quality gates, reproducibility, non-blocking service |
+| 2 | Defence grade deployment | Robustness to corrupted inputs, quality gate, offline and hardened deployment, performance budget |
+| 3 | Research methodology | Uncertainty, second simulator and cross-simulator generalisation, research-grade write-up |
+| 4 | Government digital service | Arabic and right-to-left, executive summary, audit trail, accessibility, UI rebuild |
+| 5 | Applied research | Evidence-based explanation, open-set abstention, physics-informed checks |
+| 6 | Senior engineering | Whole-system review, regression run, final polish |
+
+The viewpoints are review personas written by the author. No organisation reviewed or endorsed this work.
 
 ## 5. Exit criteria for the programme
 
