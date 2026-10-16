@@ -7,12 +7,12 @@ name = "deltat-doctor"
 version = "1.1.1"
 description = "Diagnose why district-cooled buildings pay low delta-T surcharges, using only utility meter data."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 license = { text = "MIT" }
 dependencies = [
   "numpy>=1.26",
   "pandas>=2.1",
-  "scikit-learn>=1.4",
+  "scikit-learn>=1.9,<1.10",   # the bundled model loads only with the scikit-learn minor it was trained with
   "joblib>=1.3",
 ]
 
