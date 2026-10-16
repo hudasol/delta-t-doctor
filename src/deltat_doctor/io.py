@@ -271,6 +271,11 @@ def canonicalise(df: pd.DataFrame, min_hours: int = MIN_HOURS) -> pd.DataFrame:
     ts = _parse_time(df[c_ts], notes)
     if ts.isna().all():
         raise DataError("Could not parse the timestamp column.")
+    tz = getattr(getattr(ts, "dt", None), "tz", None)
+    if tz is not None and ts.notna().any() and ts.dropna().iloc[0].utcoffset() == pd.Timedelta(0):
+        # Hour of day features (night against day, weekend against week) assume local wall time. A UTC export shifts them by the local
+        # offset (4 hours in the UAE) without any error, so say so (found on the Danish meter data, docs/REAL_DATA_CONTACT.md).
+        notes.append(note("utc_time"))
     out = pd.DataFrame({"timestamp": ts})
     n_raw = len(out)
     bad_ts = float(ts.isna().mean())

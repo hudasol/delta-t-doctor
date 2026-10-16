@@ -1,0 +1,1180 @@
+{
+  "note": "No cause labels exist for these data; nothing here is an accuracy figure.",
+  "fetched": "2026-10-16T02:20:33Z",
+  "datasets": {
+    "dk_smart_heat_6563114": {
+      "n_buildings": 40,
+      "product_outcomes": {
+        "refused": 40
+      },
+      "product_messages": {
+        "The supply temperature column has a median of 66": 15,
+        "The supply temperature column has a median of 70": 7,
+        "The supply temperature column has a median of 71": 4,
+        "The supply temperature column has a median of 73": 3,
+        "The supply temperature column has a median of 67": 2,
+        "The supply temperature column has a median of 75": 2,
+        "The supply temperature column has a median of 68": 2,
+        "The supply temperature column has a median of 65": 1,
+        "The supply temperature column has a median of 72": 1,
+        "The supply temperature column has a median of 69": 1,
+        "The supply temperature column has a median of 61": 1,
+        "The supply temperature column has a median of 64": 1
+      },
+      "buildings": [
+        {
+          "file": "1151.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 65.9, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 2,
+            "implausible_dt_hours": 554,
+            "heat_vs_energy_register": 1.0174256916374187
+          },
+          "flow_weighted_dt_c": 40.79928686182525,
+          "research": {
+            "windows": 35,
+            "guard_window_flag_share": 1.0,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 14.0,
+            "abstain_building": true,
+            "p_any_median": 0.962121212121212,
+            "flow_load_corr_median": 0.6198569936516585
+          }
+        },
+        {
+          "file": "1277.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 66.9, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 5044,
+            "implausible_dt_hours": 5189,
+            "heat_vs_energy_register": 0.975577185777568
+          },
+          "flow_weighted_dt_c": 33.20464074788462,
+          "research": {
+            "windows": 11,
+            "guard_window_flag_share": 1.0,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 16.0,
+            "abstain_building": true,
+            "p_any_median": 0.9988851727982162,
+            "flow_load_corr_median": 0.8991289218338272
+          }
+        },
+        {
+          "file": "136.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 67.0, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 75,
+            "implausible_dt_hours": 3307,
+            "heat_vs_energy_register": 1.0052384526722762
+          },
+          "flow_weighted_dt_c": 39.92462796712441,
+          "research": {
+            "windows": 24,
+            "guard_window_flag_share": 1.0,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 15.0,
+            "abstain_building": true,
+            "p_any_median": 0.9806056276338337,
+            "flow_load_corr_median": 0.686480927983876
+          }
+        },
+        {
+          "file": "1374.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 72.8, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 417,
+            "implausible_dt_hours": 3022,
+            "heat_vs_energy_register": 1.0067040586132847
+          },
+          "flow_weighted_dt_c": 45.71974148135593,
+          "research": {
+            "windows": 26,
+            "guard_window_flag_share": 1.0,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 15.0,
+            "abstain_building": true,
+            "p_any_median": 0.9543894830659536,
+            "flow_load_corr_median": 0.7162011422947429
+          }
+        },
+        {
+          "file": "1382.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 73.8, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 2815,
+            "implausible_dt_hours": 6263,
+            "heat_vs_energy_register": 0.9268270650876927
+          },
+          "flow_weighted_dt_c": 35.539617882434115,
+          "research": {
+            "windows": 13,
+            "guard_window_flag_share": 1.0,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 15.0,
+            "abstain_building": true,
+            "p_any_median": 0.9961685823754789,
+            "flow_load_corr_median": 0.8640552674196238
+          }
+        },
+        {
+          "file": "1528.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 70.5, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 1408,
+            "implausible_dt_hours": 2112,
+            "heat_vs_energy_register": 1.015594833684669
+          },
+          "flow_weighted_dt_c": 46.32838947771413,
+          "research": {
+            "windows": 29,
+            "guard_window_flag_share": 1.0,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 16.0,
+            "abstain_building": true,
+            "p_any_median": 0.9823067632850241,
+            "flow_load_corr_median": 0.8426423769326211
+          }
+        },
+        {
+          "file": "153.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 66.7, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 1635,
+            "implausible_dt_hours": 3726,
+            "heat_vs_energy_register": 1.0307733584933325
+          },
+          "flow_weighted_dt_c": 36.24601548569386,
+          "research": {
+            "windows": 22,
+            "guard_window_flag_share": 1.0,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 18.0,
+            "abstain_building": true,
+            "p_any_median": 0.9871688213208629,
+            "flow_load_corr_median": 0.9608141494510136
+          }
+        },
+        {
+          "file": "1558.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 66.7, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 1686,
+            "implausible_dt_hours": 6513,
+            "heat_vs_energy_register": 0.8719142448958344
+          },
+          "flow_weighted_dt_c": 34.494565923787434,
+          "research": {
+            "windows": 14,
+            "guard_window_flag_share": 1.0,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 15.0,
+            "abstain_building": true,
+            "p_any_median": 0.9726906488823324,
+            "flow_load_corr_median": 0.5761479853238032
+          }
+        },
+        {
+          "file": "1776.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 66.7, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 791,
+            "implausible_dt_hours": 1231,
+            "heat_vs_energy_register": 1.0118951118302828
+          },
+          "flow_weighted_dt_c": 42.52807838706074,
+          "research": {
+            "windows": 34,
+            "guard_window_flag_share": 1.0,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 14.0,
+            "abstain_building": true,
+            "p_any_median": 0.9789027055099901,
+            "flow_load_corr_median": 0.6099506279964555
+          }
+        },
+        {
+          "file": "1828.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 73.1, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 9276,
+            "implausible_dt_hours": 5639,
+            "heat_vs_energy_register": 0.9812100638954675
+          },
+          "flow_weighted_dt_c": 28.943299590677693,
+          "research": {
+            "windows": 1,
+            "guard_window_flag_share": 1.0,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 15.0,
+            "abstain_building": true,
+            "p_any_median": 0.9961685823754789,
+            "flow_load_corr_median": 0.9766508510066763
+          }
+        },
+        {
+          "file": "1950.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 75.1, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 6,
+            "implausible_dt_hours": 463,
+            "heat_vs_energy_register": 1.021788002317995
+          },
+          "flow_weighted_dt_c": 33.4573578866161,
+          "research": {
+            "windows": 36,
+            "guard_window_flag_share": 1.0,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 16.0,
+            "abstain_building": true,
+            "p_any_median": 0.9903644737009965,
+            "flow_load_corr_median": 0.7029071037434256
+          }
+        },
+        {
+          "file": "1983.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 66.3, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 0,
+            "implausible_dt_hours": 226,
+            "heat_vs_energy_register": 1.026625107315997
+          },
+          "flow_weighted_dt_c": 34.46244193549626,
+          "research": {
+            "windows": 36,
+            "guard_window_flag_share": 1.0,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 17.0,
+            "abstain_building": true,
+            "p_any_median": 0.9961685823754789,
+            "flow_load_corr_median": 0.7670868891838276
+          }
+        },
+        {
+          "file": "2069.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 66.7, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 0,
+            "implausible_dt_hours": 1851,
+            "heat_vs_energy_register": 1.013613399986143
+          },
+          "flow_weighted_dt_c": 34.51212215153786,
+          "research": {
+            "windows": 31,
+            "guard_window_flag_share": 1.0,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 17.0,
+            "abstain_building": true,
+            "p_any_median": 0.9823067632850241,
+            "flow_load_corr_median": 0.7083472728317299
+          }
+        },
+        {
+          "file": "2149.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 66.7, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 3,
+            "implausible_dt_hours": 145,
+            "heat_vs_energy_register": 1.0245283191747288
+          },
+          "flow_weighted_dt_c": 27.773796357798194,
+          "research": {
+            "windows": 36,
+            "guard_window_flag_share": 1.0,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 18.5,
+            "abstain_building": true,
+            "p_any_median": 0.9871688213208629,
+            "flow_load_corr_median": 0.878780478706773
+          }
+        },
+        {
+          "file": "2174.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 70.1, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 1019,
+            "implausible_dt_hours": 2199,
+            "heat_vs_energy_register": 1.0114778083444178
+          },
+          "flow_weighted_dt_c": 40.517753841639184,
+          "research": {
+            "windows": 26,
+            "guard_window_flag_share": 1.0,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 16.5,
+            "abstain_building": true,
+            "p_any_median": 0.9651000368799558,
+            "flow_load_corr_median": 0.7185960041196425
+          }
+        },
+        {
+          "file": "2197.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 67.4, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 2,
+            "implausible_dt_hours": 41,
+            "heat_vs_energy_register": 1.0233739387673684
+          },
+          "flow_weighted_dt_c": 34.36809866360682,
+          "research": {
+            "windows": 36,
+            "guard_window_flag_share": 1.0,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 17.0,
+            "abstain_building": true,
+            "p_any_median": 0.9731293666892045,
+            "flow_load_corr_median": 0.7479459323123365
+          }
+        },
+        {
+          "file": "2249.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 69.2, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 130,
+            "implausible_dt_hours": 1795,
+            "heat_vs_energy_register": 1.0214429634719067
+          },
+          "flow_weighted_dt_c": 40.563337485196655,
+          "research": {
+            "windows": 29,
+            "guard_window_flag_share": 1.0,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 17.0,
+            "abstain_building": true,
+            "p_any_median": 0.9870182555780933,
+            "flow_load_corr_median": 0.8028406537128006
+          }
+        },
+        {
+          "file": "234.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 66.7, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 2,
+            "implausible_dt_hours": 288,
+            "heat_vs_energy_register": 1.0174997245800788
+          },
+          "flow_weighted_dt_c": 38.76637124401591,
+          "research": {
+            "windows": 36,
+            "guard_window_flag_share": 1.0,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 16.0,
+            "abstain_building": true,
+            "p_any_median": 0.9689361925543467,
+            "flow_load_corr_median": 0.629093127950545
+          }
+        },
+        {
+          "file": "2357.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 71.2, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 6699,
+            "implausible_dt_hours": 765,
+            "heat_vs_energy_register": 1.0150963178314452
+          },
+          "flow_weighted_dt_c": 37.50428618421755,
+          "research": {
+            "windows": 35,
+            "guard_window_flag_share": 1.0,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 15.0,
+            "abstain_building": true,
+            "p_any_median": 0.9688364373962751,
+            "flow_load_corr_median": 0.6206332761391498
+          }
+        },
+        {
+          "file": "246.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 71.4, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 420,
+            "implausible_dt_hours": 1858,
+            "heat_vs_energy_register": 1.0143470764600997
+          },
+          "flow_weighted_dt_c": 39.467552045380984,
+          "research": {
+            "windows": 29,
+            "guard_window_flag_share": 1.0,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 16.0,
+            "abstain_building": true,
+            "p_any_median": 0.9870182555780933,
+            "flow_load_corr_median": 0.7484380945799634
+          }
+        },
+        {
+          "file": "2535.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 66.3, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 13,
+            "implausible_dt_hours": 882,
+            "heat_vs_energy_register": 1.0281074537122563
+          },
+          "flow_weighted_dt_c": 27.995209813410792,
+          "research": {
+            "windows": 34,
+            "guard_window_flag_share": 1.0,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 16.0,
+            "abstain_building": true,
+            "p_any_median": 0.9902922596017225,
+            "flow_load_corr_median": 0.6044899775382292
+          }
+        },
+        {
+          "file": "2596.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 66.7, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 608,
+            "implausible_dt_hours": 3232,
+            "heat_vs_energy_register": 1.0026675287244966
+          },
+          "flow_weighted_dt_c": 41.117331312254294,
+          "research": {
+            "windows": 24,
+            "guard_window_flag_share": 1.0,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 18.0,
+            "abstain_building": true,
+            "p_any_median": 0.9833830136899191,
+            "flow_load_corr_median": 0.8831295580640383
+          }
+        },
+        {
+          "file": "2649.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 61.0, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 0,
+            "implausible_dt_hours": 768,
+            "heat_vs_energy_register": 1.0492953094055497
+          },
+          "flow_weighted_dt_c": 26.01528194233953,
+          "research": {
+            "windows": 36,
+            "guard_window_flag_share": 1.0,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 13.0,
+            "abstain_building": true,
+            "p_any_median": 0.98472564074469,
+            "flow_load_corr_median": 0.3307582607701617
+          }
+        },
+        {
+          "file": "2791.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 71.4, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 9,
+            "implausible_dt_hours": 245,
+            "heat_vs_energy_register": 1.024653766260485
+          },
+          "flow_weighted_dt_c": 38.15672418618842,
+          "research": {
+            "windows": 36,
+            "guard_window_flag_share": 1.0,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 16.0,
+            "abstain_building": true,
+            "p_any_median": 0.9789027055099901,
+            "flow_load_corr_median": 0.7367740731230576
+          }
+        },
+        {
+          "file": "281.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 71.3, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 10667,
+            "implausible_dt_hours": 3410,
+            "heat_vs_energy_register": 0.9666145553315085
+          },
+          "flow_weighted_dt_c": 34.20020941416433,
+          "research": {
+            "windows": 24,
+            "guard_window_flag_share": 0.9166666666666666,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 19.5,
+            "abstain_building": true,
+            "p_any_median": 0.9870182555780933,
+            "flow_load_corr_median": 0.9391644693039003
+          }
+        },
+        {
+          "file": "2810.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 66.7, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 0,
+            "implausible_dt_hours": 492,
+            "heat_vs_energy_register": 1.0172480758773823
+          },
+          "flow_weighted_dt_c": 40.120469959663545,
+          "research": {
+            "windows": 36,
+            "guard_window_flag_share": 1.0,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 17.0,
+            "abstain_building": true,
+            "p_any_median": 0.9938462586888375,
+            "flow_load_corr_median": 0.7650328552741457
+          }
+        },
+        {
+          "file": "2845.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 66.7, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 4175,
+            "implausible_dt_hours": 4640,
+            "heat_vs_energy_register": 1.007505971978127
+          },
+          "flow_weighted_dt_c": 30.167326516392947,
+          "research": {
+            "windows": 15,
+            "guard_window_flag_share": 1.0,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 18.0,
+            "abstain_building": true,
+            "p_any_median": 0.9897348460008306,
+            "flow_load_corr_median": 0.9555762348593838
+          }
+        },
+        {
+          "file": "2918.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 70.0, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 16,
+            "implausible_dt_hours": 969,
+            "heat_vs_energy_register": 1.0179469841549142
+          },
+          "flow_weighted_dt_c": 41.00028377481895,
+          "research": {
+            "windows": 36,
+            "guard_window_flag_share": 1.0,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 16.0,
+            "abstain_building": true,
+            "p_any_median": 0.9949608529068799,
+            "flow_load_corr_median": 0.7159705126848972
+          }
+        },
+        {
+          "file": "2943.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 70.0, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 4,
+            "implausible_dt_hours": 306,
+            "heat_vs_energy_register": 1.020493344288314
+          },
+          "flow_weighted_dt_c": 37.01183857806686,
+          "research": {
+            "windows": 36,
+            "guard_window_flag_share": 1.0,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 17.0,
+            "abstain_building": true,
+            "p_any_median": 0.9799946586085425,
+            "flow_load_corr_median": 0.7920337397593756
+          }
+        },
+        {
+          "file": "3023.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 66.7, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 5,
+            "implausible_dt_hours": 243,
+            "heat_vs_energy_register": 1.0227601084977718
+          },
+          "flow_weighted_dt_c": 32.587264291817554,
+          "research": {
+            "windows": 36,
+            "guard_window_flag_share": 1.0,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 15.0,
+            "abstain_building": true,
+            "p_any_median": 0.9784450470671698,
+            "flow_load_corr_median": 0.6611969465561551
+          }
+        },
+        {
+          "file": "310.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 73.5, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 693,
+            "implausible_dt_hours": 2321,
+            "heat_vs_energy_register": 1.0166257659676816
+          },
+          "flow_weighted_dt_c": 37.53994808522424,
+          "research": {
+            "windows": 28,
+            "guard_window_flag_share": 1.0,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 18.0,
+            "abstain_building": true,
+            "p_any_median": 0.9867458427648921,
+            "flow_load_corr_median": 0.7833823150185162
+          }
+        },
+        {
+          "file": "3126.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 75.0, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 2783,
+            "implausible_dt_hours": 2584,
+            "heat_vs_energy_register": 1.0049050951056933
+          },
+          "flow_weighted_dt_c": 35.65477055748697,
+          "research": {
+            "windows": 25,
+            "guard_window_flag_share": 1.0,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 18.0,
+            "abstain_building": true,
+            "p_any_median": 0.9870182555780933,
+            "flow_load_corr_median": 0.7591361051591301
+          }
+        },
+        {
+          "file": "407.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 64.2, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 1258,
+            "implausible_dt_hours": 2510,
+            "heat_vs_energy_register": 0.9980959753233188
+          },
+          "flow_weighted_dt_c": 26.636072713377523,
+          "research": {
+            "windows": 32,
+            "guard_window_flag_share": 1.0,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 17.0,
+            "abstain_building": true,
+            "p_any_median": 0.9963191481182485,
+            "flow_load_corr_median": 0.655311501806965
+          }
+        },
+        {
+          "file": "479.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 70.6, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 3,
+            "implausible_dt_hours": 1227,
+            "heat_vs_energy_register": 1.0219424272048343
+          },
+          "flow_weighted_dt_c": 41.51106026068903,
+          "research": {
+            "windows": 35,
+            "guard_window_flag_share": 1.0,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 16.0,
+            "abstain_building": true,
+            "p_any_median": 0.9870182555780933,
+            "flow_load_corr_median": 0.8160659776078212
+          }
+        },
+        {
+          "file": "513.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 66.7, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 0,
+            "implausible_dt_hours": 624,
+            "heat_vs_energy_register": 1.013683739683053
+          },
+          "flow_weighted_dt_c": 36.85848295983508,
+          "research": {
+            "windows": 36,
+            "guard_window_flag_share": 1.0,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 15.0,
+            "abstain_building": true,
+            "p_any_median": 0.9690595123225055,
+            "flow_load_corr_median": 0.4950063122654626
+          }
+        },
+        {
+          "file": "540.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 68.5, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 0,
+            "implausible_dt_hours": 481,
+            "heat_vs_energy_register": 1.0202076447743502
+          },
+          "flow_weighted_dt_c": 35.938290396026346,
+          "research": {
+            "windows": 36,
+            "guard_window_flag_share": 1.0,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 15.0,
+            "abstain_building": true,
+            "p_any_median": 0.9696937683119224,
+            "flow_load_corr_median": 0.5816963545085078
+          }
+        },
+        {
+          "file": "624.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 70.9, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 0,
+            "implausible_dt_hours": 165,
+            "heat_vs_energy_register": 1.028638720863094
+          },
+          "flow_weighted_dt_c": 36.742513836110504,
+          "research": {
+            "windows": 36,
+            "guard_window_flag_share": 1.0,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 17.0,
+            "abstain_building": true,
+            "p_any_median": 0.9858105261094943,
+            "flow_load_corr_median": 0.88665292886885
+          }
+        },
+        {
+          "file": "791.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 70.0, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 2529,
+            "implausible_dt_hours": 3345,
+            "heat_vs_energy_register": 0.9914648397531236
+          },
+          "flow_weighted_dt_c": 35.44980240954947,
+          "research": {
+            "windows": 27,
+            "guard_window_flag_share": 1.0,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 17.0,
+            "abstain_building": true,
+            "p_any_median": 0.9897348460008306,
+            "flow_load_corr_median": 0.7537720672128633
+          }
+        },
+        {
+          "file": "871.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 66.7, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 2,
+            "implausible_dt_hours": 284,
+            "heat_vs_energy_register": 1.0212086476714686
+          },
+          "flow_weighted_dt_c": 37.40357866297683,
+          "research": {
+            "windows": 36,
+            "guard_window_flag_share": 1.0,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 16.0,
+            "abstain_building": true,
+            "p_any_median": 0.977395432122184,
+            "flow_load_corr_median": 0.6747740652716722
+          }
+        },
+        {
+          "file": "966.csv",
+          "rows": 26256,
+          "product": {
+            "outcome": "refused",
+            "message": "The supply temperature column has a median of 68.2, which is not a plausible chilled-water temperature in degrees Celsius. If it is in Fahrenheit, put (F) in the column header."
+          },
+          "loader_quality": {
+            "hours": 26255,
+            "negative_register_steps": 0,
+            "non_hourly_steps": 0,
+            "zero_volume_hours": 26,
+            "implausible_dt_hours": 1313,
+            "heat_vs_energy_register": 1.0278473170837759
+          },
+          "flow_weighted_dt_c": 35.74000783156233,
+          "research": {
+            "windows": 33,
+            "guard_window_flag_share": 1.0,
+            "guard_building_flag": true,
+            "box_window_flag_share": 1.0,
+            "box_median_features_out": 17.0,
+            "abstain_building": true,
+            "p_any_median": 0.9870182555780933,
+            "flow_load_corr_median": 0.7052780931298699
+          }
+        }
+      ],
+      "research": {
+        "n_with_windows": 40,
+        "abstain_building_share": 1.0,
+        "guard_building_flag_share": 1.0,
+        "guard_window_flag_share_mean": 0.9979166666666666,
+        "box_window_flag_share_mean": 1.0,
+        "flow_weighted_dt_c_percentiles_5_25_50_75_95": [
+          27.716910175577162,
+          34.3261263512462,
+          36.49426466090218,
+          39.97358846525919,
+          42.68766154177549
+        ],
+        "p_any_median_of_buildings": 0.9862781844371932,
+        "flow_load_corr_median_of_buildings": 0.7423600027176971
+      }
+    },
+    "nis_xai4heat_2mwc6x6kwb": {
+      "n_buildings": 5,
+      "product_outcomes": {
+        "refused": 5
+      },
+      "product_messages": {
+        "No flow column found (flow_m3h, flow_ls or flow_gpm)": 5
+      },
+      "buildings": [
+        {
+          "file": "xai4heat_scada_L12_processed.csv",
+          "rows": 10877,
+          "product": {
+            "outcome": "refused",
+            "message": "No flow column found (flow_m3h, flow_ls or flow_gpm). Columns seen: timestamp, t_supply_c, t_return_c, t_outdoor_c, delta_e"
+          },
+          "primary_dt_median_c": 34.00000000000001
+        },
+        {
+          "file": "xai4heat_scada_L17_processed.csv",
+          "rows": 18137,
+          "product": {
+            "outcome": "refused",
+            "message": "No flow column found (flow_m3h, flow_ls or flow_gpm). Columns seen: timestamp, t_supply_c, t_return_c, t_outdoor_c, delta_e"
+          },
+          "primary_dt_median_c": 35.0
+        },
+        {
+          "file": "xai4heat_scada_L22_processed.csv",
+          "rows": 10877,
+          "product": {
+            "outcome": "refused",
+            "message": "No flow column found (flow_m3h, flow_ls or flow_gpm). Columns seen: timestamp, t_supply_c, t_return_c, t_outdoor_c, delta_e"
+          },
+          "primary_dt_median_c": 32.1
+        },
+        {
+          "file": "xai4heat_scada_L4_processed.csv",
+          "rows": 18101,
+          "product": {
+            "outcome": "refused",
+            "message": "No flow column found (flow_m3h, flow_ls or flow_gpm). Columns seen: timestamp, t_supply_c, t_return_c, t_outdoor_c, delta_e"
+          },
+          "primary_dt_median_c": 34.7
+        },
+        {
+          "file": "xai4heat_scada_L8_processed.csv",
+          "rows": 10877,
+          "product": {
+            "outcome": "refused",
+            "message": "No flow column found (flow_m3h, flow_ls or flow_gpm). Columns seen: timestamp, t_supply_c, t_return_c, t_outdoor_c, delta_e"
+          },
+          "primary_dt_median_c": 34.8
+        }
+      ]
+    }
+  }
+}

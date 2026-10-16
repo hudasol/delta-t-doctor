@@ -37,6 +37,10 @@ the partner needs to supply, and how the result will be scored.
 
 ### Search for public real data (no ETS-level labelled set found)
 
+The full record (every candidate opened, with licence, reason and checksums) is now [REAL_DATA_SEARCH.md](REAL_DATA_SEARCH.md), and the
+first contact of the pipeline with real, unlabelled district heating meter data is in [REAL_DATA_CONTACT.md](REAL_DATA_CONTACT.md). The
+table below is the v1.1.1 summary and is kept for history.
+
 | Candidate | What it is | Why it does not settle the question |
 |---|---|---|
 | LBNL building-side plant data (already used, `docs/EXTERNAL_CHECK.md`) | Real plant, no building-side fault labels | Gave a failed prediction; useful for the guard, not for accuracy |
@@ -60,6 +64,14 @@ So a pilot is the only route to field evidence. The data are held by operators a
 agreement on single-cause buildings, per-cause AUROC, Brier score and reliability bins, healthy false alarms, the number of buildings where
 the tool was confidently wrong (p > 0.8 on a cause the inspection ruled out), and 95% building-bootstrap intervals. With fewer than 10 buildings
 it prints a warning and no intervals, and the numbers must not be quoted. The success criteria above are checked by the same script.
+
+### Fleet calibration in the pilot (v1.2.0)
+
+`deltat-doctor calibrate manifest.csv --out fleet_model.joblib` turns the labelled pilot buildings into a calibrated model for that fleet
+([API.md](API.md), section "Fleet calibration"). It refuses below 10 inspected buildings, marks 10 to 19 as weakly calibrated, and holds out
+30% of the buildings for a holdout report stored with the model. A suggested split for a 20 building pilot: inspect all 20 blind, score the
+bundled model on all 20 with `scripts/evaluate_real.py`, then calibrate and read the holdout report. The default model is never replaced; a
+calibrated model is used only with `--model`.
 
 ### What the pilot also tells us
 

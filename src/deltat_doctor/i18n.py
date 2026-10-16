@@ -8,6 +8,8 @@ from __future__ import annotations
 
 EN = {
     "date_ambiguous": "Dates are ambiguous (day/month order); read as day first. Check the first and last date in the report.",
+    "utc_time": ("Timestamps are in UTC. Time of day measurements assume local time, so they are shifted by the local offset "
+                 "(4 hours in the UAE); export in local time if you can."),
     "duplicates": "{n} duplicate timestamps were averaged (daylight-saving or export overlap).",
     "dropped": "{p} of rows had a missing flow or temperature and were left out.",
     "outlier": "{p} of rows had an impossible flow, temperature or delta-T (spikes, sensor codes) and were left out.",
@@ -26,6 +28,10 @@ EN = {
             "are outside the training range; a normal building shows {limit} or fewer). The ranking below is NOT reliable. "
             "Typical reasons: variable flow that does not follow load, a plant-side loop rather than a building ETS, or a "
             "different system type."),
+    "calibrated": ("This result uses a fleet calibrated model (calibrated on {n} inspected buildings on {date}; macro AUROC {m} on {h} "
+                   "held out buildings). It is not the default model."),
+    "calibrated_weak": ("WEAKLY CALIBRATED: this result uses a model calibrated on only {n} inspected buildings ({date}; macro AUROC {m} on "
+                        "{h} held out buildings). At least 20 are recommended; treat the probabilities with extra caution."),
     "openset": ("This building's combination of behaviours is unlike any building the model was trained on (distance score {s} "
                 "against {t} for a normal training building). The cause ranking is withheld because it would not be reliable."),
     "physics_unsupported": "{c}: the model rates this cause likely, but the measured shape does not show the expected signs. Treat it as unconfirmed.",
@@ -49,6 +55,8 @@ EN = {
 
 AR = {
     "date_ambiguous": "ترتيب اليوم والشهر في التواريخ غير واضح؛ قُرئت التواريخ بصيغة (اليوم/الشهر). راجع أول وآخر تاريخ في التقرير.",
+    "utc_time": ("الطوابع الزمنية بتوقيت UTC. تفترض مؤشرات وقت اليوم التوقيت المحلي، لذا فهي مزاحة بفارق التوقيت المحلي "
+                 "(4 ساعات في الإمارات)؛ صدّر البيانات بالتوقيت المحلي إن أمكن."),
     "duplicates": "تم أخذ متوسط {n} من الطوابع الزمنية المكررة (تغيير توقيت أو تداخل في ملف التصدير).",
     "dropped": "{p} من الصفوف تفتقد قراءة التدفق أو درجة الحرارة، وتم استبعادها.",
     "outlier": "{p} من الصفوف تحوي قيماً مستحيلة للتدفق أو درجة الحرارة أو فرق درجة الحرارة (قفزات أو رموز أعطال الحساسات)، وتم استبعادها.",
@@ -65,6 +73,10 @@ AR = {
     "ood": ("سلوك هذا المبنى يختلف عمّا تدرّب عليه النموذج ({n} من أصل {total} مؤشراً خارج نطاق التدريب، بينما يُظهر المبنى "
             "المعتاد {limit} أو أقل). الترتيب أدناه غير موثوق. من الأسباب المعتادة: تدفق متغير لا يتبع الحمل، أو دورة على جانب "
             "المحطة بدلاً من محطة نقل الطاقة في المبنى، أو نوع نظام مختلف."),
+    "calibrated": ("تستخدم هذه النتيجة نموذجاً معايراً على أسطول المباني (عُويِر على {n} مبنى جرى فحصه بتاريخ {date}؛ متوسط AUROC {m} "
+                   "على {h} مبانٍ محجوزة للاختبار). وهو ليس النموذج الافتراضي."),
+    "calibrated_weak": ("معايرة ضعيفة: تستخدم هذه النتيجة نموذجاً عُويِر على {n} مبانٍ فقط جرى فحصها ({date}؛ متوسط AUROC {m} على {h} "
+                        "مبانٍ محجوزة للاختبار). يُوصى بعشرين مبنى على الأقل؛ تعامل مع الاحتمالات بحذر إضافي."),
     "openset": ("مجموعة سلوكيات هذا المبنى لا تشبه أي مبنى تدرّب عليه النموذج (درجة البعد {s} مقابل {t} لمبنى تدريب اعتيادي). "
                 "حُجب ترتيب الأسباب لأنه لن يكون موثوقاً."),
     "physics_unsupported": "{c_ar}: يرى النموذج أن هذا السبب مرجّح، لكن الشكل المقيس لا يُظهر العلامات المتوقعة. اعتبره غير مؤكد.",
