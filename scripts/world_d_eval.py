@@ -20,7 +20,7 @@ from deltat_doctor.evaluate import _safe_auc, bootstrap_ci, metrics
 from deltat_doctor.models import Diagnoser, Prediction
 from deltat_doctor.sim.dataset import Dataset, generate
 
-OUT = "results/world_d.json"
+OUT = os.environ.get("DTD_OUT", "results/world_d.json")   # a separate file lets two stages run at once without overwriting
 res = json.load(open(OUT)) if os.path.exists(OUT) else {}
 t0 = time.time()
 
@@ -136,7 +136,9 @@ if MODE in ("fewshot", "all"):
     te = D.meta["building_id"].isin(test_ids).to_numpy()
     Dt = D.subset(te)
     res["few_shot"] = {"n_test_buildings": 70, "repeat": 5, "draws": 3, "curve": {}}
-    for k in (0, 5, 10, 20, 40):
+    ks = [int(v) for v in os.environ.get("DTD_KS", "0,5,10,20,40").split(",")]   # DTD_KS narrows the curve (a recorded deviation)
+    res["few_shot"]["k_values_planned"] = ks
+    for k in ks:
         runs = []
         for rep in range(1 if k == 0 else 3):
             pick = np.random.default_rng(100 + rep).permutation(pool)[:k]
@@ -154,12 +156,27 @@ if MODE in ("fewshot", "all"):
         save()
 
 if MODE in ("temporal", "all"):
-    W = {"A": load("results/data/main.npz"), "B": load("results/data_b/main.npz"), "D": D}
+    # B here is the pool regenerated with the temporal block (seed 11, results/data_b_t): the committed B pool has no temporal block and
+    # its seed was not recorded. Both arms of every comparison use the same rows, so the comparison is fair.
+    W = {"A": load("results/data/main.npz"), "B": load("results/data_b_t/main.npz"), "D": D}
     for w, d in W.items():
         assert d.T is not None, f"{w} has no temporal block; regenerate with --temporal"
     off = {"A": 0, "B": 100000, "D": 200000}
-    res["temporal"] = {"in_world": {}, "leave_one_world_out": {}}
-    for w, d in W.items():
+    res["temporal"] = {"in_world": {}, "leave_one_world_out": {}, "B_pool": "results/data_b_t (seed 11)"}
+    in_worlds = os.environ.get("DTD_TEMPORAL_INWORLD", "A,B,D").split(",")   # narrowing is a recorded deviation
+    res["temporal"]["in_world_run_for"] = in_worlds
+    for test in ("D", "B", "A"):
+        train = [w for w in W if w != test]
+        Y = np.vstack([W[w].Y for w in train]); g = np.concatenate([W[w].meta["building_id"].to_numpy() + off[w] for w in train])
+        r = {"train": train}
+        for tag, f in (("base", lambda d: d.X), ("with_temporal", lambda d: np.hstack([d.X, d.T]))):
+            c = Clf().fit(np.vstack([f(W[w]) for w in train]), Y, g)
+            r[tag] = summary(W[test], c.predict(f(W[test])), boot=False)
+        r["delta_per_cause"] = {c: r["with_temporal"]["per_cause"][c] - r["base"]["per_cause"][c] for c in CAUSES}
+        res["temporal"]["leave_one_world_out"]["to_" + test] = r
+        log("temporal LOWO to", test, r["delta_per_cause"])
+        save()
+    for w, d in ((w, W[w]) for w in in_worlds if w):
         g = d.meta["building_id"].to_numpy()
         r = {}
         for tag, X in (("base", d.X), ("with_temporal", np.hstack([d.X, d.T]))):
@@ -171,17 +188,6 @@ if MODE in ("temporal", "all"):
         r["delta_per_cause"] = {c: r["with_temporal"]["per_cause"][c] - r["base"]["per_cause"][c] for c in CAUSES}
         res["temporal"]["in_world"][w] = r
         log("temporal in world", w, r["delta_per_cause"])
-        save()
-    for test in ("D", "B", "A"):
-        train = [w for w in W if w != test]
-        Y = np.vstack([W[w].Y for w in train]); g = np.concatenate([W[w].meta["building_id"].to_numpy() + off[w] for w in train])
-        r = {"train": train}
-        for tag, f in (("base", lambda d: d.X), ("with_temporal", lambda d: np.hstack([d.X, d.T]))):
-            c = Clf().fit(np.vstack([f(W[w]) for w in train]), Y, g)
-            r[tag] = summary(W[test], c.predict(f(W[test])), boot=False)
-        r["delta_per_cause"] = {c: r["with_temporal"]["per_cause"][c] - r["base"]["per_cause"][c] for c in CAUSES}
-        res["temporal"]["leave_one_world_out"]["to_" + test] = r
-        log("temporal LOWO to", test, r["delta_per_cause"])
         save()
     lo = res["temporal"]["leave_one_world_out"]
     passes_a = any(v["delta_per_cause"]["overflow"] >= 0.02 for v in lo.values())

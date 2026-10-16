@@ -1,0 +1,143 @@
+{
+  "data": {
+    "D": {
+      "windows": 1500,
+      "buildings": 150,
+      "prevalence": {
+        "fouling": 0.26466666666666666,
+        "passing_valves": 0.10466666666666667,
+        "constant_flow": 0.24933333333333332,
+        "overflow": 0.182
+      },
+      "healthy_share": 0.42333333333333334,
+      "dt_actual_percentiles_5_50_95": [
+        4.103065123257594,
+        8.482473240134436,
+        14.366738963349453
+      ]
+    }
+  },
+  "zero_shot": {
+    "macro_auroc": 0.7052789956405556,
+    "any_fault_auroc": 0.647739292704019,
+    "per_cause": {
+      "fouling": 0.5766480699534815,
+      "passing_valves": 0.8329294146103172,
+      "constant_flow": 0.8647120563064561,
+      "overflow": 0.5468264416919675
+    },
+    "prevalence": {
+      "fouling": 0.26466666666666666,
+      "passing_valves": 0.10466666666666667,
+      "constant_flow": 0.24933333333333332,
+      "overflow": 0.182
+    },
+    "healthy_false_alarm": 0.9811023622047244,
+    "n_windows": 1500,
+    "n_healthy_windows": 635,
+    "macro_auroc_ci95": [
+      0.6849122708050471,
+      0.7239139725540288
+    ],
+    "any_fault_auroc_ci95": [
+      0.6090112521088431,
+      0.6855928113127445
+    ],
+    "per_cause_ci95": {
+      "fouling": [
+        0.5361199532056554,
+        0.6180570549295739
+      ],
+      "passing_valves": [
+        0.802419443597317,
+        0.8603185574043606
+      ],
+      "constant_flow": [
+        0.8402725848388873,
+        0.8883293720645041
+      ],
+      "overflow": [
+        0.5100038328233485,
+        0.5864005480977279
+      ]
+    }
+  },
+  "guard": {
+    "threshold": 0.9337423076923069,
+    "box_limit": 4,
+    "D": {
+      "windows_open_set": 0.6833333333333333,
+      "windows_box": 0.5286666666666666,
+      "windows_either": 0.73,
+      "buildings_open_set": 0.7933333333333333,
+      "buildings_box": 0.78,
+      "buildings_either": 0.92,
+      "n_buildings": 150
+    },
+    "fresh_A": {
+      "windows_open_set": 0.010416666666666666,
+      "windows_box": 0.016666666666666666,
+      "windows_either": 0.027083333333333334,
+      "buildings_open_set": 0.0,
+      "buildings_box": 0.0,
+      "buildings_either": 0.0,
+      "n_buildings": 80
+    },
+    "fresh_B": {
+      "windows_open_set": 0.17291666666666666,
+      "windows_box": 0.10208333333333333,
+      "windows_either": 0.2375,
+      "buildings_open_set": 0.1125,
+      "buildings_box": 0.025,
+      "buildings_either": 0.1375,
+      "n_buildings": 80
+    },
+    "D_auroc_unflagged_windows": 0.6182997848718237,
+    "D_auroc_flagged_windows": 0.7563043112540004
+  },
+  "few_shot": {
+    "n_test_buildings": 70,
+    "repeat": 5,
+    "draws": 3,
+    "curve": {
+      "0": {
+        "macro_auroc": 0.7091946439819956,
+        "sd_macro": 0.0,
+        "healthy_false_alarm": 0.9863945578231292,
+        "per_cause": {
+          "fouling": 0.5729380341880341,
+          "passing_valves": 0.8504106666666666,
+          "constant_flow": 0.8692146322276124,
+          "overflow": 0.5442152428456694
+        }
+      },
+      "20": {
+        "macro_auroc": 0.8250003907807483,
+        "sd_macro": 0.0023667345570903982,
+        "healthy_false_alarm": 0.2551020408163265,
+        "per_cause": {
+          "fouling": 0.8690883190883191,
+          "passing_valves": 0.8830079999999999,
+          "constant_flow": 0.9491372026280902,
+          "overflow": 0.5987680414065838
+        }
+      },
+      "40": {
+        "macro_auroc": 0.8496089499409076,
+        "sd_macro": 0.00688073502422178,
+        "healthy_false_alarm": 0.20975056689342406,
+        "per_cause": {
+          "fouling": 0.915005341880342,
+          "passing_valves": 0.9039893333333334,
+          "constant_flow": 0.9651056917675508,
+          "overflow": 0.6143354327824041
+        }
+      }
+    },
+    "k_values_run": [
+      0,
+      20,
+      40
+    ]
+  }
+}
