@@ -127,3 +127,29 @@ Reading, plainly:
 * The two predictions I got wrong were both over-optimistic about small k. The product therefore states the requirement as "calibrate on
   about 20 to 40 surveyed buildings before trusting the probabilities", not "a handful".
 * None of this is real-data evidence. It says how fast a model adapts when the target data are labelled and drawn from a simulator.
+
+## Addendum (v1.2.0): why does fouling transfer worst from A to B?
+
+Status: **hypotheses and predictions written 2026-10-16, before `scripts/fouling_transfer.py` was written or run.**
+
+The few shot table above shows fouling as the cause that adapts worst in A to B (0.66 at 40 target buildings, the others 0.83 to 0.96).
+One fact was already known before this addendum and must not be counted as a test: `docs/OVERFLOW.md` reports that inside world B alone,
+fouling is the weakest cause (0.700 AUROC on one building grouped fold). So part of the answer may be that fouling is simply hard to see in B,
+whatever the training world.
+
+Feature groups used below (42 shape features): **delta T shape** (`dt_period`, `dt_p10`, `dt_p90`, `dt_std_loaded`, `dt_lowload`,
+`dt_night_minus_day`, `dt_weekend_minus_week`, `dt_hi_minus_mid`, `dt_bin0` to `dt_bin7`), **flow shape** (`zero_flow_frac`,
+`flow_lowload_share`, `flow_intercept_ratio`, `flow_load_corr`, `flow_cv_loaded`, `flow_p10_over_p95`, `flow_p50_over_p95`, `flow_bin0` to
+`flow_bin7`), **load distribution** (`duty_factor`, `load_p10_over_p98`, `frac_bin0` to `frac_bin7`), **weather** (`dt_vs_oat_slope`).
+
+| # | Hypothesis | Prediction | Failure if |
+|---|---|---|---|
+| H1 | Masking: B's valve, mixing and exchanger physics shrink the fouling signature | For the 5 features whose single fault fouling effect (median shift in healthy spread units, as in `scripts/transfer_v2.py`) is largest in A, the median of the absolute effect in B is less than half the median in A | it is half or more |
+| H2 | Direction: the features that identify fouling in A point the other way, or are not monotone, in B | At least 2 of those 5 features have a univariate fouling AUROC on opposite sides of 0.5 in A and in B | fewer than 2 |
+| H3 | The delta T shape features learned in A mislead in B | Leave one group out, trained on A and tested on B: removing the delta T shape group raises fouling AUROC on B by at least 0.02; trained on B and tested on A, removing it lowers fouling AUROC on A by at least 0.02 | either part fails |
+| H4 | Identifiability ceiling (partly post hoc, see above) | Building grouped 5 fold CV inside B gives fouling AUROC at most 0.75, and the A to B fouling AUROC at 40 target buildings (0.66) is within 0.10 of it | in world B fouling above 0.75, or the gap is larger than 0.10 |
+
+Also reported, without a prediction: permutation importance of the A trained fouling classifier measured on held out A and on B, and
+partial dependence of that classifier on its two most important features, with the B and A feature ranges marked.
+
+The answer is written below whichever way it goes, including "undetermined".
