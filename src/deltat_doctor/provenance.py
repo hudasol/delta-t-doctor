@@ -31,6 +31,13 @@ def build(d: dict, *, filename: str | None = None, raw: bytes | None = None, row
     """Provenance block for a Report.to_dict() or PortfolioReport.to_dict()."""
     informed = d.get("mode") == "informed" or any(b.get("mode") == "informed" for b in d.get("buildings", []))
     model = model_identity(informed)
+    cal = d.get("calibration") or {}
+    if cal:   # a fleet calibrated model produced this report: say so, with its base model and fleet
+        model = {"file": "fleet calibrated model", "package_version": cal.get("software_version"),
+                 "weakly_calibrated": cal.get("weakly_calibrated"), "labelled_buildings": cal.get("n_labelled_buildings"),
+                 "created_utc": cal.get("created_utc"), "base_model_sha256": ((cal.get("base_model") or {}).get("sha256") or "")[:16],
+                 "manifest_sha256": ((cal.get("manifest") or {}).get("sha256") or "")[:16], "parameters": cal.get("parameters"),
+                 "sha256": (cal.get("sha256") or "")[:16]}
     sha = hashlib.sha256(raw).hexdigest() if raw is not None else None
     terms = d.get("terms", {})
     now = _dt.datetime.now(_dt.timezone.utc)

@@ -43,3 +43,30 @@ Show that to users: the ranking should not be trusted in that case.
 
 `422` with a plain-language `detail` for unreadable files, missing columns, too little data or invalid terms.
 `413` above 25 MB. `404` for an unknown demo. `503` if the informed model is not installed.
+
+## Fleet calibration (command line only, new in v1.2.0)
+
+The web API always uses the bundled model. Calibration is a separate, explicit step on the command line:
+
+```
+deltat-doctor calibrate manifest.csv --out fleet_model.joblib
+deltat-doctor diagnose building.csv --model fleet_model.joblib
+```
+
+* **Input.** A manifest in the format of `examples/real_manifest_template.csv`: `building_id`, `file` (meter export, relative to the
+  manifest), `causes` (semicolon list of `fouling`, `passing_valves`, `constant_flow`, `overflow`, `other`, `none`), `complete` (`yes` when
+  the inspection ruled out every cause not listed). Only buildings with `complete = yes` are used; the others are listed as skipped.
+* **What changes.** The four cause classifiers and the any fault classifier are refitted on the base model's training rows plus every
+  window of the labelled buildings, repeated 5 times (`--repeat`), the weighting measured in `scripts/transfer_fewshot.py`. The open set guard
+  and the per feature range are refitted on base plus fleet windows. Delta T gains and AED savings still come from the base model's
+  regressors, because inspections give causes, not recoverable delta T.
+* **Refusals and warnings.** Fewer than 10 usable labelled buildings: refused, no file written. 10 to 19: written, but marked
+  `weakly_calibrated` in the model card and in every report that uses it (`calibration` field, a "WEAKLY CALIBRATED" note in English and
+  Arabic, and the provenance block). Calibrated models are blind only (no `--design-dt`). The output may not be written into the package
+  assets, so it can never replace the default model.
+* **Holdout report.** 30% of the labelled buildings (at least 3, `--holdout`, fixed `--seed`) are never used for fitting. The model card
+  (`fleet_model.joblib.card.json`) records, for the base and the calibrated model on those buildings: abstention rate, per cause and macro
+  AUROC, top 1 and top 2 agreement on single cause buildings, and healthy false alarm rate.
+* **Provenance.** The card records the base model's sha256, the manifest's sha256, the sha256 of every building file, the number of
+  buildings, the date, the parameters and the calibrated model's own sha256, which is verified before the model is loaded (fail closed).
+* **Evidence.** In simulation only: `scripts/calibrate_check.py` and `results/calibrate_check.json`, and `tests/test_calibrate.py`.
