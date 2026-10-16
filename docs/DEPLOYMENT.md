@@ -30,7 +30,7 @@ deltat-doctor serve --host 0.0.0.0 --port 8000
 * Memory: a few hundred MB per worker.
 * To retrain on your own labelled data, see `scripts/train.py`. The model is a plain scikit-learn pipeline.
 
-## Measured budget (2-core cloud VM, scripts/benchmark.py)
+## Measured budget (2-core cloud VM, scripts/benchmark.py; measured in an earlier session, the output was not saved to results/)
 
 | job | time |
 |---|---|
