@@ -2,6 +2,42 @@
 
 All accuracy figures are simulator results unless stated. Tags exist from v1.1.1 onward; earlier versions were not tagged.
 
+## v1.2.0
+
+New evidence and new product capability. All accuracy figures are simulation results; the only real data used have no labels. The bundled
+models are unchanged (not retrained). Predictions were committed before every experiment; failures are listed.
+
+- **World D, a third physics** (`src/deltat_doctor/sim/world_d.py`, `docs/WORLD_D.md`): time stepped, closed loop (zone thermal mass,
+  discharge air PI cascade with actuator lag and deadband, pump curve with a DP set point, plate exchanger ETS). Zero shot macro AUROC 0.705,
+  98% healthy false alarm; guards withhold 92% of D buildings. Few shot: 20 D buildings give 0.825 and 40 give 0.850, healthy false alarms 99% to 21%; overflow stays near 0.61. 13 predictions: 9 held, 3 failed (D6, D7, D10), 1 not run (D11).
+- **Correction: the guard is a novelty detector, not an error detector.** On world D the windows it lets through score 0.618, lower than the
+  0.756 of those it flags (prediction D7 failed). It also flags 14% of new simulator B buildings (D6 failed). README, LIMITATIONS, MODEL_CARD
+  and the proposals now say so.
+- **Temporal features (negative result):** six hourly flow features do not help overflow in an unseen world and reduce other causes, so they
+  fail the preregistered shipping rule and are not used by the product (`src/deltat_doctor/temporal.py` stays as an unused module).
+- **Fleet calibration** (`deltat-doctor calibrate`, `diagnose --model`): refuses below 10 inspected buildings, marks 10 to 19 as weak in the
+  card and every report, keeps a holdout report, verifies the calibrated file's sha256, never replaces the default model. Simulation check on
+  a world D fleet: held out macro AUROC 0.782 to 0.833, overflow worse (`results/calibrate_check.json`).
+- **Real data contact** (`docs/REAL_DATA_CONTACT.md`): 40 Danish smart heat meters and 5 Nis substations (CC BY 4.0) all refused at parsing
+  with a plain message; no crash. Fixed a silent issue: UTC timestamps shifted the hour of day features without warning; a note now says so.
+- **Why fouling transfers badly** (`docs/TRANSFER_V2.md` addendum): B's fouling signature is weak (in world 0.675); H1 and H4 held, H2 and H3
+  failed.
+- **Assurance:** generated `requirements.lock` with every published hash (replaces the hand written 12 line lock, which left transitive
+  dependencies open); two stage Docker build whose install step runs with networking disabled; CycloneDX SBOM; `scripts/reproduce.py`;
+  CI actions pinned to SHAs; read only smoke test with an upload; a test that runs a diagnosis with network sockets disabled; threat model
+  in `docs/SECURITY.md` (intended standards mapping, not certified); `docs/ASSURANCE_CASE.md`; `docs/EDGE_PROPOSAL.md`.
+- **CI was red from Round 4 through v1.1.1.** The Python 3.10 job could only install scikit-learn 1.7, so the bundled model refused to load,
+  and fail fast cancelled the 3.12 job. Fixed: Python 3.11 or newer, scikit-learn pinned to 1.9.x, fail fast off. Earlier docs said CI was green.
+- **Reproducibility:** the simulator A pool regenerates to the same numbers (stored training percentiles match to 4e-15) but not the same
+  file hash; the seed of the committed simulator B pool was never recorded, so it cannot be regenerated. Commit 69d7706 removed the old lock
+  file before the Docker change landed, so the Docker build fails on 69d7706 to 218e0f3.
+- **Corrections from an adversarial review:** the external check is 3 of 5 predictions failed and 1 not supported (README said one failed);
+  LBNL is simulated plant data; the README results table described 6500 samples across 650 buildings but shows simulator A only; valve
+  confusion is 3% and 4% (was 2% and 5%); 40 target buildings give 0.836, not 0.84, and F1 failed; F5 was not tested as stated; guard false
+  flags under 2 hourly data (42% of windows) and noise are now reported; round names no longer carry organisation names (they were review
+  personas, not reviews by those organisations); three tests that could pass vacuously are fixed.
+- The v1.1.1 transfer entry below counts the few shot predictions only (2 of 5 failed); the transfer fixes had 3 of 8 failed (V1, V2, V5).
+
 ## v1.1.1
 
 Round 7: turning the six open limitations into measured results. Predictions were written before each experiment; failures are recorded.

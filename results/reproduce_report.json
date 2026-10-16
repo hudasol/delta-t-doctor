@@ -1,0 +1,41 @@
+{
+  "artefacts": {
+    "ok": true,
+    "checked": [
+      "calibration_base.npz",
+      "diagnoser.joblib",
+      "diagnoser_informed.joblib"
+    ],
+    "mismatch": [],
+    "seconds": 0.2
+  },
+  "zero_shot_D": {
+    "ok": true,
+    "got": {
+      "macro_auroc": 0.7052789956405556,
+      "any_fault_auroc": 0.647739292704019
+    },
+    "committed": {
+      "macro_auroc": 0.7052789956405556,
+      "any_fault_auroc": 0.647739292704019
+    },
+    "max_abs_diff": 0.0,
+    "seconds": 32.0
+  },
+  "openset": {
+    "ok": true,
+    "D": {
+      "windows_open_set": 0.6833333333333333,
+      "committed": 0.6833333333333333
+    },
+    "fresh_A": {
+      "windows_open_set": 0.010416666666666666,
+      "committed": 0.010416666666666666
+    },
+    "fresh_B": {
+      "windows_open_set": 0.17291666666666666,
+      "committed": 0.17291666666666666
+    },
+    "seconds": 0.4
+  }
+}
