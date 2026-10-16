@@ -24,15 +24,18 @@ if __name__ == "__main__":
     ap.add_argument("--stress-buildings", type=int, default=80)
     ap.add_argument("--stress-per", type=int, default=6)
     ap.add_argument("--jobs", type=int, default=2)
-    ap.add_argument("--sim", default="A", choices=["A", "B", "CA", "CB"], help="B = structurally different hydraulic simulator (no stress sets)")
+    ap.add_argument("--sim", default="A", choices=["A", "B", "CA", "CB", "D"],
+                    help="B = structurally different hydraulic simulator; D = dynamic world (docs/WORLD_D.md); stress sets are made for A only")
+    ap.add_argument("--temporal", action="store_true", help="also store the optional temporal feature block (docs/WORLD_D.md)")
+    ap.add_argument("--no-stress", action="store_true", help="skip the stress sets")
     ap.add_argument("--seed", type=int, default=11)
     a = ap.parse_args()
     os.makedirs(a.out, exist_ok=True)
     t = time.time()
-    ds = generate(a.buildings, a.per, seed=a.seed, n_jobs=a.jobs, sim=a.sim)
+    ds = generate(a.buildings, a.per, seed=a.seed, n_jobs=a.jobs, sim=a.sim, temporal=a.temporal)
     ds.save(os.path.join(a.out, "main.npz"))
     print(f"main {len(ds.X)} samples in {time.time()-t:.0f}s", flush=True)
-    for i, (name, kw) in enumerate(STRESS.items() if a.sim == "A" else []):
+    for i, (name, kw) in enumerate(STRESS.items() if a.sim == "A" and not a.no_stress else []):
         t = time.time()
         d = generate(a.stress_buildings, a.stress_per, seed=1000 + i, n_jobs=a.jobs, **kw)
         d.save(os.path.join(a.out, f"stress_{name}.npz"))
