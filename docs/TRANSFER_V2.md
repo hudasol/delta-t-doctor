@@ -115,12 +115,12 @@ buildings called faulty at p ≥ 0.5.
 | F2 | 20 buildings: 0.903 (needed 0.88) | Held |
 | F3 | B to A: overflow is the weakest cause at every k up to 200 (0.907 at k=200); A to B: fouling is the weakest cause from k=5 on (overflow 0.83 at k=40 versus fouling 0.66) | **Failed** as stated (A to B); held for B to A |
 | F4 | 24% at 20 buildings (needed under 30%); at k=0 the measured figure was 82%, not the 88% written in the prediction | Held (the "88%" in the prediction was a misquote; the correct baseline is 82%) |
-| F5 | A to B 40 to 70 buildings adds 0.023 (the 80-building point was not run) | Held, approximately |
+| F5 | A to B 40 to 70 buildings adds 0.023; the 80 building point was not run | Not tested as stated (corrected in v1.2.0 from "Held, approximately") |
 
 Reading, plainly:
 
 * A pilot does not need a large labelled fleet to leave the weak region. Roughly 20 surveyed buildings lift the weaker direction from
-  0.69 to 0.80 and cut healthy false alarms from 82% to 24%; about 40 gets 0.84. These are simulator-to-simulator numbers; the
+  0.69 to 0.80 and cut healthy false alarms from 82% to 24%; 40 gets 0.836, just under the preregistered 0.84 (F1 failed). These are simulator-to-simulator numbers; the
   point is the shape of the curve, not the values, and real buildings may need more or fewer.
 * Fouling is the cause that adapts worst in A to B (0.66 at k=40 while the others reach 0.83 to 0.96). I have not yet tested why; a
   plausible but unverified reading is that B's valve and mixing physics hide the fouling signature.
@@ -153,3 +153,24 @@ Also reported, without a prediction: permutation importance of the A trained fou
 partial dependence of that classifier on its two most important features, with the B and A feature ranges marked.
 
 The answer is written below whichever way it goes, including "undetermined".
+
+### Results (`scripts/fouling_transfer.py`, `results/fouling_transfer.json`)
+
+| # | Measured | Verdict |
+|---|---|---|
+| H1 | A's five strongest fouling features (`dt_std_loaded`, `flow_load_corr`, `flow_bin5`, `dt_hi_minus_mid`, `dt_vs_oat_slope`) shift by a median of 3.63 healthy spreads in A and 0.38 in B, about a tenth | Held |
+| H2 | Only `dt_std_loaded` has a univariate fouling AUROC on opposite sides of 0.5 (0.78 in A, 0.46 in B); the other four point the same way in both worlds, only much more weakly in B (0.15 to 0.21 in A, 0.36 to 0.48 in B) | **Failed** |
+| H3 | Removing the delta T shape group lowers fouling AUROC in both directions: A to B 0.630 to 0.614 (I predicted a rise), B to A 0.889 to 0.870 (a fall of 0.020, just under the 0.02 I required) | **Failed** |
+| H4 | Building grouped 5 fold CV inside B gives fouling AUROC 0.675, and the A to B few shot value at 40 buildings is 0.66, within 0.02 | Held |
+
+Descriptive: the A trained fouling classifier relies mostly on `dt_std_loaded` and `flow_load_corr` (permutation importance on held out A:
+0.103 and 0.060 AUROC). On B, `dt_std_loaded` is worth almost nothing (0.008) and `flow_load_corr` remains the main feature (0.068). Partial
+dependence shows why the second one cannot carry over: in A, `flow_load_corr` lies between 0.91 and 1.00 (5th to 95th percentile), in B
+between 0.27 and 1.00, and over most of B's range the A model's output is flat at about 0.52, which is extrapolation, not information.
+
+**Answer.** Fouling transfers worst from A to B mainly because B's fouling signature is weak, not because it points the wrong way. Inside B
+alone fouling is found at only 0.675 AUROC, the few shot curve reaches the same level, and A's strongest fouling features move about a tenth as
+much in B. The delta T shape features are not misleading in B (H3 failed), and only one feature reverses (H2 failed). In B's physics a fouled
+coil is compensated by the valve and the plate exchanger approach, so the meter sees little. The practical consequence is the same as for
+overflow: in a fleet whose hydraulics resemble B, fouling will be hard to confirm from meter data alone, and calibration cannot lift it above
+what the meter data contain. This is a simulation result about two simulators written by the same author.
