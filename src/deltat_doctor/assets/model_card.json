@@ -54,12 +54,22 @@
   },
   "sha256": {
     "diagnoser.joblib": "7995e5efc70501be4e37148a761714b58df5fe32319b31e5d9b982f77369299a",
-    "diagnoser_informed.joblib": "f5b340ef8172dfdc4072fb405c220d534ad03bac437a4cd6237d36da693d5f05"
+    "diagnoser_informed.joblib": "f5b340ef8172dfdc4072fb405c220d534ad03bac437a4cd6237d36da693d5f05",
+    "calibration_base.npz": "183a8bbe7e205998bba6a9b8562f19bead1cc6205e31698e58d93f7a8c85e030"
   },
   "worst_world_auroc": {
     "fouling": 0.633,
     "passing_valves": 0.678,
     "constant_flow": 0.858,
     "overflow": 0.502
+  },
+  "calibration_base": {
+    "rows": 6500,
+    "buildings": 650,
+    "from": [
+      "results/data/main.npz",
+      "results/data_b/main.npz"
+    ],
+    "note": "training rows of the shipped blind model, used only by 'deltat-doctor calibrate'; the A rows were regenerated and match the model's stored training percentiles to 4e-15 (scripts/check_regenerated.py)"
   }
 }

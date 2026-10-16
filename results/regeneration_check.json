@@ -1,0 +1,18 @@
+{
+  "A": {
+    "regenerated_sha256_without_temporal": "fa77ca415bbc01268e41f57db8232183c6282be62fa4a6b3a732a7ad9f767747",
+    "model_card_sha256": "680dca730791e99037cdeec583ca32e279e5732bc2a9d367ae557aa6ce2b82ce",
+    "file_identical": false,
+    "rows": 6500,
+    "model_trained_on": 6500,
+    "max_abs_diff_feature_p1": 1.7763568394002505e-15,
+    "max_abs_diff_feature_p99": 3.552713678800501e-15,
+    "prevalence_identical": true,
+    "identical": true
+  },
+  "B_informational": {
+    "identical_X_Y_G": false,
+    "seed_tried": 11,
+    "note": "the seed of the committed B pool is not recorded; seed 11 does not reproduce it"
+  }
+}

@@ -100,6 +100,7 @@ class Report:
     guard: dict = field(default_factory=dict)
     series: list = field(default_factory=list)   # per-window delta-T and cause probabilities
     trend: dict = field(default_factory=dict)    # onset / drift of high-load delta-T
+    calibration: dict = field(default_factory=dict)   # set when a fleet calibrated model (calibrate.py) produced this report
 
     def to_dict(self) -> dict:
         d = asdict(self)
@@ -137,7 +138,22 @@ def _load_verified(path: str) -> Diagnoser:
         trained = str(card.get("sklearn_version", ""))
         if trained.split(".")[:2] != sklearn.__version__.split(".")[:2] and not os.environ.get("DTD_ALLOW_SKLEARN_MISMATCH"):
             raise RuntimeError(f"The model was trained with scikit-learn {trained} but {sklearn.__version__} is installed. "
-                               f"Install the pinned version (requirements-lock.txt) or retrain.")
+                               f"Install the pinned version (requirements.lock) or retrain.")
+    elif os.path.exists(path + ".card.json"):
+        # a fleet calibrated model (calibrate.py) carries a sidecar card with its sha256: verify it, fail closed
+        try:
+            want = json.load(open(path + ".card.json"))["sha256"]
+        except (OSError, KeyError, ValueError):
+            raise RuntimeError(f"{os.path.basename(path)}.card.json has no sha256; refusing to load the model.") from None
+        if hashlib.sha256(blob).hexdigest() != want:
+            raise RuntimeError(f"{os.path.basename(path)} does not match the sha256 in its card; refusing to load it.")
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            import joblib
+            m = joblib.load(_io.BytesIO(blob))
+        if getattr(m, "calibration", None) is not None:
+            m.calibration = dict(m.calibration, sha256=want)   # so every report names the exact calibrated file
+        return m
     else:
         log.warning("loading a model from outside the package assets: %s (not verified)", path)
     with warnings.catch_warnings():
@@ -269,6 +285,9 @@ def diagnose_frame(df: pd.DataFrame, terms: ContractTerms | None = None,
     if informed and not (DESIGN_DT_RANGE[0] <= design_delta_t_c <= DESIGN_DT_RANGE[1]):
         raise DataError(f"Design delta-T must be between {DESIGN_DT_RANGE[0]:.0f} and {DESIGN_DT_RANGE[1]:.0f} C "
                         f"(the range the model was trained on).")
+    cal = dict(getattr(model, "calibration", None) or {})
+    if cal and informed:
+        raise DataError("A fleet calibrated model is blind only; run it without a design delta-T.")
     model = model or load_default_model(informed=informed)
     h = canonicalise(df)
     q_in = dict(h.attrs.get("quality", {}))
@@ -326,6 +345,11 @@ def diagnose_frame(df: pd.DataFrame, terms: ContractTerms | None = None,
     dt_all = float(h["heat_kw"].sum() / (CP_KJ_KG_K * max(h["flow_kgs"].sum(), 1e-9)))
 
     notes = list(in_notes)
+    if cal:
+        hc = cal.get("holdout", {}).get("calibrated", {})
+        notes.append(note("calibrated_weak" if cal.get("weakly_calibrated") else "calibrated", n=cal.get("n_labelled_buildings"),
+                          date=str(cal.get("created_utc", ""))[:10], m=f"{hc.get('macro_auroc') or float('nan'):.2f}",
+                          h=hc.get("n_buildings")))
     has_oat = bool(h["t_outdoor_c"].notna().mean() > 0.5)
     if not has_oat:
         notes.append(note("no_oat"))
@@ -388,7 +412,7 @@ def diagnose_frame(df: pd.DataFrame, terms: ContractTerms | None = None,
         notes=[str(n) for n in notes], notes_ar=[note_ar(n) for n in notes], terms=terms.to_dict(),
         data_quality=quality, signature=signature,
         mode="informed" if informed else "blind", design_delta_t_c=design_delta_t_c,
-        abstained=abstain, series=series, trend=trend,
+        abstained=abstain, series=series, trend=trend, calibration=cal,
         guard={"open_set_score": g_score, "open_set_threshold": getattr(guard, "threshold", None), "open_set_flag": g_flag,
                "box_features_out": n_ood, "box_limit": ood_limit},
     )

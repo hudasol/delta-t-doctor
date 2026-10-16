@@ -32,9 +32,10 @@ def _fmt_report(r) -> str:
 
 
 def cmd_diagnose(a):
-    from .diagnose import diagnose_csv
+    from .diagnose import diagnose_csv, load_default_model
     terms = ContractTerms(a.min_dt, a.pct, a.rate)
-    rep = diagnose_csv(a.csv, terms, design_delta_t_c=a.design_dt)
+    model = load_default_model(a.model) if a.model else None
+    rep = diagnose_csv(a.csv, terms, model=model, design_delta_t_c=a.design_dt)
     if a.html:
         from . import provenance
         from .report import render_report
@@ -44,6 +45,25 @@ def cmd_diagnose(a):
         open(a.html, "w", encoding="utf-8").write(render_report(d, a.name, a.lang))
         print(f"wrote {a.html}")
     print(json.dumps(rep.to_dict(), indent=2, default=float) if a.json else _fmt_report(rep))
+
+
+def cmd_calibrate(a):
+    from .calibrate import CalibrationError, calibrate
+    try:
+        card = calibrate(a.manifest, a.out, repeat=a.repeat, holdout=a.holdout, seed=a.seed)
+    except CalibrationError as e:
+        sys.exit(f"calibration refused: {e}")
+    h = card["holdout"]
+    fmt = lambda v: "n/a" if v is None else f"{v:.3f}"
+    print(f"wrote {a.out} and {a.out}.card.json")
+    print(f"{card['n_labelled_buildings']} labelled buildings: {card['n_fit_buildings']} used for fitting, "
+          f"{card['n_holdout_buildings']} held out" + (f"; skipped (inspection not complete): {', '.join(card['skipped_incomplete'])}"
+                                                       if card["skipped_incomplete"] else ""))
+    print(f"held out macro AUROC: base {fmt(h['base']['macro_auroc'])}, calibrated {fmt(h['calibrated']['macro_auroc'])}")
+    print(f"held out top-2 agreement: base {fmt(h['base']['top2_agreement'])}, calibrated {fmt(h['calibrated']['top2_agreement'])}")
+    if card["weakly_calibrated"]:
+        print(f"\nWARNING: {card['warning']}")
+    print("\nThe default model is unchanged. Use this model only by passing --model to 'deltat-doctor diagnose'.")
 
 
 def cmd_portfolio(a):
@@ -109,7 +129,16 @@ def main(argv=None):
     d.add_argument("--name", default="Your building", help="building name for the report heading")
     d.add_argument("--lang", choices=["en", "ar"], default="en", help="language of the --html report")
     d.add_argument("--json", action="store_true")
+    d.add_argument("--model", default=None, help="a fleet calibrated model written by 'deltat-doctor calibrate' (default: bundled model)")
     d.set_defaults(fn=cmd_diagnose)
+
+    cb = sub.add_parser("calibrate", help="calibrate the cause classifiers on inspected, labelled buildings of one fleet")
+    cb.add_argument("manifest", help="CSV like examples/real_manifest_template.csv (building_id,file,causes,complete,...)")
+    cb.add_argument("--out", required=True, help="where to write the calibrated model (never the bundled model)")
+    cb.add_argument("--repeat", type=int, default=5, help="weight of each labelled window relative to a base training window")
+    cb.add_argument("--holdout", type=float, default=0.3, help="share of labelled buildings held out for the holdout report")
+    cb.add_argument("--seed", type=int, default=0)
+    cb.set_defaults(fn=cmd_calibrate)
 
     pf = sub.add_parser("portfolio", help="diagnose many buildings from one file")
     pf.add_argument("csv")
