@@ -126,7 +126,7 @@ Reading, plainly:
   plausible but unverified reading is that B's valve and mixing physics hide the fouling signature.
 * The two predictions I got wrong were both over-optimistic about small k. The product therefore states the requirement as "calibrate on
   about 20 to 40 surveyed buildings before trusting the probabilities", not "a handful".
-* None of this is real-data evidence. It says how fast a model adapts when the target data are labelled and drawn from a simulator.
+* None of this is real data evidence. It says how fast a model adapts when the target data are labelled and drawn from a simulator.
 
 ## Addendum (v1.2.0): why does fouling transfer worst from A to B?
 

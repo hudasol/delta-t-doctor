@@ -84,7 +84,7 @@ def main():
     ap.add_argument("manifest")
     ap.add_argument("--out", default="results/real_eval")
     ap.add_argument("--boot", type=int, default=2000)
-    ap.add_argument("--model", default=None, help="a fleet calibrated model (verified by its card); default: the bundled model")
+    ap.add_argument("--model", default=None, help="a fleet calibrated model; verified against its .card.json when the card exists, otherwise loaded with a warning")
     a = ap.parse_args()
     model = None
     if a.model:

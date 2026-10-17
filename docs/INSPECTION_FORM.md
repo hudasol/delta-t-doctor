@@ -46,7 +46,7 @@ the pilot manifest (`examples/real_manifest_template.csv`) that `scripts/evaluat
 | Constant flow (3-way valves, actuators stuck open or in manual) | | | | |
 | Overflow (excess differential pressure, oversized or hunting valves) | | | | |
 | Other (describe) | | | | |
-| None of the above found | | | | |
+| None of the above found (tick if every cause above is ruled out) | tick: | | | |
 
 **4. Measurements taken (optional)**
 

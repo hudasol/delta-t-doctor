@@ -23,7 +23,7 @@ truly present, coverage was lower (55% to 76%). Ranges assume the windows of one
 do not include error in scaling a partial year to a full year.
 
 **Evaluation.** On held out simulated buildings from simulator A, for models trained and tested on A only (not the shipped A + B model): macro AUROC 0.966 (blind, 95% interval 0.963 to 0.969) and
-0.971 (informed); across 4 regenerated datasets the spread is 0.959 +/- 0.003. Calibration, stress, leave-one-building-type-out and
+0.971 (informed); across 4 regenerated datasets the spread is 0.959 +/- 0.003. Calibration, stress, leave one building type out and
 held out-season results are in [results/metrics.md](../results/metrics.md). Across simulators the picture is much weaker: trained on A
 and tested on B it scores 0.683, trained on B and tested on A 0.770 ([CROSS_SIMULATOR.md](CROSS_SIMULATOR.md)). Reproduce with
 `python scripts/evaluate.py` and `python scripts/cross_simulator.py`.
@@ -35,7 +35,7 @@ or an engineer checking on site.
 ranking has safety consequences, or buildings the tool marks "not reliable".
 
 **Known failures.**
-* On the LBNL chiller-plant benchmark (a different kind of system) it reports a fault with near-certainty, in blind
+* On the LBNL chiller-plant benchmark (a different kind of system) it reports a fault with near certainty, in blind
   and informed modes. See [EXTERNAL_CHECK.md](EXTERNAL_CHECK.md).
 * Overflow is the weakest cause (AUROC 0.92 in simulation, chance level across simulators). Weak faults (true gain 0.2 to 0.4 C) are
   missed often: recall at p >= 0.5 for gains of 0.2 to 0.4 C is 0.28 (overflow), 0.41 (passing valves), 0.57 (fouling) and 0.69
@@ -62,5 +62,5 @@ those buildings, but the windows they let through score lower (0.618) than the o
 
 **Knowing when it is wrong (v1.2.1).** Measured per window in [SELECTIVE_PREDICTION.md](SELECTIVE_PREDICTION.md): the decision margin (distance
 of `p_any` or the top cause probability to 0.5) ranks wrong decisions first at AUROC 0.905 in simulator A and 0.733 in B, but no label free
-signal exceeds 0.61 on world D, where the model's entropy is below chance (0.457). The open set guard is not an error signal (0.40 and 0.44 in
-world, 0.583 on D). The model's probabilities are therefore not a reliability measure on an unfamiliar fleet.
+signal exceeds 0.61 on world D, where the model's entropy is below chance (0.457). As an error signal the open set guard is below chance in world
+(0.40 and 0.44) and weak on D (0.583). The model's probabilities are therefore not a reliability measure on an unfamiliar fleet.

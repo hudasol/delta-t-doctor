@@ -196,9 +196,9 @@ recorded as a negative result.
 
 ## Follow up (v1.2.1): the cut experiments
 
-Status: **predictions written 2026-10-18, before these runs.** Same scripts and protocol as above: `scripts/world_d_eval.py fewshot` with
-`DTD_KS=5,10,70` (same 70 test buildings, same three draws per k, seeds 100 to 102), written to `results/world_d_fewshot_followup.json`; and
-`scripts/world_d_eval.py temporal` in world A and B (`DTD_TEMPORAL_INWORLD=A,B`), written to `results/world_d_temporal_followup.json`, which
+Status: **predictions written 2026-10-18, before these runs.** Same scripts and protocol as above: `scripts/world_d_eval.py fewshot` with the
+environment variable `DTD_KS` set to `5,10,70` (in PowerShell: `$env:DTD_KS="5,10,70"`; same 70 test buildings, same three draws per k, seeds 100 to 102), written to `results/world_d_fewshot_followup.json`; and
+`scripts/world_d_eval.py temporal` in world A and B (`DTD_TEMPORAL_INWORLD` set to `A,B`), written to `results/world_d_temporal_followup.json`, which
 scores the already preregistered D11. The B pool for the temporal comparison is again the seed 11 pool (deviation 3 above).
 
 | # | Prediction | Failure if |

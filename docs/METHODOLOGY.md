@@ -42,7 +42,7 @@ Real buildings do not come with root-cause labels, so the training data are simu
   temperature, 21-day window, energy-only meter.
 * **Leave one building type out** and **held out seasons.**
 * **Metrics:** AUROC, F1, Brier score, gain error, and a decision metric: of the available delta T
-  gain, how much does fixing the tool's top-ranked cause capture.
+  gain, how much does fixing the tool's top ranked cause capture.
 
 All results are in [results/metrics.md](../results/metrics.md) and are simulator results.
 
