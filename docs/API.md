@@ -34,9 +34,9 @@ At least 14 days; a full year is best.
 }
 ```
 
-`data_quality.reliable` is `false` when the building's behaviour is outside the trained range (per-feature box or the open-set Mahalanobis guard), or when input quality is poor (dropped rows, outliers, a flatlined meter, low coverage). When a guard trips, `abstained` is `true` and `findings` is empty.
+`data_quality.reliable` is `false` when the building's behaviour is outside the trained range (per feature box or the open set Mahalanobis guard), or when input quality is poor (dropped rows, outliers, a flatlined meter, low coverage). When a guard trips, `abstained` is `true` and `findings` is empty.
 
-New in v1.1 on every result: `abstained`, `guard` (open-set score, threshold, box count), `series` (per-window delta-T and cause probabilities), `trend` (Kendall / Theil-Sen on delta-T at 60-100% load), `provenance`, `is_demo`, `notes_ar`, `disclaimer_ar`. Each finding adds `tier` (likely / possible / weak / unsupported), `evidence` (measured features against the healthy 5th-95th percentile, `weak_signature`), `label_ar`, `checks_ar`, and `saving_low/high_aed_per_year`. Savings are capped at the annual surcharge.
+New in v1.1 on every result: `abstained`, `guard` (open set score, threshold, box count), `series` (per window delta T and cause probabilities), `trend` (Kendall / Theil-Sen on delta T at 60-100% load), `provenance`, `is_demo`, `notes_ar`, `disclaimer_ar`. Each finding adds `tier` (likely / possible / weak / unsupported), `evidence` (measured features against the healthy 5th-95th percentile, `weak_signature`), `label_ar`, `checks_ar`, and `saving_low/high_aed_per_year`. Savings are capped at the annual surcharge.
 Show that to users: the ranking should not be trusted in that case.
 
 ## Errors

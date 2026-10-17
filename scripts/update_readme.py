@@ -2,12 +2,12 @@
 import json, re
 m = json.load(open("results/metrics.json"))
 cv, bs = m["cv_grouped_by_building"], m.get("bootstrap", {}).get("models", {})
-rows = [("**delta-t-doctor (blind)**", "ours_gbdt"), ("delta-t-doctor (informed, design delta-T given)", "ours_informed"),
-        ("logistic regression", "logistic"), ("hand-written expert rules", "expert_rules"), ("class prior", "prior")]
+rows = [("**delta-t-doctor (blind)**", "ours_gbdt"), ("delta-t-doctor (informed, design delta T given)", "ours_informed"),
+        ("logistic regression", "logistic"), ("hand written expert rules", "expert_rules"), ("class prior", "prior")]
 def ci(k, key):
     b = bs.get(k, {}).get(key)
     return f" [{b['ci95'][0]:.3f}, {b['ci95'][1]:.3f}]" if b else ""
-lines = ["| model | macro AUROC (95% CI) | any-fault AUROC | macro F1 | fix #1 gain captured* |", "|---|---|---|---|---|"]
+lines = ["| model | macro AUROC (95% CI) | any fault AUROC | macro F1 | fix #1 gain captured* |", "|---|---|---|---|---|"]
 for label, k in rows:
     x = cv[k]
     lines.append(f"| {label} | {x['macro_auroc']:.3f}{ci(k, 'macro_auroc')} | {x['any_fault_auroc']:.3f} | {x['macro_f1']:.3f} | {x.get('top1_fix_gain_captured_blind', float('nan')):.3f} |")
