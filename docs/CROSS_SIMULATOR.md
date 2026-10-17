@@ -39,7 +39,7 @@ Results are in the section below once run, with every failed prediction reported
 
 ## Results (run after the predictions above; raw tables in `results/cross_simulator.md`)
 
-Simulator A: 5,000 windows from 500 buildings. Simulator B: 1,500 windows from 150 buildings. Macro AUROC with a building-level
+Simulator A: 5,000 windows from 500 buildings. Simulator B: 1,500 windows from 150 buildings. Macro AUROC with a building level
 bootstrap interval where computed.
 
 | setting | macro AUROC | any fault AUROC | fouling | passing valves | constant flow | overflow |

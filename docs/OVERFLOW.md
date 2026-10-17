@@ -56,7 +56,7 @@ Held out buildings, first of five building grouped folds, one gradient-boosted d
    request: loop differential pressure (or pump speed) at the building, where the BMS has it.
 4. **Hunting features were not tested.** Both simulators produce overflow as a steady extra part load flow, with no oscillation dynamics. A
    high-frequency "hunting" feature could only be validated on data I would have to invent, so I did not build one. It remains a candidate for the
-   real-data pilot.
+   real data pilot.
 
 Product decision: keep overflow at "possible" (no behaviour change). Record what would lift it: local calibration on about 20 to 40 labelled buildings
 (`scripts/evaluate_real.py` measures when that is met) or a measured DP channel confirmed on real data.

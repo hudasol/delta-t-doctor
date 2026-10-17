@@ -24,11 +24,11 @@ results are reported for the cooling season (June-September) and for the full ye
 
 ## 2. Predictions (written before running)
 
-* **P1.** On the fault free year, the mean probability of "any material cause" over cooling-season
+* **P1.** On the fault free year, the mean probability of "any material cause" over cooling season
   windows is below 0.35.
 * **P2.** For plant-side faults that should not alter the building loop (cooling-tower fouling 95%,
   cooling-tower PI tuning, chiller sensor bias +2 C, condenser three-way valve stuck 75% and leaking
-  75%), the cooling-season mean "any cause" probability stays within 0.15 of the fault free value.
+  75%), the cooling season mean "any cause" probability stays within 0.15 of the fault free value.
 * **P3.** For the secondary pressure-sensor bias of -20% (controller believes pressure is lower than
   it is and drives the pumps harder) I expect the "overflow" probability to rise relative to the
   fault free year. I hold this prediction weakly: whether the fault is visible in delta T at all is
@@ -54,7 +54,7 @@ Raw output: `results/lbnl_check.json`, `results/lbnl.log`.
 `results/lbnl_first_run_discarded.log`). The numbers below are from the corrected run only. The
 predictions above were not edited.
 
-| Case | cooling-season delta T (C) | any cause | fouling | passing valves | constant flow | overflow |
+| Case | cooling season delta T (C) | any cause | fouling | passing valves | constant flow | overflow |
 |---|---|---|---|---|---|---|
 | fault free | 2.62 | 1.00 | 0.98 | 0.06 | 0.67 | 0.04 |
 | secondary pressure bias -20% | 2.61 | 1.00 | 0.98 | 0.06 | 0.68 | 0.03 |
@@ -106,7 +106,7 @@ so it is a response to a known failure and cannot count as an independent test o
 The benchmark documentation does not state a design delta T for the secondary loop, and estimating it from the data
 itself would be circular. So I sweep the design value instead of choosing one.
 
-* **P4.** In informed mode on the fault free year, the cooling-season mean "any cause" probability falls with the
+* **P4.** In informed mode on the fault free year, the cooling season mean "any cause" probability falls with the
   design value I supply: it is below 0.35 when I enter a design delta T within 1.5 C of the plant's observed
   delta T (2.6 C), i.e. 4.1 C or lower, and it is above 0.65 when I enter 9 C or more.
 * **P5.** In blind mode (no design value), the v0.2 model's fault free score is lower than v0.1's 1.00, but I do not
@@ -140,6 +140,6 @@ Raw output: `results/lbnl_v02.json`. Fault-free year, cooling season, 4 windows.
   the plant had 9 out of range features, so this is a guard I built in response, not an independent test. On held out
   simulated buildings it flags 2.5-6% of windows.
 
-**Conclusion.** The model is not a general delta T anomaly detector. It is a four-cause classifier for variable flow
+**Conclusion.** The model is not a general delta T anomaly detector. It is a four cause classifier for variable flow
 building loops of the kind it was trained on, and it now says so when a building does not look like them. Real UAE
 ETS data would need to pass the same guard, and that is a first thing the pilot should measure.

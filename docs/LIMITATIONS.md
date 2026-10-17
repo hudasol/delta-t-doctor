@@ -16,7 +16,7 @@ Read this before trusting any number from the tool.
    40 to 0.836 (the preregistered target of 0.84 was missed narrowly; simulator to simulator; real fleets may differ). On a third, dynamic
    simulator (world D, [WORLD_D.md](WORLD_D.md)) the shipped model scores 0.705 zero shot and calls 98% of healthy windows faulty.
 3. **Only variable flow building loops of the kind simulated.** On the LBNL plant (flow barely follows load, and
-   delta T is about 2.6 C with no fault) the model reports a fault with near-certainty, even when told the design
+   delta T is about 2.6 C with no fault) the model reports a fault with near certainty, even when told the design
    delta T. The tool now counts how many of its 42 measurements fall outside the training range and says "not
    reliable" when too many do. That guard was built after seeing this failure, so it is untested on real ETS data. Since v1.1 a second, joint-distribution guard also runs (item 11).
    See [EXTERNAL_CHECK.md](EXTERNAL_CHECK.md) sections 4 and 6.
@@ -45,17 +45,13 @@ Read this before trusting any number from the tool.
 11. **Open set guard is a simulator measured estimate.** Since v1.1.1 it averages a Mahalanobis score and a nearest neighbour score. Fit on A it flags 64% of
     B's windows; fit on B it flags 29% of A's (`results/openset.json`; v1.1.0's Mahalanobis-only guard gave 71% and 25%). The asymmetry is partly structural:
     B's wider envelope contains much of A's behaviour, so A looks "in range". I tried six detectors (`results/openset_v2.json`); none is strong in both directions.
-    In world false-flag rate is 5.5% to 6% on clean held out windows, so about one in fifteen normal windows is flagged (the building-level test uses the
+    In world false flag rate is 5.5% to 6% on clean held out windows, so about one in fifteen normal windows is flagged (the building level test uses the
     median window, which is stricter). It is much higher under degraded input: 42% of windows with 2 hourly data, 22% with 3x sensor noise, 16%
     without outdoor temperature (`results/openset.json`), and 24% of windows (14% of buildings) from freshly generated simulator B buildings
     (`results/world_d.json`), so "hourly or 2 hourly is enough" holds for the parser, not for the guard. **The guard detects unfamiliar
     buildings; it does not pick out the model's mistakes**: on world D the windows it lets through score 0.618 macro AUROC, lower than the 0.756
     of the windows it flags. As a per window error signal it is below chance in world (AUROC 0.40 in A, 0.44 in B) and weak on world D (0.583)
     ([SELECTIVE_PREDICTION.md](SELECTIVE_PREDICTION.md)). On real chilled water buildings the rates are unknown.
-18. **The system cannot tell when it is wrong on an unfamiliar fleet.** In world, the model's decision margin is a good error signal (0.905 in A,
-    0.733 in B). On world D no label free signal exceeds 0.61 AUROC and the model's entropy is below chance (0.457): it is confidently wrong. A
-    combination of signals fitted on A and B did not transfer (0.513 on D), so no uncertainty based abstention is shipped
-    (`results/selective_prediction.json`). Until a fleet is calibrated on inspected buildings, its probabilities should not be read as reliability.
 12. **Evidence is a physics consistency flag, not proof.** The features and directions are chosen from simulated single cause
     windows. When two faults are present they can mask each other (the mixed demo shows fouling as "unconfirmed" for this reason).
 13. **Trend is confounded by season.** The test uses delta T at 60-100% load, which is roughly load matched, but a half year file
@@ -68,3 +64,7 @@ Read this before trusting any number from the tool.
     simulator B pool was not recorded, so that pool cannot be regenerated from the repository; it is committed as is.
 17. **Fleet calibration is measured in simulation only**, on 12 held out buildings of a pretend fleet (`results/calibrate_check.json`): macro
     AUROC rose from 0.782 to 0.833 but overflow fell (0.81 to 0.66) and abstention stayed at 58%. Small holdouts give noisy figures.
+18. **The system cannot tell when it is wrong on an unfamiliar fleet.** In world, the model's decision margin is a good error signal (0.905 in A,
+    0.733 in B). On world D no label free signal exceeds 0.61 AUROC and the model's entropy is below chance (0.457): it is confidently wrong. A
+    combination of signals fitted on A and B did not transfer (0.513 on D), so no uncertainty based abstention is shipped
+    (`results/selective_prediction.json`). Until a fleet is calibrated on inspected buildings, its probabilities should not be read as reliability.

@@ -9,7 +9,8 @@
 > failed and 1 was not supported, and on simulators it was not trained on it scores 0.68 to 0.77 macro AUROC (see [Results](#results) and
 > [Limitations](docs/LIMITATIONS.md)). Treat its output as a ranked inspection list.
 
-Product plan, market research and roadmap: [plan.md](plan.md). Draft pilot protocol: [docs/PILOT.md](docs/PILOT.md).
+Product plan, market research and roadmap: [plan.md](plan.md). Draft pilot protocol: [docs/PILOT.md](docs/PILOT.md), with a blind
+[inspection form](docs/INSPECTION_FORM.md). Reproducibility of the data: [docs/REPRODUCIBILITY.md](docs/REPRODUCIBILITY.md).
 
 ## The problem
 
@@ -63,7 +64,7 @@ All simulated, simulator A only: 5000 windows across 500 buildings, models train
 | class prior | 0.478 [0.468, 0.487] | 0.483 | 0.000 | 0.543 |
 <!--results:end-->
 
-\*Share of the achievable delta T gain recovered by fixing the tool's top-ranked cause, without access to the true fault list.
+\*Share of the achievable delta T gain recovered by fixing the tool's top ranked cause, without access to the true fault list.
 
 Under stress (3x sensor noise, 2-hour data, +/-3 C climate, no outdoor temperature, energy-only meter,
 21-day window, half and 1.5x fault severity) macro AUROC ranges from 0.91 (3x sensor noise, no outdoor temperature) to 0.98 (fresh
@@ -84,9 +85,9 @@ Savings carry ranges: each cause has 10th/50th/90th percentile gains from quanti
 **External check (LBNL chiller plant benchmark, CC-BY; simulated plant data from a different team).** I wrote predictions before running it
 and again before the follow-up ([docs/EXTERNAL_CHECK.md](docs/EXTERNAL_CHECK.md)). Outcome:
 
-* **It failed.** A fault free plant was flagged as faulty with near-certainty, in v0.1 and again in v0.2, even when
+* **It failed.** A fault free plant was flagged as faulty with near certainty, in v0.1 and again in v0.2, even when
   told its design delta T. My first explanation (low design delta T) was only part of it: the plant's flow barely
-  follows load, unlike every simulated building. The model is a four-cause classifier for variable flow building
+  follows load, unlike every simulated building. The model is a four cause classifier for variable flow building
   loops, not a general anomaly detector.
 * **What changed.** The tool now measures how far a building's behaviour is from the training range and reports
   "not reliable" when it is far. That guard was built after the failure and is untested on real data.
@@ -95,9 +96,9 @@ and again before the follow-up ([docs/EXTERNAL_CHECK.md](docs/EXTERNAL_CHECK.md)
 That dataset has no building-side labels, so it cannot measure accuracy.
 
 **Open set guard (v1.1).** The first guard checked each feature against its own range and missed combinations it had never seen.
-It is joined by a Mahalanobis-distance guard over all 42 shape features (the building is withheld if either fires), and when a guard trips the tool **withholds the cause ranking**
-instead of printing it with a warning. Measured as a leave-one-world-out estimate (`results/openset.json`): fit on simulator A, it
-flags 64% of simulator B's windows (the old box: 37%) at a 5.5% false-flag rate on held out A buildings. Fit on B, it flags 29% of A
+It is joined by a Mahalanobis distance guard over all 42 shape features (the building is withheld if either fires), and when a guard trips the tool **withholds the cause ranking**
+instead of printing it with a warning. Measured as a leave one world out estimate (`results/openset.json`): fit on simulator A, it
+flags 64% of simulator B's windows (the old box: 37%) at a 5.5% false flag rate on held out A buildings. Fit on B, it flags 29% of A
 (old box: 7%), so the guard is weaker when the training world is small. (v1.1.0 used Mahalanobis alone: 71% and 25%; v1.1.1 adds a nearest neighbour score for a more balanced result.) It is built and tested on simulated data only.
 In world false flags are higher under degraded input: 42% of windows with 2 hourly data, 22% with 3x sensor noise, 16% without outdoor temperature
 (`results/openset.json`), and 24% of windows (14% of buildings) from freshly generated simulator B buildings (`results/world_d.json`).
@@ -117,7 +118,8 @@ inside one simulator but at chance (0.53 to 0.56) across simulators (`results/ov
   familiar simulator, its own decision margin finds wrong rankings well (AUROC 0.905 in A, 0.733 in B; keeping the more confident half cuts the
   error rate from 7.0% to 0.3% in A). On the unseen world D, **no label free signal works**: the best reaches 0.608, the model's entropy is below
   chance (0.457) because it is confidently wrong, and as an error signal the guard is below chance in world (0.40, 0.44) and weak on D (0.583).
-  No extra abstention flag is shipped. On a new fleet, only calibration on inspected buildings makes the output trustworthy.
+  No extra abstention flag is shipped. Calibration on inspected buildings is the only adaptation measured to raise accuracy on an unfamiliar
+  fleet (few shot on world D: 0.71 to 0.83 with 20 buildings); whether it also restores error detection has not been tested.
 * **Real data contact** ([docs/REAL_DATA_CONTACT.md](docs/REAL_DATA_CONTACT.md)): two openly licensed real district heating datasets (no labels).
   The product refused all 45 buildings at parsing with a plain message and did not crash; one silent issue (UTC timestamps) was fixed.
 * **Fleet calibration** (`deltat-doctor calibrate`, [docs/API.md](docs/API.md)): adapts the cause classifiers to a fleet from 10 or more

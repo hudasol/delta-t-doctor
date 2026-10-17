@@ -1,6 +1,6 @@
 # Pilot proposal (draft)
 
-**Goal:** measure, on real buildings, how often delta-t-doctor's top-ranked cause matches what a site inspection finds.
+**Goal:** measure, on real buildings, how often delta-t-doctor's top ranked cause matches what a site inspection finds.
 
 ## Scope
 * One operator or one property owner. 10-20 penalised buildings. 90 days.
@@ -64,6 +64,11 @@ So a pilot is the only route to field evidence. The data are held by operators a
 agreement on single cause buildings, per cause AUROC, Brier score and reliability bins, healthy false alarms, the number of buildings where
 the tool was confidently wrong (p > 0.8 on a cause the inspection ruled out), and 95% building-bootstrap intervals. With fewer than 10 buildings
 it prints a warning and no intervals, and the numbers must not be quoted. The success criteria above are checked by the same script.
+
+### Inspection form and dry run (v1.2.1)
+
+Inspectors use the blind form in [INSPECTION_FORM.md](INSPECTION_FORM.md). `scripts/pilot_dry_run.py` rehearses the whole path (manifest,
+`evaluate_real.py`, `calibrate`, rescoring) on synthetic buildings before a partner exists.
 
 ### Fleet calibration in the pilot (v1.2.0)
 
