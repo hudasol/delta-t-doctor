@@ -193,3 +193,20 @@ recorded as a negative result.
   cut healthy false alarms from 99% to 26% and 21%, slightly above the A to B curve. Overflow is the exception: 0.60 at 20 and 0.61 at 40. This supports fleet calibration as a product step.
 * **Hourly temporal features do not rescue overflow.** World D's hunting has a period of about ten minutes; the hourly meter averages it out.
   Detecting hunting would need sub hourly data, which is a data request for the pilot, not a model change.
+
+## Follow up (v1.2.1): the cut experiments
+
+Status: **predictions written 2026-10-18, before these runs.** Same scripts and protocol as above: `scripts/world_d_eval.py fewshot` with
+`DTD_KS=5,10,70` (same 70 test buildings, same three draws per k, seeds 100 to 102), written to `results/world_d_fewshot_followup.json`; and
+`scripts/world_d_eval.py temporal` in world A and B (`DTD_TEMPORAL_INWORLD=A,B`), written to `results/world_d_temporal_followup.json`, which
+scores the already preregistered D11. The B pool for the temporal comparison is again the seed 11 pool (deviation 3 above).
+
+| # | Prediction | Failure if |
+|---|---|---|
+| E1 | k = 5: macro AUROC at least 0.74 | below 0.74 |
+| E2 | k = 10: macro AUROC between 0.76 and 0.82 | outside |
+| E3 | k = 70: macro AUROC at least 0.86, and the gain from k = 40 (0.850) to k = 70 is at most 0.03 | either part fails |
+| E4 | Overflow stays below 0.70 at every k up to 70 | 0.70 or above at any k |
+| E5 | In world A and B the temporal block changes no other cause by more than 0.01 | a change above 0.01 for any of fouling, passing valves, constant flow |
+
+D11 (written before the v1.2.0 run, unchanged): "In world on A and on B, the temporal block changes overflow AUROC by less than 0.01".
