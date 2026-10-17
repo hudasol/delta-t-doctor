@@ -113,6 +113,11 @@ inside one simulator but at chance (0.53 to 0.56) across simulators (`results/ov
   the ranking for 92% of D buildings. **But the windows the guard lets through score lower (0.618) than those it flags (0.756)**: the guard
   detects unfamiliar buildings, it does not pick out the model's mistakes. Hourly temporal features did not help overflow in an unseen world
   and are not shipped.
+* **When does it know it is probably wrong?** ([docs/SELECTIVE_PREDICTION.md](docs/SELECTIVE_PREDICTION.md), v1.2.1, simulation.) Inside a
+  familiar simulator, its own decision margin finds wrong rankings well (AUROC 0.905 in A, 0.733 in B; keeping the more confident half cuts the
+  error rate from 7.0% to 0.3% in A). On the unseen world D, **no label free signal works**: the best reaches 0.608, the model's entropy is below
+  chance (0.457) because it is confidently wrong, and as an error signal the guard is below chance in world (0.40, 0.44) and weak on D (0.583).
+  No extra abstention flag is shipped. On a new fleet, only calibration on inspected buildings makes the output trustworthy.
 * **Real data contact** ([docs/REAL_DATA_CONTACT.md](docs/REAL_DATA_CONTACT.md)): two openly licensed real district heating datasets (no labels).
   The product refused all 45 buildings at parsing with a plain message and did not crash; one silent issue (UTC timestamps) was fixed.
 * **Fleet calibration** (`deltat-doctor calibrate`, [docs/API.md](docs/API.md)): adapts the cause classifiers to a fleet from 10 or more

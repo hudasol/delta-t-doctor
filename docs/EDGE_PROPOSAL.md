@@ -36,7 +36,10 @@ across physics.
 
 A measured limit: the guards are novelty detectors, not error detectors. On a simulated physics the model was not trained on they withheld
 92% of buildings, but the windows they let through were scored worse (0.618 macro AUROC) than those they withheld (0.756). An answer for a
-building from an unfamiliar fleet is therefore not more trustworthy because it was not withheld; fleet calibration is what addresses that.
+building from an unfamiliar fleet is therefore not more trustworthy because it was not withheld. A follow up measured five label free
+confidence signals: inside a familiar simulator the model's decision margin finds wrong answers well (AUROC 0.905), but on the unseen physics
+none exceeds 0.61 and the model is confidently wrong ([SELECTIVE_PREDICTION.md](SELECTIVE_PREDICTION.md)). Fleet calibration on inspected
+buildings is what addresses that.
 
 ## 5. Traceability
 
