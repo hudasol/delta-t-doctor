@@ -80,6 +80,14 @@ What I expect overall: model confidence signals carry real information in world,
 confidently wrong (98% of healthy windows are called faulty with high probability), which will limit every confidence signal. Q4 and Q8 are
 the predictions I hold least firmly.
 
+## Implementation details decided before the run
+
+* **S5 inputs.** S1 is already a training rank in [0, 1]; S2 to S4 are on probability scales. A training rank for S2 to S4 would need out of
+  fold scores on the training rows, so S5 uses the raw values of S1 to S4, standardised with the mean and spread of the A and B rows.
+* **S5 is never scored on rows it was fitted on.** For settings 1 to 4 it is fitted on the other three settings (leave one setting out); for
+  world D it is fitted on all four. This is stricter than the sentence above ("fitted on settings 1 to 4") for the A and B figures, and
+  identical for D.
+
 ## Results
 
 (appended after the run)
