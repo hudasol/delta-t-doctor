@@ -26,3 +26,11 @@ time, `n_jobs=1`, never touch processes I did not start.
 ### F0 orientation (02:14)
 
 * Pulled: already at b67898b (v1.2.0). Read OVERNIGHT_LOG, README, LIMITATIONS, MODEL_CARD, ASSURANCE_CASE, PILOT, WORLD_D, CHANGELOG.
+* Lint passed. Full local test suite on Windows (Python 3.13, OMP_NUM_THREADS=2): every test passed except one,
+  `test_ui_has_language_and_a11y_hooks`, which read the bundled UI with the platform default encoding (cp1252 on Windows) and could not decode
+  the Arabic text. CI runs on Linux, so it had never shown. Fixed with an explicit UTF-8 read; the test now passes. Slowest setup: the
+  calibration fixtures (114 s).
+* Docker: the CLI is installed but the Docker Desktop engine is not running. Starting it would take about 2 GB of memory with about 1.3 GB
+  free, so the local build is skipped and the image is verified by the CI `docker` job, as before.
+* Decision: F4 documents and the pilot dry run were written while the suite ran, because they need little compute. The pilot dry run test
+  (20 synthetic B buildings, one month each) passes.
