@@ -11,3 +11,9 @@ demo_ets.csv
 external/
 .DS_Store
 results/data_v01/
+results/pilot_dry_run/*.csv
+results/pilot_dry_run/*.joblib
+results/pilot_dry_run/*.card.json
+results/pilot_dry_run/eval_*/
+results/**/generate.log
+ci/lock.log
