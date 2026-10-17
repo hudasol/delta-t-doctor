@@ -1,6 +1,6 @@
 """Score delta-t-doctor against site-inspection labels on real buildings.
 
-usage: python scripts/evaluate_real.py manifest.csv [--out results/real_eval] [--boot 2000]
+usage: python scripts/evaluate_real.py manifest.csv [--out results/real_eval] [--boot 2000] [--model fleet_model.joblib]
 
 manifest.csv columns (one row per building; see examples/real_manifest_template.csv):
   building_id   any string
@@ -28,7 +28,7 @@ from deltat_doctor.penalty import ContractTerms
 CONF = 0.8
 
 
-def run_building(row, base):
+def run_building(row, base, model=None):
     path = os.path.join(base, row["file"])
     with open(path, "rb") as fh:
         table = read_table(fh.read(), path)
@@ -36,7 +36,7 @@ def run_building(row, base):
     dd = float(dd) if pd.notna(dd) and str(dd).strip() else None
     md = row.get("min_dt")
     terms = ContractTerms(float(md) if pd.notna(md) and str(md).strip() else 8.9, 10.0, 1.0)
-    rep = diagnose_frame(table, terms, design_delta_t_c=dd).to_dict()
+    rep = diagnose_frame(table, terms, model=model, design_delta_t_c=dd).to_dict()
     probs = {c: 0.0 for c in CAUSES}
     for f in rep["findings"]:
         probs[f["cause"]] = float(f["probability"])
@@ -84,12 +84,17 @@ def main():
     ap.add_argument("manifest")
     ap.add_argument("--out", default="results/real_eval")
     ap.add_argument("--boot", type=int, default=2000)
+    ap.add_argument("--model", default=None, help="a fleet calibrated model (verified by its card); default: the bundled model")
     a = ap.parse_args()
+    model = None
+    if a.model:
+        from deltat_doctor.diagnose import load_default_model
+        model = load_default_model(a.model)
     man = pd.read_csv(a.manifest, dtype=str).fillna("")
     base = os.path.dirname(os.path.abspath(a.manifest))
     rows = []
     for _, m in man.iterrows():
-        r = run_building(m, base)
+        r = run_building(m, base, model)
         r["id"] = m["building_id"]
         r["labels"] = {x.strip() for x in m["causes"].split(";") if x.strip()}
         r["complete"] = m.get("complete", "").strip().lower() in ("yes", "y", "true", "1")
