@@ -61,7 +61,7 @@ All figures below are simulation results. Scripts and result files are listed in
 | Question | Measured answer (simulation unless stated) | Source |
 |---|---|---|
 | Accuracy on held out buildings of the training simulator | macro AUROC 0.966 [0.963, 0.969] | `results/metrics.json` |
-| Accuracy on a differently built simulator | 0.683 (A to B), 0.770 (B to A) | `results/cross_simulator.json` |
+| Accuracy on a differently built simulator | 0.683 (A to B), 0.770 (B to A); on four regenerated B pools 0.670 to 0.697 and 0.741 to 0.757 | `results/cross_simulator.json`, `results/replication_b.json` |
 | Accuracy on a third, dynamic simulator never trained on | 0.705 [0.685, 0.724]; 98% of healthy windows called faulty | `results/world_d.json` |
 | After calibrating on 20 labelled buildings of that world | 0.825; healthy false alarms 26% | `results/world_d.json` |
 | Fleet calibration command, 40 building pretend fleet, 12 held out | macro AUROC 0.782 to 0.833; overflow worse (0.81 to 0.66) | `results/calibrate_check.json` |

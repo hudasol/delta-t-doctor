@@ -6,6 +6,7 @@
 |---|---|---|---|
 | Simulator A pool (`results/data/main.npz`, 500 buildings x 10 windows, seed 11) | no (gitignored, regenerated) | **yes, numerically**: the shipped model's stored training percentiles match to 4e-15 and label prevalence is identical; the file hash differs in the last float bits | `scripts/check_regenerated.py`, `results/regeneration_check.json` |
 | Simulator B pool (`results/data_b/main.npz`, 150 x 10) | yes | **no**: the seed used to make it was never recorded; seed 11 gives a different pool | same |
+| Replicate B pools (`results/data_b_r2101`, `_r2102`, `_r2103`, 150 x 10 each) | yes | yes: seed, call and versions in each `generator.json` | `results/replication_b.json` |
 | World D (`results/data_d/main.npz`, 150 x 10, seed 21) | yes | yes (`scripts/reproduce.py --full`) | `results/reproduce_report.json` |
 | Domain randomised worlds C-A and C-B (`results/data_ca`, `results/data_cb`) | yes | not checked | none |
 
@@ -51,4 +52,39 @@ pointed out that "outlier" was undefined:
 
 ## Results
 
-(appended after the run)
+Run 2026-10-18 02:38 to 03:53 (`scripts/replicate_b.py`, `results/replication_b.json`; each pool's `generator.json` records the seed, call,
+package version, git commit and library versions). Generating one pool took 16 to 19 minutes on this machine with `n_jobs=1`.
+
+| Pool | in world B | A to B | B to A | A to B healthy false alarm |
+|---|---|---|---|---|
+| committed | 0.884 | 0.684 | 0.770 | 88% |
+| seed 11 | 0.896 | 0.697 | 0.741 | 87% |
+| seed 2101 | 0.908 | 0.689 | 0.749 | 86% |
+| seed 2102 | 0.889 | 0.676 | 0.757 | 90% |
+| seed 2103 | 0.888 | 0.670 | 0.746 | 84% |
+
+Replicate means: in world B 0.895, A to B 0.683, B to A 0.748, healthy false alarm
+87%. Spread over the four replicates: 0.021, 0.026, 0.016 and
+0.056.
+
+The protocol reproduces the committed pool's own published figures (0.884, 0.684 against 0.683 published, 0.770, 88%), so differences below
+come from the pools, not the code.
+
+| # | Outcome | Verdict |
+|---|---|---|
+| R1 | in world B 0.896, 0.908, 0.889, 0.888 (allowed 0.864 to 0.904) | **Failed** (seed 2101, 0.908, is higher) |
+| R2 | A to B 0.697, 0.689, 0.676, 0.670 | Held |
+| R3 | B to A 0.741, 0.749, 0.757, 0.746 | Held, all near the lower bound |
+| R4 | spreads 0.021, 0.026, 0.016 | Held |
+| R5 | 87%, 86%, 90%, 84% | Held |
+
+Decision rule: the committed pool is not an outlier on any figure (in world B 0.884 is 0.004 below the replicate range, B to A 0.770 is 0.013
+above it; both inside the tolerances), so the bundled model is **not** retrained.
+
+**What moves.** The headline transfer figures hold on regenerable data. The one honest correction: **B to A is 0.741 to 0.757 on regenerated
+pools (mean 0.748), so the committed pool's 0.770 sits at the favourable end.** The range quoted in README and LIMITATIONS,
+"0.68 to 0.77", becomes "0.68 to 0.77 (0.67 to 0.76 on four regenerated B pools)". In world B on regenerated pools is slightly higher
+(0.888 to 0.908) than the committed 0.884. The A to B healthy false alarm stays between 84% and 90%.
+
+From now on any new B result should use a regenerable pool (`results/data_b_r2101/main.npz` is the first one); the committed pool is kept
+because the shipped model was trained on it.

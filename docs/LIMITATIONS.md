@@ -61,7 +61,9 @@ Read this before trusting any number from the tool.
 15. **Tariff shape.** Only the linear surcharge is modelled (no tiers, deadbands, caps or demand charges).
 16. **Reproducibility of the training data is partial.** The simulator A pool regenerates to the same numbers (the shipped model's stored
     training percentiles match to 4e-15; `results/regeneration_check.json`) but not to the same file hash. The seed used for the committed
-    simulator B pool was not recorded, so that pool cannot be regenerated from the repository; it is committed as is.
+    simulator B pool was not recorded, so that pool cannot be regenerated from the repository; it is committed as is. Four new B pools with recorded seeds
+    reproduce the B results within the preregistered tolerances except one in world figure (0.908 against 0.884); B to A is 0.741 to 0.757 on
+    them, below the committed 0.770 ([REPRODUCIBILITY.md](REPRODUCIBILITY.md), `results/replication_b.json`).
 17. **Fleet calibration is measured in simulation only**, on 12 held out buildings of a pretend fleet (`results/calibrate_check.json`): macro
     AUROC rose from 0.782 to 0.833 but overflow fell (0.81 to 0.66) and abstention stayed at 58%. Small holdouts give noisy figures.
 18. **The system cannot tell when it is wrong on an unfamiliar fleet.** In world, the model's decision margin is a good error signal (0.905 in A,
