@@ -59,3 +59,18 @@ time, `n_jobs=1`, never touch processes I did not start.
   code page bug as the test above. Fixed and regenerated: 181 strings, glossary check clean (32d1c27).
 * Unneeded hyphens removed from older published docs (269 occurrences of a fixed list of compounds, 1c2f2e9); the README table generator uses
   the same wording. The note that Docker builds fail on commits 69d7706 to 218e0f3 is already in OVERNIGHT_LOG.md (T5), so it was not repeated.
+
+### Independent review of this run (02:50 to 03:10)
+
+* A separate review pass, given only the repository and the constraints, returned 25 findings on the changes since v1.2.0. Acted on:
+  * **AURC broke ties by file order** (high). Isotonic probabilities and the capped guard score tie often, so the first run's AURC and risk at
+    50% coverage depended on row order; AUROC did not. Fixed with a tie aware AURC and a test (a5922d1); F1 is rerun after F2, and the results
+    section will report the corrected figures.
+  * The retraining rule in REPRODUCIBILITY.md used an undefined "outlier"; defined before any replicate pool was scored (d2a844a).
+  * Overstated calibration claim, inconsistent guard wording, the C7b claim, LIMITATIONS numbering, links, the inspection form row, help text,
+    remaining hyphens and PowerShell environment variable syntax (9e79b7c).
+  * Pilot dry run outputs not all labelled synthetic (the evaluator writes `real_eval.json`), and a test that would pass if `--model` were
+    ignored: fixed in the script and test, committed after the test reruns.
+  * Still to do in the F1 rerun write up: S5's window overlap between settings (a stricter leave target world out variant is added as a
+    sensitivity check), the preregistered Brier loss, an interval for the margin, Q6 rounding, the proxy nature of the window decision, the
+    timeline of the preregistration.
