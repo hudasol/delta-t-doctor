@@ -90,13 +90,21 @@ def setting(Xtr, Ytr, gtr, Xte, Yte, gte, model=None, guard=None):
     return {"sig": s, "wrong": decision_wrong(prob, p_any, Yte), "brier": ((prob - Yte) ** 2).mean(1), "groups": gte}
 
 
-def aurc(score, wrong):
+def aurc(score, loss):
+    """Risk coverage, tie aware: windows with equal scores are kept in random order, so within a tied block the expected loss is used.
+    (The first v1.2.1 run broke ties by file order; isotonic probabilities and the capped guard score have many exact ties.)"""
+    score = np.asarray(score, float)
+    loss = np.asarray(loss, float)
     order = np.argsort(score, kind="stable")
-    w = wrong[order]
-    n = len(w)
+    s_sorted, l_sorted = score[order], loss[order]
+    n = len(l_sorted)
+    _, start, counts = np.unique(s_sorted, return_index=True, return_counts=True)
+    block_mean = np.repeat(np.add.reduceat(l_sorted, start) / counts, counts)
+    cum = np.concatenate([[0.0], np.cumsum(block_mean)])
     covs = np.arange(10, 101) / 100
-    risks = np.array([w[:max(1, int(round(c * n)))].mean() for c in covs])
-    return float(risks.mean()), float(w[:n // 2].mean()), [float(r) for r in risks[::10]]
+    keep = [max(1, int(round(c * n))) for c in covs]
+    risks = np.array([cum[m] / m for m in keep])
+    return float(risks.mean()), float(cum[n // 2] / (n // 2)), [float(r) for r in risks[::10]]
 
 
 def auc(score, wrong):
@@ -104,13 +112,15 @@ def auc(score, wrong):
 
 
 def measures(r, names):
-    out = {"n_windows": int(len(r["wrong"])), "base_error_rate": float(r["wrong"].mean())}
+    out = {"n_windows": int(len(r["wrong"])), "base_error_rate": float(r["wrong"].mean()), "mean_brier": float(r["brier"].mean()),
+           "share_of_tied_values": {nme: float(1 - len(np.unique(r["sig"][nme])) / len(r["sig"][nme])) for nme in names}}
     oracle = aurc(r["wrong"] + 1e-9 * np.arange(len(r["wrong"])), r["wrong"])[0]
     out["oracle_aurc"] = oracle
     for nme in names:
         a, r50, curve = aurc(r["sig"][nme], r["wrong"])
         out[nme] = {"auroc_wrong": auc(r["sig"][nme], r["wrong"]), "aurc": a, "risk_at_50pct_coverage": r50, "risk_curve_10_to_100": curve,
-                    "auroc_brier_above_median": auc(r["sig"][nme], (r["brier"] > np.median(r["brier"])).astype(int))}
+                    "auroc_brier_above_median": auc(r["sig"][nme], (r["brier"] > np.median(r["brier"])).astype(int)),
+                    "brier_aurc": aurc(r["sig"][nme], r["brier"])[0], "brier_at_50pct_coverage": aurc(r["sig"][nme], r["brier"])[1]}
     return out
 
 
@@ -138,6 +148,14 @@ def main():
     F = {k: np.column_stack([runs[k]["sig"][s] for s in SIGNALS]) for k in runs}
     allF = np.vstack([F[k] for k in labelled])
     mu, sd = allF.mean(0), allF.std(0) + 1e-12
+    # S5b (sensitivity, not preregistered): leave the target world out entirely. in_world_A and B_to_A score the same A windows, and
+    # in_world_B and A_to_B the same B windows, so leave one setting out still fits S5 on the same windows (under a different model).
+    target = {"in_world_A": "A", "B_to_A": "A", "in_world_B": "B", "A_to_B": "B"}
+    for k in labelled:
+        train = [x for x in labelled if target[x] != target[k]]
+        lr = LogisticRegression(C=1.0, max_iter=1000).fit((np.vstack([F[x] for x in train]) - mu) / sd,
+                                                          np.concatenate([runs[x]["wrong"] for x in train]))
+        runs[k]["sig"]["S5b_leave_target_world_out"] = lr.decision_function((F[k] - mu) / sd)
     for k in runs:
         train = [x for x in labelled if x != k]
         lr = LogisticRegression(C=1.0, max_iter=1000).fit((np.vstack([F[x] for x in train]) - mu) / sd,
@@ -147,26 +165,40 @@ def main():
             coef = {s: float(c) for s, c in zip(SIGNALS, lr.coef_[0])}
             thr = float(np.percentile(lr.decision_function((allF - mu) / sd), 95))
     names = SIGNALS + ["S5_combination"]
+    np.savez_compressed("results/selective_prediction_windows.npz",
+                        **{f"{k}__{sg}": v for k, r in runs.items() for sg, v in r["sig"].items()},
+                        **{f"{k}__wrong": r["wrong"] for k, r in runs.items()}, **{f"{k}__brier": r["brier"] for k, r in runs.items()},
+                        **{f"{k}__groups": r["groups"] for k, r in runs.items()})
     res = {"definition": "wrong = says no material cause while one is present, or the top ranked cause is not present (window level)",
            "S5_coefficients_fitted_on_A_and_B": coef, "S5_threshold_95th_percentile_A_and_B": thr,
-           "settings": {k: measures(r, names) for k, r in runs.items()}}
+           "settings": {k: measures(r, names + (["S5b_leave_target_world_out"] if k != "world_D" else [])) for k, r in runs.items()},
+           "world_D_windows_at_maximum_guard_score": int((runs["world_D"]["sig"]["S1_guard"] >= runs["world_D"]["sig"]["S1_guard"].max()).sum())}
 
-    # building bootstrap on D for S1 and S5
-    r = runs["world_D"]
-    ids = np.unique(r["groups"]); rows = {b: np.flatnonzero(r["groups"] == b) for b in ids}
-    rng = np.random.default_rng(0)
-    bs = {"auroc_S1": [], "auroc_S5": [], "aurc_S1": [], "aurc_S5": []}
-    for _ in range(500):
-        idx = np.concatenate([rows[b] for b in rng.choice(ids, len(ids))])
-        w = r["wrong"][idx]
-        for s, key in (("S1_guard", "S1"), ("S5_combination", "S5")):
-            bs["auroc_" + key].append(auc(r["sig"][s][idx], w))
-            bs["aurc_" + key].append(aurc(r["sig"][s][idx], w)[0])
+    # building bootstrap (500 resamples, seed 0): on D for S1, S3 and S5; in world A and B for S1 and S3
     q = lambda v: [float(np.nanpercentile(v, 2.5)), float(np.nanpercentile(v, 97.5))]
-    res["world_D_bootstrap"] = {"auroc_S1": q(bs["auroc_S1"]), "auroc_S5": q(bs["auroc_S5"]),
-                                "auroc_S5_minus_S1": q(np.array(bs["auroc_S5"]) - np.array(bs["auroc_S1"])),
-                                "aurc_S1": q(bs["aurc_S1"]), "aurc_S5": q(bs["aurc_S5"]),
-                                "aurc_S5_minus_S1": q(np.array(bs["aurc_S5"]) - np.array(bs["aurc_S1"]))}
+
+    def boot(r, keys):
+        ids = np.unique(r["groups"])
+        rows = {b: np.flatnonzero(r["groups"] == b) for b in ids}
+        rng = np.random.default_rng(0)
+        bs = {f"{m}_{k}": [] for k in keys for m in ("auroc", "aurc")}
+        for _ in range(500):
+            idx = np.concatenate([rows[b] for b in rng.choice(ids, len(ids))])
+            w = r["wrong"][idx]
+            for k in keys:
+                bs[f"auroc_{k}"].append(auc(r["sig"][k][idx], w))
+                bs[f"aurc_{k}"].append(aurc(r["sig"][k][idx], w)[0])
+        return {k: np.array(v) for k, v in bs.items()}
+
+    bs = boot(runs["world_D"], ["S1_guard", "S3_margin", "S5_combination"])
+    res["world_D_bootstrap"] = {"auroc_S1": q(bs["auroc_S1_guard"]), "auroc_S3": q(bs["auroc_S3_margin"]), "auroc_S5": q(bs["auroc_S5_combination"]),
+                                "auroc_S5_minus_S1": q(bs["auroc_S5_combination"] - bs["auroc_S1_guard"]),
+                                "auroc_S3_minus_S1": q(bs["auroc_S3_margin"] - bs["auroc_S1_guard"]),
+                                "aurc_S1": q(bs["aurc_S1_guard"]), "aurc_S3": q(bs["aurc_S3_margin"]), "aurc_S5": q(bs["aurc_S5_combination"]),
+                                "aurc_S5_minus_S1": q(bs["aurc_S5_combination"] - bs["aurc_S1_guard"])}
+    for k in ("in_world_A", "in_world_B"):
+        b2 = boot(runs[k], ["S1_guard", "S3_margin"])
+        res[f"{k}_bootstrap"] = {"auroc_S1": q(b2["auroc_S1_guard"]), "auroc_S3": q(b2["auroc_S3_margin"])}
     sD, sA, sB = (res["settings"][k] for k in ("world_D", "in_world_A", "in_world_B"))
     rule = {"a_D_auroc_S5_above_S1_interval_above_0": bool(res["world_D_bootstrap"]["auroc_S5_minus_S1"][0] > 0),
             "b_D_aurc_S5_below_S1": bool(sD["S5_combination"]["aurc"] < sD["S1_guard"]["aurc"]),
