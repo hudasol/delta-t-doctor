@@ -26,7 +26,7 @@ Train-on / test-on pairs, always whole buildings, never the test physics in trai
 * T1: train A, test B (baseline 0.683). T1+: train A + C-A, test B.
 * T2: train B, test A (baseline 0.770). T2+: train B + C-B, test A.
 
-Candidate fixes, each scored on T1 and T2 and on in-world grouped CV (to see what it costs):
+Candidate fixes, each scored on T1 and T2 and on in world grouped CV (to see what it costs):
 
 1. **Wide randomisation**: add C-A / C-B to training (T1+, T2+).
 2. **Invariant features**: drop shape features whose distribution differs most between worlds (selected using the *training* worlds only:
@@ -42,46 +42,46 @@ Candidate fixes, each scored on T1 and T2 and on in-world grouped CV (to see wha
 | V1 | T1+ lifts A to B macro AUROC from 0.683 to between 0.70 and 0.76 | below 0.70 (no help) or above 0.76 |
 | V2 | T2+ lifts B to A from 0.770 to between 0.78 and 0.84 | below 0.78 or above 0.84 |
 | V3 | Invariant features alone give at most +0.03 on T1 and T2 | more than +0.03 |
-| V4 | Target-batch standardisation helps T1 by at least 0.03 but hurts in-world AUROC by no more than 0.02 | otherwise |
+| V4 | Target-batch standardisation helps T1 by at least 0.03 but hurts in world AUROC by no more than 0.02 | otherwise |
 | V5 | Overflow stays below 0.65 AUROC on both transfers whatever the fix | any transfer above 0.65 |
 | V6 | Healthy false-alarm rate on T1 (88% baseline) falls below 60% with the best fix | stays above 60% |
 | V7 | No fix gets either transfer above 0.85 macro AUROC | a fix does |
-| V8 | In-world AUROC cost of wide randomisation is at most 0.02 | more than 0.02 |
+| V8 | In world AUROC cost of wide randomisation is at most 0.02 | more than 0.02 |
 
 Results are appended below, with every failed prediction reported.
 
 ## Results of the four fixes (run after the predictions above; `results/transfer_v2.json`, `scripts/transfer_v2.py`)
 
-Macro AUROC on the held-out physics, building-bootstrap 95% interval in brackets. Training never contains the test physics.
+Macro AUROC on the held out physics, building-bootstrap 95% interval in brackets. Training never contains the test physics.
 
 | fix | T1: train A, test B | T2: train B, test A |
 |---|---|---|
 | baseline | 0.683 [0.656, 0.706] | 0.770 [0.758, 0.778] |
 | wide randomisation (adds C-A or C-B) | 0.682 [0.654, 0.702] | 0.752 [0.742, 0.760] |
 | invariant features (drop 13 of 42) | 0.680 [0.658, 0.701] | 0.784 [0.776, 0.792] |
-| target-batch standardisation | 0.715 [0.688, 0.736] | 0.736 [0.728, 0.744] |
+| target batch standardisation | 0.715 [0.688, 0.736] | 0.736 [0.728, 0.744] |
 | wide + invariant | 0.689 [0.664, 0.710] | 0.763 [0.755, 0.771] |
 
 Healthy-building false alarms on T1 (baseline 88%): wide 76%, invariant 84%, batch standardisation 48%, combined 77%.
-In-world cost (one building-grouped fold): A 0.968 baseline, 0.969 wide, 0.964 invariant, 0.959 batch; B 0.867 baseline, 0.884 wide, 0.870 invariant, 0.874 batch.
+In world cost (one building grouped fold): A 0.968 baseline, 0.969 wide, 0.964 invariant, 0.959 batch; B 0.867 baseline, 0.884 wide, 0.870 invariant, 0.874 batch.
 
 **Against my predictions.**
 
 * V1 failed: wide randomisation did nothing for A to B (0.682 against a predicted 0.70 to 0.76).
 * V2 failed, in the wrong direction: B to A *fell* to 0.752 with C-B added.
 * V3 held: invariant features moved the result by -0.003 and +0.014.
-* V4 held for T1 (+0.032, in-world cost at most 0.009) but I did not predict that it would hurt T2 (-0.034).
+* V4 held for T1 (+0.032, in world cost at most 0.009) but I did not predict that it would hurt T2 (-0.034).
 * V5 failed narrowly: batch standardisation took overflow on A to B to 0.65.
 * V6 held: false alarms fell to 48% with batch standardisation.
 * V7 held: nothing exceeds 0.79.
-* V8 held: wide randomisation costs nothing in-world (+0.001 on A, +0.016 on B).
+* V8 held: wide randomisation costs nothing in world (+0.001 on A, +0.016 on B).
 
 **Reading.** Randomising parameters inside one physics does not teach the model another physics. The gap is structural, so no feature trick closes
 it with these two simulators. Batch standardisation is the only fix that moves A to B, and it hurts B to A, so it is not shipped. The honest
 position is: transfer to an unseen world is about 0.68 to 0.78, the guard has to catch the worst cases, and the model must be calibrated on
 a few surveyed buildings from the real fleet. The next section measures how few.
 
-## Few-shot adaptation: how many surveyed buildings does a pilot need?
+## Few shot adaptation: how many surveyed buildings does a pilot need?
 
 Status: **predictions written before this ran.** Train on the source physics plus *k* whole buildings of the target physics (target rows repeated 5x),
 test on target buildings never seen. Three random draws of the *k* buildings; fixed test buildings (B: 70 of 150; A: 150 of 500).
@@ -94,9 +94,9 @@ test on target buildings never seen. Three random draws of the *k* buildings; fi
 | F4 | Healthy false alarms on A to B fall below 30% at 20 target buildings (88% at 0) | stay above 30% |
 | F5 | The curve flattens: going from 40 to 80 target buildings adds under 0.03 | adds more |
 
-### Few-shot results (`scripts/transfer_fewshot.py`, `results/transfer_fewshot.json`)
+### Few shot results (`scripts/transfer_fewshot.py`, `results/transfer_fewshot.json`)
 
-Macro AUROC on held-out target buildings (mean of 3 draws; sd of the draws 0.001 to 0.017). "Healthy FA" is the share of healthy
+Macro AUROC on held out target buildings (mean of 3 draws; sd of the draws 0.001 to 0.017). "Healthy FA" is the share of healthy
 buildings called faulty at p ≥ 0.5.
 
 | k target buildings | A to B macro | A to B healthy FA | A to B overflow | B to A macro | B to A healthy FA | B to A overflow |
@@ -120,7 +120,7 @@ buildings called faulty at p ≥ 0.5.
 Reading, plainly:
 
 * A pilot does not need a large labelled fleet to leave the weak region. Roughly 20 surveyed buildings lift the weaker direction from
-  0.69 to 0.80 and cut healthy false alarms from 82% to 24%; 40 gets 0.836, just under the preregistered 0.84 (F1 failed). These are simulator-to-simulator numbers; the
+  0.69 to 0.80 and cut healthy false alarms from 82% to 24%; 40 gets 0.836, just under the preregistered 0.84 (F1 failed). These are simulator to simulator numbers; the
   point is the shape of the curve, not the values, and real buildings may need more or fewer.
 * Fouling is the cause that adapts worst in A to B (0.66 at k=40 while the others reach 0.83 to 0.96). I have not yet tested why; a
   plausible but unverified reading is that B's valve and mixing physics hide the fouling signature.
