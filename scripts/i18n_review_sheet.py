@@ -23,7 +23,7 @@ for k, (en, ar, _u) in _FIXED.items():
 html = open("src/deltat_doctor/web/index.html", encoding="utf-8").read()
 m = re.search(r"const I = (\{.*?\n\});\nconst CAUSE_AR", html, re.S)
 js = "const I=" + m.group(1) + ";const out={};for(const k of Object.keys(I.en)){const f=v=>typeof v==='function'?v.toString():(typeof v==='object'?JSON.stringify(v):String(v));out[k]=[f(I.en[k]),f(I.ar[k]||'')];}console.log(JSON.stringify(out));"
-ui = json.loads(subprocess.run(["node", "-e", js], capture_output=True, text=True, check=True).stdout)
+ui = json.loads(subprocess.run(["node", "-e", js], capture_output=True, text=True, encoding="utf-8", check=True).stdout)
 for k, (en, ar) in ui.items():
     rows.append(("ui", k, en, ar))
 os.makedirs("docs", exist_ok=True)
