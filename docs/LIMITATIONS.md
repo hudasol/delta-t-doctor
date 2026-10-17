@@ -50,7 +50,12 @@ Read this before trusting any number from the tool.
     without outdoor temperature (`results/openset.json`), and 24% of windows (14% of buildings) from freshly generated simulator B buildings
     (`results/world_d.json`), so "hourly or 2 hourly is enough" holds for the parser, not for the guard. **The guard detects unfamiliar
     buildings; it does not pick out the model's mistakes**: on world D the windows it lets through score 0.618 macro AUROC, lower than the 0.756
-    of the windows it flags. On real chilled water buildings the rates are unknown.
+    of the windows it flags. As a per window error signal it is below chance in world (AUROC 0.40 in A, 0.44 in B) and weak on world D (0.583)
+    ([SELECTIVE_PREDICTION.md](SELECTIVE_PREDICTION.md)). On real chilled water buildings the rates are unknown.
+18. **The system cannot tell when it is wrong on an unfamiliar fleet.** In world, the model's decision margin is a good error signal (0.905 in A,
+    0.733 in B). On world D no label free signal exceeds 0.61 AUROC and the model's entropy is below chance (0.457): it is confidently wrong. A
+    combination of signals fitted on A and B did not transfer (0.513 on D), so no uncertainty based abstention is shipped
+    (`results/selective_prediction.json`). Until a fleet is calibrated on inspected buildings, its probabilities should not be read as reliability.
 12. **Evidence is a physics consistency flag, not proof.** The features and directions are chosen from simulated single cause
     windows. When two faults are present they can mask each other (the mixed demo shows fouling as "unconfirmed" for this reason).
 13. **Trend is confounded by season.** The test uses delta T at 60-100% load, which is roughly load matched, but a half year file

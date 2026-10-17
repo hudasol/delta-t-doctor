@@ -59,3 +59,8 @@ for a model trained only on A, it fired for 36%, which is too few: most of B's w
 those buildings, but the windows they let through score lower (0.618) than the ones they flag (0.756) (`results/world_d.json`,
 [WORLD_D.md](WORLD_D.md)). New buildings from the training worlds are flagged at 0% (A) and 14% (B) of buildings. A fleet calibrated model
 (`deltat-doctor calibrate`) is a separate file with its own card; the bundled model described here is unchanged.
+
+**Knowing when it is wrong (v1.2.1).** Measured per window in [SELECTIVE_PREDICTION.md](SELECTIVE_PREDICTION.md): the decision margin (distance
+of `p_any` or the top cause probability to 0.5) ranks wrong decisions first at AUROC 0.905 in simulator A and 0.733 in B, but no label free
+signal exceeds 0.61 on world D, where the model's entropy is below chance (0.457). The open set guard is not an error signal (0.40 and 0.44 in
+world, 0.583 on D). The model's probabilities are therefore not a reliability measure on an unfamiliar fleet.
