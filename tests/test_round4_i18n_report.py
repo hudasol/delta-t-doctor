@@ -76,6 +76,6 @@ def test_report_endpoint_lang(demo):
 
 
 def test_ui_has_language_and_a11y_hooks():
-    html = (pathlib.Path(__file__).parents[1] / "src/deltat_doctor/web/index.html").read_text()
+    html = (pathlib.Path(__file__).parents[1] / "src/deltat_doctor/web/index.html").read_text(encoding="utf-8")
     for needle in ['class="skip"', 'aria-live="polite"', "dir=", "prefers-reduced-motion", "ar-AE", "label_ar", "checks_ar"]:
         assert needle in html
