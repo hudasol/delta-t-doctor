@@ -34,3 +34,28 @@ time, `n_jobs=1`, never touch processes I did not start.
   free, so the local build is skipped and the image is verified by the CI `docker` job, as before.
 * Decision: F4 documents and the pilot dry run were written while the suite ran, because they need little compute. The pilot dry run test
   (20 synthetic B buildings, one month each) passes.
+
+### F1 selective prediction (02:25 to 02:38)
+
+* Preregistered (dca7f70, two implementation details fixed before the run in 745ac0d), run in about 10 minutes (`scripts/selective_prediction.py`,
+  `results/selective_prediction.json`). 2 of 10 predictions held (Q1, Q3); Q2 and Q4 to Q10 failed.
+* Answer: inside a familiar simulator the model's own decision margin finds wrong rankings well (AUROC 0.905 in A, 0.733 in B); on world D no
+  label free signal exceeds 0.61, the model's entropy is below chance (0.457, confidently wrong), and the A and B fitted combination gives 0.513.
+  The guard is below chance as an error signal in world (0.40, 0.44) and weak on D (0.583).
+* Shipping rule failed on (a) and (b), so `--abstain-on uncertainty` was not added. Decision recorded: the decision margin looks best on D
+  (0.608), but it was not the preregistered signal and D was used to see that, so shipping it now would be tuning on D. It is listed as a
+  candidate to preregister against a future world.
+* README, LIMITATIONS (new item 18), MODEL_CARD, ASSURANCE_CASE (C7, new C7b) and EDGE_PROPOSAL updated in the same commit (edfc9bb).
+
+### F4 pilot dry run and documents (02:20 to 02:30)
+
+* `scripts/pilot_dry_run.py` (synthetic fleet, manifest, evaluate_real, calibrate on one half, rescore the other half with both models, one
+  page summary) with a reduced test that passes; `evaluate_real.py` gained an optional `--model` flag. `docs/INSPECTION_FORM.md` and
+  `docs/ARABIC_REVIEW_BRIEF.md` written. The full size dry run is queued after F2 (one heavy job at a time).
+
+### F5 housekeeping, done early (02:30 to 02:35)
+
+* The Arabic review sheet was stale (178 strings; three notes added in v1.2.0 were missing) and its generator failed on Windows with the same
+  code page bug as the test above. Fixed and regenerated: 181 strings, glossary check clean (32d1c27).
+* Unneeded hyphens removed from older published docs (269 occurrences of a fixed list of compounds, 1c2f2e9); the README table generator uses
+  the same wording. The note that Docker builds fail on commits 69d7706 to 218e0f3 is already in OVERNIGHT_LOG.md (T5), so it was not repeated.
