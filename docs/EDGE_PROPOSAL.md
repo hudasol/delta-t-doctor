@@ -48,7 +48,7 @@ parameters, and is never used unless asked for explicitly.
 ## 6. Bilingual support
 
 English and Arabic user interface and owner report (right to left layout, bundled Arabic font). The Arabic text is a machine draft
-with a glossary and a 178 string reviewer sheet; **it has not been reviewed by a native speaking engineer**, which is a precondition
+with a glossary and a 181 string reviewer sheet; **it has not been reviewed by a native speaking engineer**, which is a precondition
 for customer use.
 
 ## 7. The honest evidence state
