@@ -10,7 +10,7 @@ the right building first, with the right question.
 
 **What exists.** An open-source prototype with a web app, an API, a portfolio mode and a printable owner report. It is
 validated in simulation only. On held out buildings of the simulator it was trained on, macro AUROC is 0.97 and the first fix it
-suggests recovers about 97% of the achievable delta T gain; on differently built simulators it scores 0.68 to 0.77, and 0.705 on a third,
+suggests recovers about 97% of the achievable delta T gain; on differently built simulators it scores 0.68 to 0.77 (0.67 to 0.76 on regenerated data), and 0.705 on a third,
 dynamic one (docs/WORLD_D.md). A fleet calibration step, measured in simulation, uses inspected buildings to close part of that gap.
 
 **What does not exist yet.** Validation on real buildings. That is the point of the pilot. In an external test on a

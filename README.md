@@ -6,7 +6,7 @@
 
 > **Status: a research prototype, validated in simulation only.** Trained and tested on physics simulators.
 > It has **not** been validated on real UAE building data and no field accuracy is claimed. In the external check 3 of 5 predictions
-> failed and 1 was not supported, and on simulators it was not trained on it scores 0.68 to 0.77 macro AUROC (see [Results](#results) and
+> failed and 1 was not supported, and on simulators it was not trained on it scores 0.68 to 0.77 macro AUROC (0.67 to 0.76 on four regenerated B pools) (see [Results](#results) and
 > [Limitations](docs/LIMITATIONS.md)). Treat its output as a ranked inspection list.
 
 Product plan, market research and roadmap: [plan.md](plan.md). Draft pilot protocol: [docs/PILOT.md](docs/PILOT.md), with a blind

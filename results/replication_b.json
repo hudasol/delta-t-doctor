@@ -1,0 +1,81 @@
+{
+  "reference_committed_cross_simulator_json": {
+    "in_world_B": 0.884,
+    "A_to_B": 0.683,
+    "B_to_A": 0.77,
+    "A_to_B_healthy_false_alarm": 0.88
+  },
+  "pools": {
+    "committed": {
+      "path": "results/data_b/main.npz",
+      "prevalence": {
+        "fouling": 0.194,
+        "passing_valves": 0.05466666666666667,
+        "constant_flow": 0.25533333333333336,
+        "overflow": 0.202
+      },
+      "in_world_B": 0.8835710604271116,
+      "A_to_B": 0.6837553934155927,
+      "B_to_A": 0.7697934978075052,
+      "A_to_B_healthy_false_alarm": 0.8805732484076433
+    },
+    "seed_11": {
+      "path": "results/data_b_t/main.npz",
+      "prevalence": {
+        "fouling": 0.18,
+        "passing_valves": 0.07266666666666667,
+        "constant_flow": 0.2793333333333333,
+        "overflow": 0.19066666666666668
+      },
+      "in_world_B": 0.8962887584229748,
+      "A_to_B": 0.6966074545994916,
+      "B_to_A": 0.7407473248865577,
+      "A_to_B_healthy_false_alarm": 0.870242214532872
+    },
+    "seed_2101": {
+      "path": "results/data_b_r2101/main.npz",
+      "prevalence": {
+        "fouling": 0.17866666666666667,
+        "passing_valves": 0.06866666666666667,
+        "constant_flow": 0.27466666666666667,
+        "overflow": 0.20266666666666666
+      },
+      "in_world_B": 0.908348783614661,
+      "A_to_B": 0.6887031166409185,
+      "B_to_A": 0.7488968716804821,
+      "A_to_B_healthy_false_alarm": 0.8573825503355704
+    },
+    "seed_2102": {
+      "path": "results/data_b_r2102/main.npz",
+      "prevalence": {
+        "fouling": 0.18866666666666668,
+        "passing_valves": 0.062,
+        "constant_flow": 0.25333333333333335,
+        "overflow": 0.19933333333333333
+      },
+      "in_world_B": 0.8894161705499674,
+      "A_to_B": 0.6761711304324056,
+      "B_to_A": 0.7566460792347536,
+      "A_to_B_healthy_false_alarm": 0.899505766062603
+    },
+    "seed_2103": {
+      "path": "results/data_b_r2103/main.npz",
+      "prevalence": {
+        "fouling": 0.20666666666666667,
+        "passing_valves": 0.06533333333333333,
+        "constant_flow": 0.2673333333333333,
+        "overflow": 0.19866666666666666
+      },
+      "in_world_B": 0.8877959543908942,
+      "A_to_B": 0.6702058411034035,
+      "B_to_A": 0.7460176308008599,
+      "A_to_B_healthy_false_alarm": 0.8433734939759037
+    }
+  },
+  "spread_over_replicates": {
+    "in_world_B": 0.020552829223766778,
+    "A_to_B": 0.02640161349608805,
+    "B_to_A": 0.015898754348195876,
+    "A_to_B_healthy_false_alarm": 0.05613227208669935
+  }
+}

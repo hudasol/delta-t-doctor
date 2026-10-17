@@ -25,7 +25,8 @@ do not include error in scaling a partial year to a full year.
 **Evaluation.** On held out simulated buildings from simulator A, for models trained and tested on A only (not the shipped A + B model): macro AUROC 0.966 (blind, 95% interval 0.963 to 0.969) and
 0.971 (informed); across 4 regenerated datasets the spread is 0.959 +/- 0.003. Calibration, stress, leave one building type out and
 held out-season results are in [results/metrics.md](../results/metrics.md). Across simulators the picture is much weaker: trained on A
-and tested on B it scores 0.683, trained on B and tested on A 0.770 ([CROSS_SIMULATOR.md](CROSS_SIMULATOR.md)). Reproduce with
+and tested on B it scores 0.683, trained on B and tested on A 0.770 ([CROSS_SIMULATOR.md](CROSS_SIMULATOR.md)); on four regenerated B
+pools with recorded seeds these are 0.670 to 0.697 and 0.741 to 0.757 ([REPRODUCIBILITY.md](REPRODUCIBILITY.md)). Reproduce with
 `python scripts/evaluate.py` and `python scripts/cross_simulator.py`.
 
 **Intended use.** Ranking what to inspect first in a variable flow building loop fed by district cooling, with the owner
