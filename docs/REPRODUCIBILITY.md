@@ -42,6 +42,13 @@ Decision rule, fixed now: the bundled model is retrained only if a replicate mov
 the committed pool turns out to be the outlier among the five pools (committed plus four replicates). Otherwise the committed pool stays,
 documented as non regenerable but replicated.
 
+Definitions added at 02:58, before any replicate pool was evaluated (the first pool had been generated; none had been scored), after a review
+pointed out that "outlier" was undefined:
+
+* "The replicates" in R1 to R5 are the four regenerated pools (seeds 11, 2101, 2102, 2103); the committed pool is not one of them.
+* The committed pool is "the outlier" for a figure when its value lies outside the replicates' minimum to maximum by more than that figure's
+  tolerance (0.02 for in world B, 0.03 for the two transfers).
+
 ## Results
 
 (appended after the run)
