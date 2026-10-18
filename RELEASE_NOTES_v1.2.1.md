@@ -1,0 +1,46 @@
+# delta-t-doctor v1.2.1
+
+Validated in simulation only. No field accuracy is claimed. The bundled models are the v1.1.1 models, unchanged.
+
+## What is new
+
+* **A measured answer to "when does the system know it is probably wrong?"** (`docs/SELECTIVE_PREDICTION.md`).
+* **Pilot dry run** (`scripts/pilot_dry_run.py`): a synthetic fleet goes through the manifest, `scripts/evaluate_real.py`,
+  `deltat-doctor calibrate` and rescoring, with every output labelled SYNTHETIC. `scripts/evaluate_real.py` accepts an optional `--model`.
+* **Blind inspection form** (`docs/INSPECTION_FORM.md`) and a **brief for the Arabic language reviewer** (`docs/ARABIC_REVIEW_BRIEF.md`).
+* **Regenerable simulator B data**: three new B pools with recorded seeds and generator identity (`results/data_b_r2101` to `_r2103`), and
+  `docs/REPRODUCIBILITY.md`.
+
+## What was measured
+
+| Experiment | Result | Source |
+|---|---|---|
+| Error detection in a familiar simulator | the model's decision margin ranks wrong decisions first at AUROC 0.905 (A) and 0.733 (B) | `results/selective_prediction.json` |
+| Error detection on an unseen physics (world D) | no label free signal above 0.61; the model's entropy is below chance (0.457) | same |
+| The open set guard as an error signal | below chance in world (0.40, 0.44), weak on D (0.583) | same |
+| Simulator B results on regenerated pools | A to B 0.670 to 0.697, B to A 0.741 to 0.757 (committed pool: 0.683, 0.770) | `results/replication_b.json` |
+| Few shot on world D | 5, 10, 70 buildings: 0.762, 0.798, 0.869; healthy false alarms 50%, 35%, 16% | `results/world_d_fewshot_followup.json` |
+| Temporal features in world A and B | overflow +0.002 and +0.004; across all tests below the +0.02 threshold except once (+0.020, A held out) | `results/world_d_temporal_followup.json` |
+| Pilot dry run, 24 synthetic buildings | the path runs end to end | `results/pilot_dry_run/SUMMARY_SYNTHETIC.md` |
+
+## What failed
+
+* 8 of 10 selective prediction predictions failed, including the shipping rule, so no `--abstain-on uncertainty` flag is added.
+* B replication: in world B on one regenerated pool (0.908) was above the preregistered range.
+* E5: in world B the temporal block moved fouling by +0.013 and passing valves by -0.010, past the 0.01 limit.
+* The first selective prediction run broke ties in the risk coverage figures by file order; fixed and rerun (no figure moved by more than 0.001).
+
+## What is corrected
+
+* B to A on regenerated data is 0.741 to 0.757, below the committed 0.770; the quoted range now adds "0.67 to 0.76 on four regenerated B pools".
+* The guard and the model's confidence are described exactly as measured in README, LIMITATIONS, MODEL_CARD, ASSURANCE_CASE and the Edge proposal.
+* Two Windows encoding bugs (a test and the Arabic review sheet generator), found by the first full local test run on Windows.
+* The Arabic review sheet now lists 181 strings (three notes added in v1.2.0 were missing).
+
+## What is still open
+
+* Real labelled data from a pilot partner; no UAE data has been used.
+* Native speaker review of the Arabic text.
+* Whether fleet calibration also restores error detection on an unfamiliar fleet (untested).
+* The decision margin as a reliability signal, to be preregistered against a world not yet seen.
+* A local Docker build on this machine (the engine was not running; the image is built and smoke tested in CI).
