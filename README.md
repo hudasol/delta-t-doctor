@@ -112,8 +112,8 @@ inside one simulator but at chance (0.53 to 0.56) across simulators (`results/ov
 * **World D** ([docs/WORLD_D.md](docs/WORLD_D.md)), a time stepped closed loop simulator written to test the claims above, with predictions
   committed first. The shipped model scores **0.705** macro AUROC on it zero shot and calls 98% of healthy windows faulty; the guards withhold
   the ranking for 92% of D buildings. **But the windows the guard lets through score lower (0.618) than those it flags (0.756)**: the guard
-  detects unfamiliar buildings, it does not pick out the model's mistakes. Hourly temporal features did not help overflow in an unseen world
-  and are not shipped.
+  detects unfamiliar buildings, it does not pick out the model's mistakes. Hourly temporal features did not help overflow in any of the three
+  worlds and are not shipped.
 * **When does it know it is probably wrong?** ([docs/SELECTIVE_PREDICTION.md](docs/SELECTIVE_PREDICTION.md), v1.2.1, simulation.) Inside a
   familiar simulator, its own decision margin finds wrong rankings well (AUROC 0.905 in A, 0.733 in B; keeping the more confident half cuts the
   error rate from 7.0% to 0.3% in A). On the unseen world D, **no label free signal works**: the best reaches 0.608, the model's entropy is below
