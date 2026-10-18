@@ -176,7 +176,7 @@ recorded as a negative result.
 | D8 | k = 20: 0.825 (needed 0.80); k = 40: 0.850 (needed 0.84) | Held |
 | D9 | 26% at k = 20 (needed below 30%) | Held |
 | D10 | overflow 0.703 to 0.714 (+0.010; needed +0.02) | **Failed** |
-| D11 | not run (deviation 2) | Not run |
+| D11 | not run (deviation 2); run in v1.2.1, see the follow up section: held | Not run in v1.2.0 |
 | D12 | overflow +0.005 on D | Held |
 | D13 | rule fails on part (b) | Held |
 
@@ -233,3 +233,20 @@ Macro AUROC on the same 70 held out D buildings, mean of three draws, joined wit
 
 The curve is smooth and flattens after about 40 buildings. Healthy false alarms fall fastest: from 99% to 35% with 10 labelled buildings.
 Overflow barely moves (0.54 to 0.65 over the whole curve), so even a calibrated fleet model should keep overflow at "possible".
+
+### Follow up results: temporal block in world A and B (`results/world_d_temporal_followup.json`, run 04:10 to 04:20)
+
+| World (5 fold grouped CV) | fouling | passing valves | constant flow | overflow | macro |
+|---|---|---|---|---|---|
+| A | 0.988 to 0.988 | 0.964 to 0.962 | 0.995 to 0.996 | 0.918 to 0.920 | 0.966 to 0.966 |
+| B | 0.705 to 0.718 | 0.983 to 0.973 | 0.972 to 0.974 | 0.925 to 0.929 | 0.896 to 0.899 |
+
+The leave one world out part was recomputed in the same run and matches the v1.2.0 figures exactly (the code is deterministic).
+
+| # | Outcome | Verdict |
+|---|---|---|
+| D11 | overflow +0.0016 (A), +0.0044 (B) | Held |
+| E5 | A: every other cause within 0.002; B: fouling +0.0133, passing valves -0.0105 | **Failed** (B, narrowly) |
+
+With this, the claim "hourly temporal features do not help overflow" holds in all three worlds, in world (A +0.002, B +0.004, D +0.010) and
+leave one world out (+0.005 to +0.020). The block stays unshipped.

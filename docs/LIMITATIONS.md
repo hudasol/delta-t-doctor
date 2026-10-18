@@ -29,7 +29,7 @@ Read this before trusting any number from the tool.
    0.2 to 0.4, 0.4 to 0.8, 0.8 to 1.6 and above 1.6 C, because it shares a high low load flow signature with the valve faults. Within one physics it is found at about 0.92 AUROC;
    the real problem is transfer, where it falls to 0.53 to 0.56 (chance; 0.547 on world D), so it stays capped at "possible" ([OVERFLOW.md](OVERFLOW.md)).
    World D can produce valve hunting, but at a period of about ten minutes the hourly meter averages it out, and hourly temporal features did not
-   help overflow in an unseen world ([WORLD_D.md](WORLD_D.md)). Weak faults
+   help overflow in any world (in world A +0.002, B +0.004, D +0.010; leave one world out +0.005 to +0.020; [WORLD_D.md](WORLD_D.md)). Weak faults
    (true gain 0.2-0.4 C) are missed about half the time or more. Telling these apart on site needs a valve
    position or differential-pressure reading.
 6. **The tariff is a parameter, not a fact.** The 10% per degC below 8.9 C surcharge comes from one operator's
