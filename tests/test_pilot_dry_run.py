@@ -25,4 +25,13 @@ def test_reduced_pilot_dry_run_end_to_end(tmp_path):
     assert card["n_labelled_buildings"] == 10 and card["weakly_calibrated"] is True
     text = (out / "SUMMARY_SYNTHETIC.md").read_text(encoding="utf-8")
     assert text.startswith("# Pilot dry run summary (SYNTHETIC)") and "weakly calibrated" in text
-    assert os.path.exists(out / "fleet_model_SYNTHETIC.joblib.card.json")
+    card_file = json.load(open(out / "fleet_model_SYNTHETIC.joblib.card.json"))
+    assert card_file["SYNTHETIC"] is True and card_file["n_labelled_buildings"] == 10
+    for d in ("eval_all_bundled", "eval_half_bundled", "eval_half_calibrated"):
+        files = os.listdir(out / d)
+        assert files == ["SYNTHETIC_eval.json"], files            # no file named "real_..." is left behind
+        assert json.load(open(out / d / "SYNTHETIC_eval.json"))["SYNTHETIC"] is True
+    # the calibrated model was really used: its probabilities differ from the bundled model's on the same buildings
+    pb = [b["probs"] for b in json.load(open(out / "eval_half_bundled" / "SYNTHETIC_eval.json"))["buildings"]]
+    pc = [b["probs"] for b in json.load(open(out / "eval_half_calibrated" / "SYNTHETIC_eval.json"))["buildings"]]
+    assert pb != pc

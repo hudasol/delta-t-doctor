@@ -59,7 +59,13 @@ def evaluate(manifest, out, model=None, boot=200):
     if model:
         cmd += ["--model", model]
     run(cmd)
-    s = json.load(open(os.path.join(out, "real_eval.json")))["summary"]
+    path = os.path.join(out, "real_eval.json")
+    full = json.load(open(path))
+    # evaluate_real.py names its output "real_eval.json"; here it is not real, so the file is marked and renamed
+    full = {"SYNTHETIC": True, "note": "Produced by scripts/pilot_dry_run.py from simulated buildings; not real data."} | full
+    json.dump(full, open(os.path.join(out, "SYNTHETIC_eval.json"), "w"), indent=2, default=float)
+    os.remove(path)
+    s = full["summary"]
     return {k: s.get(k) for k in FIELDS} | {"per_cause_auroc": s.get("per_cause_auroc")}
 
 
@@ -90,9 +96,12 @@ def main(argv=None):
     model = os.path.join(out, "fleet_model_SYNTHETIC.joblib")
     res["calibrate_stdout"] = run([sys.executable, "-m", "deltat_doctor.cli", "calibrate", cal_m, "--out", model, "--seed", str(a.seed)]).strip()
     card = json.load(open(model + ".card.json"))
+    card = {"SYNTHETIC": True} | card       # extra keys do not affect loading; the model's sha256 is unchanged
+    json.dump(card, open(model + ".card.json", "w"), indent=2, default=float)
     res["calibration_card"] = {k: card[k] for k in ("weakly_calibrated", "n_labelled_buildings", "n_fit_buildings", "n_holdout_buildings", "holdout")}
     res["second_half_bundled"] = evaluate(score_m, os.path.join(out, "eval_half_bundled"), boot=a.boot)
     res["second_half_calibrated"] = evaluate(score_m, os.path.join(out, "eval_half_calibrated"), model=model, boot=a.boot)
+    res["calibrated_model_sha256"] = card["sha256"]
     json.dump(res, open(os.path.join(out, "summary_synthetic.json"), "w"), indent=2, default=float)
 
     f = lambda v: "n/a" if v is None or (isinstance(v, float) and np.isnan(v)) else (f"{v:.2f}" if isinstance(v, float) else str(v))
@@ -102,6 +111,8 @@ def main(argv=None):
              f"Fleet: {a.buildings} buildings, {a.months} months each. Calibration half: {half}; scoring half: {len(man) - half}.", "",
              "| Measure | All buildings, bundled model | Scoring half, bundled | Scoring half, calibrated |", "|---|---|---|---|"]
     for k in FIELDS:
+        if k == "interpretable":
+            continue
         lines.append(f"| {k} | {f(res['all_bundled'][k])} | {f(res['second_half_bundled'][k])} | {f(res['second_half_calibrated'][k])} |")
     lines += ["", "Calibration card: " + ("**weakly calibrated**" if card["weakly_calibrated"] else "calibrated") +
               f" on {card['n_labelled_buildings']} buildings ({card['n_fit_buildings']} fitted, {card['n_holdout_buildings']} held out inside "
