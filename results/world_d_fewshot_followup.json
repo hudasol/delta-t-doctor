@@ -1,0 +1,65 @@
+{
+  "data": {
+    "D": {
+      "windows": 1500,
+      "buildings": 150,
+      "prevalence": {
+        "fouling": 0.26466666666666666,
+        "passing_valves": 0.10466666666666667,
+        "constant_flow": 0.24933333333333332,
+        "overflow": 0.182
+      },
+      "healthy_share": 0.42333333333333334,
+      "dt_actual_percentiles_5_50_95": [
+        4.103065123257594,
+        8.482473240134436,
+        14.366738963349453
+      ]
+    }
+  },
+  "few_shot": {
+    "n_test_buildings": 70,
+    "repeat": 5,
+    "draws": 3,
+    "curve": {
+      "5": {
+        "macro_auroc": 0.7619364399809396,
+        "sd_macro": 0.002450244373136836,
+        "healthy_false_alarm": 0.5034013605442177,
+        "per_cause": {
+          "fouling": 0.7321118233618235,
+          "passing_valves": 0.8487893333333334,
+          "constant_flow": 0.9119465932433023,
+          "overflow": 0.5548980099852991
+        }
+      },
+      "10": {
+        "macro_auroc": 0.7976239446889896,
+        "sd_macro": 0.0013541449490074725,
+        "healthy_false_alarm": 0.34920634920634924,
+        "per_cause": {
+          "fouling": 0.8068678774928775,
+          "passing_valves": 0.8676728888888888,
+          "constant_flow": 0.9399920603703218,
+          "overflow": 0.5759629520038702
+        }
+      },
+      "70": {
+        "macro_auroc": 0.8685213521864754,
+        "sd_macro": 0.0031434836529022794,
+        "healthy_false_alarm": 0.16439909297052155,
+        "per_cause": {
+          "fouling": 0.9417289886039887,
+          "passing_valves": 0.918424888888889,
+          "constant_flow": 0.9677661961161371,
+          "overflow": 0.6461653351368869
+        }
+      }
+    },
+    "k_values_planned": [
+      5,
+      10,
+      70
+    ]
+  }
+}
