@@ -2,6 +2,8 @@
 
 **Simulated buildings only (simulator B, seed 5); the labels are simulator ground truth, not inspections. Nothing here is evidence about real buildings.** Produced by `scripts/pilot_dry_run.py`.
 
+Simulator B is one of the bundled model's training worlds, so high scores are expected and say nothing about accuracy; the dry run tests the path, not the model.
+
 Fleet: 24 buildings, 2 months each. Calibration half: 12; scoring half: 12.
 
 | Measure | All buildings, bundled model | Scoring half, bundled | Scoring half, calibrated |
@@ -13,7 +15,8 @@ Fleet: 24 buildings, 2 months each. Calibration half: 12; scoring half: 12.
 | healthy_false_alarm | 0.12 | 0.17 | 0.17 |
 | confidently_wrong_buildings | 1 | 1 | 1 |
 | brier | 0.09 | 0.10 | 0.10 |
+| interpretable | True | True | True |
 
 Calibration card: **weakly calibrated** on 12 buildings (8 fitted, 4 held out inside the calibration half).
 
-With fewer than 10 buildings in a half, `evaluate_real.py` marks the figures as not interpretable; that is expected in a small dry run.
+`interpretable` is false when `evaluate_real.py` was given fewer than 10 buildings.

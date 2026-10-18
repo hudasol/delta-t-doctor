@@ -6,7 +6,7 @@
 
 > **Status: a research prototype, validated in simulation only.** Trained and tested on physics simulators.
 > It has **not** been validated on real UAE building data and no field accuracy is claimed. In the external check 3 of 5 predictions
-> failed and 1 was not supported, and on simulators it was not trained on it scores 0.68 to 0.77 macro AUROC (0.67 to 0.76 on four regenerated B pools) (see [Results](#results) and
+> failed and 1 was not supported, and models trained on one simulator score 0.68 to 0.77 macro AUROC on the other (0.67 to 0.76 on four regenerated B pools; see [Results](#results) and
 > [Limitations](docs/LIMITATIONS.md)). Treat its output as a ranked inspection list.
 
 Product plan, market research and roadmap: [plan.md](plan.md). Draft pilot protocol: [docs/PILOT.md](docs/PILOT.md), with a blind
@@ -112,8 +112,8 @@ inside one simulator but at chance (0.53 to 0.56) across simulators (`results/ov
 * **World D** ([docs/WORLD_D.md](docs/WORLD_D.md)), a time stepped closed loop simulator written to test the claims above, with predictions
   committed first. The shipped model scores **0.705** macro AUROC on it zero shot and calls 98% of healthy windows faulty; the guards withhold
   the ranking for 92% of D buildings. **But the windows the guard lets through score lower (0.618) than those it flags (0.756)**: the guard
-  detects unfamiliar buildings, it does not pick out the model's mistakes. Hourly temporal features did not help overflow in any of the three
-  worlds and are not shipped.
+  detects unfamiliar buildings, it does not pick out the model's mistakes. Hourly temporal features stayed below the preregistered +0.02 help
+  threshold for overflow in every test but one (+0.020 with simulator A held out) and lowered other causes, so they are not shipped.
 * **When does it know it is probably wrong?** ([docs/SELECTIVE_PREDICTION.md](docs/SELECTIVE_PREDICTION.md), v1.2.1, simulation.) Inside a
   familiar simulator, its own decision margin finds wrong rankings well (AUROC 0.905 in A, 0.733 in B; keeping the more confident half cuts the
   error rate from 7.0% to 0.3% in A). On the unseen world D, **no label free signal works**: the best reaches 0.608, the model's entropy is below

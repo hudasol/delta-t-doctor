@@ -26,7 +26,7 @@ do not include error in scaling a partial year to a full year.
 0.971 (informed); across 4 regenerated datasets the spread is 0.959 +/- 0.003. Calibration, stress, leave one building type out and
 held out-season results are in [results/metrics.md](../results/metrics.md). Across simulators the picture is much weaker: trained on A
 and tested on B it scores 0.683, trained on B and tested on A 0.770 ([CROSS_SIMULATOR.md](CROSS_SIMULATOR.md)); on four regenerated B
-pools with recorded seeds these are 0.670 to 0.697 and 0.741 to 0.757 ([REPRODUCIBILITY.md](REPRODUCIBILITY.md)). Reproduce with
+pools (three with recorded seeds and generator identity, one with seed 11) these are 0.670 to 0.697 and 0.741 to 0.757 ([REPRODUCIBILITY.md](REPRODUCIBILITY.md)). Reproduce with
 `python scripts/evaluate.py` and `python scripts/cross_simulator.py`.
 
 **Intended use.** Ranking what to inspect first in a variable flow building loop fed by district cooling, with the owner

@@ -27,7 +27,7 @@
       "overflow": 0.7912087912087912
     }
   },
-  "calibrate_stdout": "wrote C:\\Users\\karee\\Downloads\\projects\\delta t doctor\\delta-t-doctor\\results\\pilot_dry_run\\fleet_model_SYNTHETIC.joblib and C:\\Users\\karee\\Downloads\\projects\\delta t doctor\\delta-t-doctor\\results\\pilot_dry_run\\fleet_model_SYNTHETIC.joblib.card.json\n12 labelled buildings: 8 used for fitting, 4 held out\nheld out macro AUROC: base 1.000, calibrated 1.000\nheld out top-2 agreement: base 1.000, calibrated 1.000\n\nWARNING: Weakly calibrated: 12 labelled buildings (at least 20 recommended). The holdout figures rest on very few buildings.\n\nThe default model is unchanged. Use this model only by passing --model to 'deltat-doctor diagnose'.",
+  "calibrate_stdout": "wrote fleet_model_SYNTHETIC.joblib and fleet_model_SYNTHETIC.joblib.card.json\n12 labelled buildings: 8 used for fitting, 4 held out\nheld out macro AUROC: base 1.000, calibrated 1.000\nheld out top-2 agreement: base 1.000, calibrated 1.000\n\nWARNING: Weakly calibrated: 12 labelled buildings (at least 20 recommended). The holdout figures rest on very few buildings.\n\nThe default model is unchanged. Use this model only by passing --model to 'deltat-doctor diagnose'.",
   "calibration_card": {
     "weakly_calibrated": true,
     "n_labelled_buildings": 12,
@@ -80,7 +80,7 @@
     "brier": 0.10363708380721838,
     "interpretable": true,
     "per_cause_auroc": {
-      "fouling": NaN,
+      "fouling": null,
       "passing_valves": 1.0,
       "constant_flow": 0.9,
       "overflow": 0.49999999999999994
@@ -96,11 +96,11 @@
     "brier": 0.10365000797571375,
     "interpretable": true,
     "per_cause_auroc": {
-      "fouling": NaN,
+      "fouling": null,
       "passing_valves": 1.0,
       "constant_flow": 0.9,
       "overflow": 0.5416666666666666
     }
   },
-  "calibrated_model_sha256": "06c02287ece8209b22752e366d1f978916fb026cf0c2d270f7313e00053334fe"
+  "calibrated_model_sha256": "c471a32b7c61da8a1362b475ac488992e5ab159e931f24f63a157405a42d19c8"
 }

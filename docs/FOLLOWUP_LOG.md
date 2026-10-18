@@ -91,3 +91,18 @@ time, `n_jobs=1`, never touch processes I did not start.
 
 * Few shot on D at k = 5, 10, 70: 0.762, 0.798, 0.869; E1 to E4 held. Temporal in world A and B: overflow +0.002 and +0.004, D11 held; E5
   failed narrowly in B (fouling +0.013, passing valves -0.010). The leave one world out figures reproduced exactly.
+
+### Second review pass (04:25 to 04:35) and full local suite
+
+* Full local suite: **124 passed** in 8 min 29 s (Windows, Python 3.13). Lint clean.
+* A second independent review of the F2 and F3 write ups confirmed every number and every verdict, and found wording that went too far.
+  Corrected in the documents (this log is append only, so two earlier entries above stay as written and are corrected here):
+  * "the same code reproduces the committed pool's figures exactly" is wrong: A to B is 0.684 against 0.683 published; **to within 0.001**.
+  * "temporal features do not help overflow in all three worlds" overstated it: with A held out the gain is +0.020, exactly the preregistered
+    threshold; the block was rejected because other causes fell. All documents now say this.
+  * C15b is "partly supported": B to A is lower on all four regenerated pools, a systematic shift. The seed 11 pool has no `generator.json`.
+  * The regenerated range is quoted with one phrase everywhere ("0.67 to 0.76 on four regenerated B pools"), including LIMITATIONS item 2,
+    CROSS_SIMULATOR and WORLD_D, which had been missed. The default regenerable B pool is chosen by a stated rule (closest to the replicate
+    means: seed 2102), not the pool that failed R1.
+  * The dry run summary now states that B is a training world of the bundled model, prints the real `interpretable` flag, and writes valid
+    JSON without absolute paths.

@@ -94,7 +94,8 @@ def main(argv=None):
            "label_prevalence": {c: float(man["causes"].str.contains(c).mean()) for c in CAUSES}}
     res["all_bundled"] = evaluate(full, os.path.join(out, "eval_all_bundled"), boot=a.boot)
     model = os.path.join(out, "fleet_model_SYNTHETIC.joblib")
-    res["calibrate_stdout"] = run([sys.executable, "-m", "deltat_doctor.cli", "calibrate", cal_m, "--out", model, "--seed", str(a.seed)]).strip()
+    stdout = run([sys.executable, "-m", "deltat_doctor.cli", "calibrate", cal_m, "--out", model, "--seed", str(a.seed)]).strip()
+    res["calibrate_stdout"] = stdout.replace(out + os.sep, "").replace(out, ".")      # no absolute paths in the saved summary
     card = json.load(open(model + ".card.json"))
     card = {"SYNTHETIC": True} | card       # extra keys do not affect loading; the model's sha256 is unchanged
     json.dump(card, open(model + ".card.json", "w"), indent=2, default=float)
@@ -102,22 +103,29 @@ def main(argv=None):
     res["second_half_bundled"] = evaluate(score_m, os.path.join(out, "eval_half_bundled"), boot=a.boot)
     res["second_half_calibrated"] = evaluate(score_m, os.path.join(out, "eval_half_calibrated"), model=model, boot=a.boot)
     res["calibrated_model_sha256"] = card["sha256"]
-    json.dump(res, open(os.path.join(out, "summary_synthetic.json"), "w"), indent=2, default=float)
+    def clean(v):      # NaN is not valid JSON: write null
+        if isinstance(v, dict):
+            return {k: clean(x) for k, x in v.items()}
+        if isinstance(v, list):
+            return [clean(x) for x in v]
+        return None if isinstance(v, float) and np.isnan(v) else v
+    json.dump(clean(res), open(os.path.join(out, "summary_synthetic.json"), "w"), indent=2, default=float)
 
     f = lambda v: "n/a" if v is None or (isinstance(v, float) and np.isnan(v)) else (f"{v:.2f}" if isinstance(v, float) else str(v))
     lines = ["# Pilot dry run summary (SYNTHETIC)", "",
              f"**Simulated buildings only (simulator {a.world}, seed {a.seed}); the labels are simulator ground truth, not inspections. "
              "Nothing here is evidence about real buildings.** Produced by `scripts/pilot_dry_run.py`.", "",
+             (f"Simulator {a.world} is one of the bundled model's training worlds, so high scores are expected and say nothing about accuracy; "
+              "the dry run tests the path, not the model." if a.world == "B" else
+              "World D is not a training world of the bundled model; these scores are still simulation only."), "",
              f"Fleet: {a.buildings} buildings, {a.months} months each. Calibration half: {half}; scoring half: {len(man) - half}.", "",
              "| Measure | All buildings, bundled model | Scoring half, bundled | Scoring half, calibrated |", "|---|---|---|---|"]
     for k in FIELDS:
-        if k == "interpretable":
-            continue
         lines.append(f"| {k} | {f(res['all_bundled'][k])} | {f(res['second_half_bundled'][k])} | {f(res['second_half_calibrated'][k])} |")
     lines += ["", "Calibration card: " + ("**weakly calibrated**" if card["weakly_calibrated"] else "calibrated") +
               f" on {card['n_labelled_buildings']} buildings ({card['n_fit_buildings']} fitted, {card['n_holdout_buildings']} held out inside "
               "the calibration half).", "",
-              "With fewer than 10 buildings in a half, `evaluate_real.py` marks the figures as not interpretable; that is expected in a small dry run."]
+              "`interpretable` is false when `evaluate_real.py` was given fewer than 10 buildings."]
     open(os.path.join(out, "SUMMARY_SYNTHETIC.md"), "w", encoding="utf-8", newline="\n").write("\n".join(lines) + "\n")
     print("\n".join(lines))
     return res

@@ -182,7 +182,7 @@ recorded as a negative result.
 
 ### What this changes
 
-* **The transfer claim holds on a third physics.** An unseen world gives 0.705, inside the 0.68 to 0.77 seen between A and B, with almost every
+* **The transfer claim holds on a third physics.** An unseen world gives 0.705, inside the 0.68 to 0.77 seen between A and B (0.67 to 0.76 on four regenerated B pools), with almost every
   healthy building called faulty. The product's honest position does not change: zero shot probabilities on a new fleet are not trustworthy.
 * **The guard claim needs a correction.** The guards do withhold most unseen world buildings (92%). But they are novelty detectors, not error
   detectors: on D they pass the windows the model handles worse. So "the system refuses rather than guesses" is true for unfamiliar buildings,
@@ -232,7 +232,9 @@ Macro AUROC on the same 70 held out D buildings, mean of three draws, joined wit
 | E4 | overflow at most 0.646 (k = 70) | Held |
 
 The curve is smooth and flattens after about 40 buildings. Healthy false alarms fall fastest: from 99% to 35% with 10 labelled buildings.
-Overflow barely moves (0.54 to 0.65 over the whole curve), so even a calibrated fleet model should keep overflow at "possible".
+Overflow rises only to 0.65 over the whole curve, the lowest of the four causes, so even a calibrated fleet model should keep overflow at
+"possible". At k = 70 the three draws share most of the 80 non test buildings, so the sd understates the variance; the v1.2.0 sd values were
+0.002 (k = 20) and 0.007 (k = 40).
 
 ### Follow up results: temporal block in world A and B (`results/world_d_temporal_followup.json`, run 04:10 to 04:20)
 
@@ -246,7 +248,8 @@ The leave one world out part was recomputed in the same run and matches the v1.2
 | # | Outcome | Verdict |
 |---|---|---|
 | D11 | overflow +0.0016 (A), +0.0044 (B) | Held |
-| E5 | A: every other cause within 0.002; B: fouling +0.0133, passing valves -0.0105 | **Failed** (B, narrowly) |
+| E5 | A: every other cause within 0.002; B: fouling +0.0133, passing valves -0.0105 | **Failed** (B: fouling exceeds the limit by a third, passing valves just past it) |
 
-With this, the claim "hourly temporal features do not help overflow" holds in all three worlds, in world (A +0.002, B +0.004, D +0.010) and
-leave one world out (+0.005 to +0.020). The block stays unshipped.
+With this, the temporal block stays below the preregistered +0.02 for overflow in world in all three worlds (A +0.002, B +0.004, D +0.010) and
+in two of three leave one world out tests (+0.005, +0.016); with A held out it reaches +0.020, exactly the threshold. A and B contain no hunting,
+so the in world A and B runs cannot show help; they show the block costs nothing there. It stays unshipped because other causes fell (part b).

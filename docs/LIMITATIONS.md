@@ -9,7 +9,7 @@ Read this before trusting any number from the tool.
    on a technicality. The only contact with real meter data (district heating, no labels, [REAL_DATA_CONTACT.md](REAL_DATA_CONTACT.md))
    measures refusal and abstention, not accuracy.
 2. **Across structurally different simulators it fails, and the fixes I tried do not close the gap.** Trained on one simulator and tested on a second one with different
-   hydraulics, macro AUROC is 0.68 (A to B) and 0.77 (B to A), and the A-trained model flags 88% of B's healthy windows. The shipped
+   hydraulics, macro AUROC is 0.68 (A to B) and 0.77 (B to A; 0.67 to 0.70 and 0.74 to 0.76 on four regenerated B pools), and the A-trained model flags 88% of B's healthy windows. The shipped
    model is trained on both, which helps on those two worlds and says nothing about a third. See [CROSS_SIMULATOR.md](CROSS_SIMULATOR.md).
    Domain randomised training worlds, invariant feature selection and target batch standardisation were tested: best 0.715 and 0.784, not a fix
    ([TRANSFER_V2.md](TRANSFER_V2.md)). What does work is calibrating on surveyed target buildings: about 20 lift the weak direction to 0.800 and
@@ -28,8 +28,9 @@ Read this before trusting any number from the tool.
    4% (`results/error_analysis.json`). The weak spot is overflow: its recall at p>=0.5 is 0.28, 0.45, 0.67 and 0.80 for true gains of
    0.2 to 0.4, 0.4 to 0.8, 0.8 to 1.6 and above 1.6 C, because it shares a high low load flow signature with the valve faults. Within one physics it is found at about 0.92 AUROC;
    the real problem is transfer, where it falls to 0.53 to 0.56 (chance; 0.547 on world D), so it stays capped at "possible" ([OVERFLOW.md](OVERFLOW.md)).
-   World D can produce valve hunting, but at a period of about ten minutes the hourly meter averages it out, and hourly temporal features did not
-   help overflow in any world (in world A +0.002, B +0.004, D +0.010; leave one world out +0.005 to +0.020; [WORLD_D.md](WORLD_D.md)). Weak faults
+   World D can produce valve hunting, but at a period of about ten minutes the hourly meter averages it out, and hourly temporal features stayed
+   below the preregistered +0.02 for overflow except once (in world A +0.002, B +0.004, D +0.010; leave one world out +0.005, +0.016 and +0.020
+   with A held out) while lowering other causes ([WORLD_D.md](WORLD_D.md)). Weak faults
    (true gain 0.2-0.4 C) are missed about half the time or more. Telling these apart on site needs a valve
    position or differential-pressure reading.
 6. **The tariff is a parameter, not a fact.** The 10% per degC below 8.9 C surcharge comes from one operator's
@@ -61,8 +62,8 @@ Read this before trusting any number from the tool.
 15. **Tariff shape.** Only the linear surcharge is modelled (no tiers, deadbands, caps or demand charges).
 16. **Reproducibility of the training data is partial.** The simulator A pool regenerates to the same numbers (the shipped model's stored
     training percentiles match to 4e-15; `results/regeneration_check.json`) but not to the same file hash. The seed used for the committed
-    simulator B pool was not recorded, so that pool cannot be regenerated from the repository; it is committed as is. Four new B pools with recorded seeds
-    reproduce the B results within the preregistered tolerances except one in world figure (0.908 against 0.884); B to A is 0.741 to 0.757 on
+    simulator B pool was not recorded, so that pool cannot be regenerated from the repository; it is committed as is. Three new B pools with recorded seeds, plus the seed 11
+    pool from v1.2.0, reproduce the B results within the preregistered tolerances except one in world figure (0.908 against 0.884); B to A is 0.741 to 0.757 on
     them, below the committed 0.770 ([REPRODUCIBILITY.md](REPRODUCIBILITY.md), `results/replication_b.json`).
 17. **Fleet calibration is measured in simulation only**, on 12 held out buildings of a pretend fleet (`results/calibrate_check.json`): macro
     AUROC rose from 0.782 to 0.833 but overflow fell (0.81 to 0.66) and abstention stayed at 58%. Small holdouts give noisy figures.
