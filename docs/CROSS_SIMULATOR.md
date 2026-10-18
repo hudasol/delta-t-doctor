@@ -80,7 +80,7 @@ bootstrap interval where computed.
 * Fouling is hard inside B too (0.675): its effect there shows up mainly at high load, so it is easy to confuse with healthy part load behaviour.
 * Training on both simulators removes most of the gap on the simulators it has seen, so the shipped model is trained on both. That makes the
   reported within-simulator numbers look slightly better than they would for a stranger and does nothing to show how it will do on a field site.
-  The honest estimate for an unseen world remains the 0.68 to 0.77 above.
+  The honest estimate for an unseen world remains the 0.68 to 0.77 above (0.67 to 0.76 on four regenerated B pools, `docs/REPRODUCIBILITY.md`).
 * Nearest-neighbour test (`results/identifiability.json`): even inside a simulator, windows with exactly one cause have a nearest
   neighbour with a different cause 16% of the time for passing valves against overflow in A, and 18% to 21% for overflow against
   fouling or constant flow in B. Overflow is the cause that meter data alone separates least well.

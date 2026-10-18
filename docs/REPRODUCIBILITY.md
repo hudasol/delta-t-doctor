@@ -6,7 +6,7 @@
 |---|---|---|---|
 | Simulator A pool (`results/data/main.npz`, 500 buildings x 10 windows, seed 11) | no (gitignored, regenerated) | **yes, numerically**: the shipped model's stored training percentiles match to 4e-15 and label prevalence is identical; the file hash differs in the last float bits | `scripts/check_regenerated.py`, `results/regeneration_check.json` |
 | Simulator B pool (`results/data_b/main.npz`, 150 x 10) | yes | **no**: the seed used to make it was never recorded; seed 11 gives a different pool | same |
-| Replicate B pools (`results/data_b_r2101`, `_r2102`, `_r2103`, 150 x 10 each) | yes | yes: seed, call and versions in each `generator.json` | `results/replication_b.json` |
+| Replicate B pools (`results/data_b_r2101`, `_r2102`, `_r2103`, 150 x 10 each) | yes | yes: seed, call and versions in each `generator.json` (the seed 11 pool in `results/data_b_t` from v1.2.0 has the seed in its folder history only, no `generator.json`) | `results/replication_b.json` |
 | World D (`results/data_d/main.npz`, 150 x 10, seed 21) | yes | yes (`scripts/reproduce.py --full`) | `results/reproduce_report.json` |
 | Domain randomised worlds C-A and C-B (`results/data_ca`, `results/data_cb`) | yes | not checked | none |
 
@@ -64,11 +64,10 @@ package version, git commit and library versions). Generating one pool took 16 t
 | seed 2103 | 0.888 | 0.670 | 0.746 | 84% |
 
 Replicate means: in world B 0.895, A to B 0.683, B to A 0.748, healthy false alarm
-87%. Spread over the four replicates: 0.021, 0.026, 0.016 and
-0.056.
+87%. Spread over the four replicates (largest minus smallest): in world B 0.021, A to B 0.026, B to A 0.016 (these three are R4); healthy false alarm 0.056.
 
-The protocol reproduces the committed pool's own published figures (0.884, 0.684 against 0.683 published, 0.770, 88%), so differences below
-come from the pools, not the code.
+The protocol reproduces the committed pool's own published figures to within 0.001 (0.884, 0.684 against 0.683 published, 0.770, 88%), so
+the differences below come mainly from the pools.
 
 | # | Outcome | Verdict |
 |---|---|---|
@@ -86,5 +85,6 @@ pools (mean 0.748), so the committed pool's 0.770 sits at the favourable end.** 
 "0.68 to 0.77", becomes "0.68 to 0.77 (0.67 to 0.76 on four regenerated B pools)". In world B on regenerated pools is slightly higher
 (0.888 to 0.908) than the committed 0.884. The A to B healthy false alarm stays between 84% and 90%.
 
-From now on any new B result should use a regenerable pool (`results/data_b_r2101/main.npz` is the first one); the committed pool is kept
-because the shipped model was trained on it.
+From now on any new B result should use a regenerable pool. By a rule fixed here, the default is the pool closest to the replicate means on
+all three figures, `results/data_b_r2102/main.npz` (0.889, 0.676, 0.757); results that depend on B should also be checked on the other two.
+The committed pool is kept because the shipped model was trained on it.
