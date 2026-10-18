@@ -74,3 +74,20 @@ time, `n_jobs=1`, never touch processes I did not start.
   * Still to do in the F1 rerun write up: S5's window overlap between settings (a stricter leave target world out variant is added as a
     sensitivity check), the preregistered Brier loss, an interval for the margin, Q6 rounding, the proxy nature of the window decision, the
     timeline of the preregistration.
+
+### F2 reproducible B data (02:38 to 03:53)
+
+* Preregistered (56c3d6a; "outlier" defined at 02:58 before any pool was scored, d2a844a). Three pools with recorded seeds (2101 to 2103), each
+  16 to 19 minutes with `n_jobs=1`, plus the seed 11 pool from v1.2.0. The same code reproduces the committed pool's figures exactly.
+* 4 of 5 held; R1 failed (in world B 0.908 on seed 2101). **Correction:** B to A is 0.741 to 0.757 on regenerated pools, below the committed
+  0.770; README, MODEL_CARD, LIMITATIONS, PROPOSAL and EDGE_PROPOSAL now add "0.67 to 0.76 on regenerated data". Not an outlier by the rule,
+  so the bundled model is not retrained.
+
+### F1 rerun (03:54 to 04:04)
+
+* Tie aware AURC moved nothing by more than 0.001. Results section rewritten with the review's points (1f55404). Verdicts unchanged, 2 of 10.
+
+### F3 cut experiments (04:05 to 04:20)
+
+* Few shot on D at k = 5, 10, 70: 0.762, 0.798, 0.869; E1 to E4 held. Temporal in world A and B: overflow +0.002 and +0.004, D11 held; E5
+  failed narrowly in B (fouling +0.013, passing valves -0.010). The leave one world out figures reproduced exactly.

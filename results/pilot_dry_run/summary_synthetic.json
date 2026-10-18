@@ -1,0 +1,106 @@
+{
+  "SYNTHETIC": true,
+  "note": "Simulated buildings with simulator ground truth standing in for inspections. Not evidence about real buildings.",
+  "world": "B",
+  "buildings": 24,
+  "months_per_building": 2,
+  "seed": 5,
+  "label_prevalence": {
+    "fouling": 0.125,
+    "passing_valves": 0.16666666666666666,
+    "constant_flow": 0.25,
+    "overflow": 0.2916666666666667
+  },
+  "all_bundled": {
+    "n_buildings": 24,
+    "abstention_rate": 0.16666666666666663,
+    "top1": 1.0,
+    "top2": 1.0,
+    "healthy_false_alarm": 0.125,
+    "confidently_wrong_buildings": 1,
+    "brier": 0.09296878809925872,
+    "interpretable": true,
+    "per_cause_auroc": {
+      "fouling": 0.9607843137254901,
+      "passing_valves": 1.0,
+      "constant_flow": 0.9411764705882353,
+      "overflow": 0.7912087912087912
+    }
+  },
+  "calibrate_stdout": "wrote C:\\Users\\karee\\Downloads\\projects\\delta t doctor\\delta-t-doctor\\results\\pilot_dry_run\\fleet_model_SYNTHETIC.joblib and C:\\Users\\karee\\Downloads\\projects\\delta t doctor\\delta-t-doctor\\results\\pilot_dry_run\\fleet_model_SYNTHETIC.joblib.card.json\n12 labelled buildings: 8 used for fitting, 4 held out\nheld out macro AUROC: base 1.000, calibrated 1.000\nheld out top-2 agreement: base 1.000, calibrated 1.000\n\nWARNING: Weakly calibrated: 12 labelled buildings (at least 20 recommended). The holdout figures rest on very few buildings.\n\nThe default model is unchanged. Use this model only by passing --model to 'deltat-doctor diagnose'.",
+  "calibration_card": {
+    "weakly_calibrated": true,
+    "n_labelled_buildings": 12,
+    "n_fit_buildings": 8,
+    "n_holdout_buildings": 4,
+    "holdout": {
+      "base": {
+        "n_buildings": 4,
+        "n_windows": 8,
+        "abstention_rate": 0.5,
+        "per_cause_auroc": {
+          "fouling": 1.0,
+          "passing_valves": null,
+          "constant_flow": 1.0,
+          "overflow": null
+        },
+        "macro_auroc": 1.0,
+        "n_single_cause": 2,
+        "top1_agreement": 1.0,
+        "top2_agreement": 1.0,
+        "n_healthy": 1,
+        "healthy_false_alarm": 0.0
+      },
+      "calibrated": {
+        "n_buildings": 4,
+        "n_windows": 8,
+        "abstention_rate": 0.5,
+        "per_cause_auroc": {
+          "fouling": 1.0,
+          "passing_valves": null,
+          "constant_flow": 1.0,
+          "overflow": null
+        },
+        "macro_auroc": 1.0,
+        "n_single_cause": 2,
+        "top1_agreement": 1.0,
+        "top2_agreement": 1.0,
+        "n_healthy": 1,
+        "healthy_false_alarm": 0.0
+      }
+    }
+  },
+  "second_half_bundled": {
+    "n_buildings": 12,
+    "abstention_rate": 0.08333333333333337,
+    "top1": 1.0,
+    "top2": 1.0,
+    "healthy_false_alarm": 0.16666666666666666,
+    "confidently_wrong_buildings": 1,
+    "brier": 0.10363708380721838,
+    "interpretable": true,
+    "per_cause_auroc": {
+      "fouling": NaN,
+      "passing_valves": 1.0,
+      "constant_flow": 0.9,
+      "overflow": 0.49999999999999994
+    }
+  },
+  "second_half_calibrated": {
+    "n_buildings": 12,
+    "abstention_rate": 0.08333333333333337,
+    "top1": 1.0,
+    "top2": 1.0,
+    "healthy_false_alarm": 0.16666666666666666,
+    "confidently_wrong_buildings": 1,
+    "brier": 0.10365000797571375,
+    "interpretable": true,
+    "per_cause_auroc": {
+      "fouling": NaN,
+      "passing_valves": 1.0,
+      "constant_flow": 0.9,
+      "overflow": 0.5416666666666666
+    }
+  },
+  "calibrated_model_sha256": "06c02287ece8209b22752e366d1f978916fb026cf0c2d270f7313e00053334fe"
+}
