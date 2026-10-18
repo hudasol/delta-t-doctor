@@ -210,3 +210,26 @@ scores the already preregistered D11. The B pool for the temporal comparison is 
 | E5 | In world A and B the temporal block changes no other cause by more than 0.01 | a change above 0.01 for any of fouling, passing valves, constant flow |
 
 D11 (written before the v1.2.0 run, unchanged): "In world on A and on B, the temporal block changes overflow AUROC by less than 0.01".
+
+### Follow up results: few shot (`results/world_d_fewshot_followup.json`, run 2026-10-18 04:05 to 04:10)
+
+Macro AUROC on the same 70 held out D buildings, mean of three draws, joined with the v1.2.0 points:
+
+| k D buildings | macro AUROC | healthy false alarm | fouling | passing valves | constant flow | overflow |
+|---|---|---|---|---|---|---|
+| 0 | 0.709 | 99% | 0.573 | 0.850 | 0.869 | 0.544 |
+| 5 | 0.762 (sd 0.002) | 50% | 0.732 | 0.849 | 0.912 | 0.555 |
+| 10 | 0.798 (sd 0.001) | 35% | 0.807 | 0.868 | 0.940 | 0.576 |
+| 20 | 0.825 | 26% | 0.869 | 0.883 | 0.949 | 0.599 |
+| 40 | 0.850 | 21% | 0.915 | 0.904 | 0.965 | 0.614 |
+| 70 | 0.869 (sd 0.003) | 16% | 0.942 | 0.918 | 0.968 | 0.646 |
+
+| # | Outcome | Verdict |
+|---|---|---|
+| E1 | k = 5: 0.762 | Held |
+| E2 | k = 10: 0.798 | Held |
+| E3 | k = 70: 0.869; gain from k = 40 is 0.019 | Held |
+| E4 | overflow at most 0.646 (k = 70) | Held |
+
+The curve is smooth and flattens after about 40 buildings. Healthy false alarms fall fastest: from 99% to 35% with 10 labelled buildings.
+Overflow barely moves (0.54 to 0.65 over the whole curve), so even a calibrated fleet model should keep overflow at "possible".
