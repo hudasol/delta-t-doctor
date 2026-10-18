@@ -21,6 +21,9 @@ pip install ".[api]"
 deltat-doctor serve --host 0.0.0.0 --port 8000
 ```
 
+On Windows, keep the virtual environment in a short path (or enable long paths): with a very long path, installing scikit-learn fails
+with "No such file or directory" because some of its file paths exceed 260 characters. This happened once during the v1.2.1 checks.
+
 ## Production notes
 
 * Put it behind a reverse proxy that adds TLS, authentication and rate limiting. The app has none. Also cap the request body there (nginx: `client_max_body_size 26m;`, Caddy: `request_body { max_size 26MB }`, Traefik: `buffering.maxRequestBodyBytes`). The app enforces the same limit itself, including for chunked uploads, but the proxy stops oversize bodies earlier.

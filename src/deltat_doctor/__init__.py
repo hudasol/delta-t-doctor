@@ -1,6 +1,6 @@
 """delta-t-doctor: diagnose low delta-T syndrome from utility meter data only."""
 
-__version__ = "1.2.0"
+__version__ = "1.2.1"
 
 CP_KJ_KG_K = 4.186  # specific heat of chilled water, kJ/(kg K); single source for every module
 

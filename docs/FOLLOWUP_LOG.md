@@ -106,3 +106,36 @@ time, `n_jobs=1`, never touch processes I did not start.
     means: seed 2102), not the pool that failed R1.
   * The dry run summary now states that B is a training world of the bundled model, prints the real `interpretable` flag, and writes valid
     JSON without absolute paths.
+
+### F6 release checks (04:35 to 04:50)
+
+* Clean install in a fresh virtual environment (`pip install .[api]`): the first attempt failed because the scratch path was so long that a
+  scikit-learn file path exceeded the Windows 260 character limit; in a short path it installed, `deltat-doctor serve` answered
+  `/api/health` (status ok, version 1.2.1) and the fouled coils demo. A Windows note is added to DEPLOYMENT.md.
+* Version bumped to 1.2.1. The bundled models are unchanged.
+
+## Final report (04:50)
+
+**Predictions in this run**
+
+| Set | Held | Failed | Not run |
+|---|---|---|---|
+| Selective prediction Q1 to Q10 (`docs/SELECTIVE_PREDICTION.md`) | Q1, Q3 | Q2, Q4, Q5, Q6, Q7, Q8, Q9, Q10 (shipping rule) | none |
+| B replication R1 to R5 (`docs/REPRODUCIBILITY.md`) | R2, R3 (by 0.0007), R4, R5 | R1 (in world B 0.908 on seed 2101) | none |
+| World D follow up E1 to E5 and D11 (`docs/WORLD_D.md`) | E1, E2, E3, E4, D11 | E5 (fouling +0.013, passing valves -0.010 in B) | none |
+
+**Claims added:** a measured answer to "when does the system know it is wrong" (in world yes, from its decision margin; on an unseen physics
+no); regenerable B pools with recorded seeds; few shot on D at 5, 10, 70 buildings; temporal comparison in all three worlds; a pilot dry run
+that runs end to end; a blind inspection form and an Arabic review brief.
+
+**Claims corrected:** the guard is below chance as an error signal in world and weak on D; B to A is 0.741 to 0.757 on regenerated pools, below
+the committed 0.770; the temporal block reached the +0.02 threshold once and was rejected for lowering other causes; calibration is the only
+adaptation measured to raise accuracy, untested for error detection; two Windows encoding bugs; a stale Arabic review sheet.
+
+**Only a human can do:** the native speaker review of the Arabic text (`docs/ARABIC_REVIEW_BRIEF.md`, 181 strings); a real data partner with
+blind inspections (`docs/INSPECTION_FORM.md`); a local Docker build on a machine with the engine running (CI builds and smoke tests the image).
+Nothing failed to push.
+
+**Single most important next step:** a pilot with 10 to 20 inspected buildings of one operator. This run showed that on an unfamiliar fleet the
+model cannot tell when it is wrong, and that labelled buildings are the only measured remedy; only a pilot can show whether that holds for
+real buildings.

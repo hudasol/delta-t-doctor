@@ -2,6 +2,33 @@
 
 All accuracy figures are simulator results unless stated. Tags exist from v1.1.1 onward; earlier versions were not tagged.
 
+## v1.2.1
+
+Follow up to v1.2.0: closes the gaps it left open. All figures are simulation results. The bundled models are unchanged.
+
+- **When does the system know it is probably wrong?** (`docs/SELECTIVE_PREDICTION.md`, preregistered.) In world, the model's decision margin
+  finds wrong rankings well (AUROC 0.905 in A, 0.733 in B). On world D no label free signal exceeds 0.61 and the model's entropy is below chance
+  (0.457): it is confidently wrong. A combination fitted on A and B gives 0.513 on D, so no `--abstain-on uncertainty` flag is shipped. 2 of 10
+  predictions held. **Correction:** the guard is below chance as an error signal in world (0.40, 0.44) and weak on D (0.583); README,
+  LIMITATIONS, MODEL_CARD, ASSURANCE_CASE and the Edge proposal now say so.
+- **Pilot dry run** (`scripts/pilot_dry_run.py`): synthetic fleet to manifest, `evaluate_real.py`, `calibrate`, rescoring; every output is
+  labelled SYNTHETIC. `evaluate_real.py` gains an optional `--model` flag. New `docs/INSPECTION_FORM.md` and `docs/ARABIC_REVIEW_BRIEF.md`.
+- **Reproducible simulator B data** (`docs/REPRODUCIBILITY.md`, preregistered): three new B pools with recorded seeds and generator identity
+  (`results/data_b_r2101` to `_r2103`). The committed pool's figures reproduce to within 0.001 with the same code; on the regenerated pools A to B is
+  0.670 to 0.697 and **B to A 0.741 to 0.757, below the committed 0.770**, so the quoted range "0.68 to 0.77" now carries "0.67 to 0.76 on
+  four regenerated B pools" (README, MODEL_CARD, LIMITATIONS, PROPOSAL, EDGE_PROPOSAL). 4 of 5 predictions held (in world B on seed 2101, 0.908, was
+  above the allowed range). The committed pool is not an outlier by the preregistered rule, so the bundled model is not retrained.
+- **Cut experiments finished** (`docs/WORLD_D.md`, follow up, preregistered): few shot on world D at k = 5, 10, 70 gives 0.762, 0.798 and
+  0.869 (healthy false alarms 50%, 35%, 16%; overflow at most 0.646); the temporal block in world A and B changes overflow by +0.002 and +0.004;
+  across all tests it stays below the preregistered +0.02 except once (+0.020 with A held out). 5 of 6 predictions held (E5 failed in B:
+  fouling +0.013, passing valves -0.010).
+- **Windows fixes found by the first full local test run:** a test and the Arabic review sheet generator read UTF-8 files with the Windows
+  default code page and failed on Arabic text (CI runs on Linux, so it never showed). The review sheet is regenerated: 181 strings (three
+  notes added in v1.2.0 were missing).
+- Unneeded hyphens removed from older published docs (a fixed list of compounds such as delta T, open set, held out, in world, few shot).
+- `docs/DEPLOYMENT.md`: a Windows note on long virtual environment paths, found during the clean install check.
+- Version 1.2.1. Full local suite: 124 passed on Windows. Clean install (`pip install .[api]`), health endpoint and demo checked.
+
 ## v1.2.0
 
 New evidence and new product capability. All accuracy figures are simulation results; the only real data used have no labels. The bundled
