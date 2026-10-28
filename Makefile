@@ -1,4 +1,4 @@
-.PHONY: install test data train evaluate lbnl serve demo reproduce reproduce-full lock sbom
+.PHONY: install test data train evaluate baselines lbnl serve demo reproduce reproduce-full lock sbom
 install:
 	pip install -e ".[api,dev]"
 test:
@@ -9,6 +9,8 @@ train:
 	python scripts/train.py
 evaluate:
 	python scripts/evaluate.py
+baselines:
+	python scripts/baselines.py
 lbnl:
 	python scripts/lbnl_check.py
 serve:
