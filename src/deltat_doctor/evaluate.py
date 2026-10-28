@@ -157,3 +157,43 @@ def bootstrap_ci(ds: Dataset, preds: dict, n_boot: int = 200, seed: int = 0, ref
                     "diff_mean": float(np.mean(np.array(draws[ref][k]) - np.array(draws[n][k])))}
                 for k in draws[n]}
     return out
+
+
+def expected_calibration_error(ds: Dataset, pred: Prediction, bins: int = 10) -> float:
+    """Pooled ECE over all cause probabilities (equal width bins)."""
+    p, y = pred.prob.ravel(), ds.Y.ravel()
+    idx = np.minimum((p * bins).astype(int), bins - 1)
+    err = sum(abs(p[idx == b].mean() - y[idx == b].mean()) * (idx == b).sum() for b in range(bins) if (idx == b).any())
+    return float(err / len(p))
+
+
+def top1_precision(ds: Dataset, pred: Prediction) -> float:
+    """Share of faulty windows whose first recommendation (largest probability x predicted gain) is a cause that is really present."""
+    has = ds.Y.sum(1) > 0
+    if not has.any():
+        return float("nan")
+    pick = (pred.prob * pred.gain)[has].argmax(1)
+    return float(ds.Y[has][np.arange(has.sum()), pick].mean())
+
+
+def healthy_false_alarm(ds: Dataset, pred: Prediction, threshold: float = 0.5) -> float:
+    """Share of windows with no cause present that the model calls faulty (p_any at or above the threshold)."""
+    healthy = ds.Y.sum(1) == 0
+    return float((pred.p_any[healthy] >= threshold).mean()) if healthy.any() else float("nan")
+
+
+def summary_row(ds: Dataset, pred: Prediction) -> dict:
+    """The compact set of numbers the baseline tables report."""
+    m = metrics(ds, pred)
+    present = ds.Y == 1
+    return {
+        "macro_auroc": m["macro_auroc"],
+        "any_fault_auroc": m["any_fault_auroc"],
+        "brier": float(np.mean([m["per_cause"][c]["brier"] for c in CAUSES])),
+        "ece": expected_calibration_error(ds, pred),
+        "healthy_false_alarm": healthy_false_alarm(ds, pred),
+        "top1_precision": top1_precision(ds, pred),
+        "gain_mae_when_present": float(np.abs(pred.gain - ds.G)[present].mean()),
+        "top1_fix_gain_captured_blind": m.get("top1_fix_gain_captured_blind", float("nan")),
+        "per_cause_auroc": {c: m["per_cause"][c]["auroc"] for c in CAUSES},
+    }
