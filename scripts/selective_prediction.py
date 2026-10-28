@@ -1,4 +1,4 @@
-"""Selective prediction: which label free signal tells when the cause ranking is wrong? Protocol and predictions: docs/SELECTIVE_PREDICTION.md.
+"""Selective prediction: which label free signal tells when the cause ranking is wrong? Protocol and predictions: docs/research/SELECTIVE_PREDICTION.md.
 
 usage: python scripts/selective_prediction.py           writes results/selective_prediction.json
 

@@ -1,4 +1,4 @@
-"""Real data contact without labels (docs/REAL_DATA_CONTACT.md). No accuracy is measured or claimed here.
+"""Real data contact without labels (docs/research/REAL_DATA_CONTACT.md). No accuracy is measured or claimed here.
 
 usage: python scripts/real_contact.py            (after python scripts/fetch_real_data.py)
 

@@ -1,7 +1,7 @@
 """Domain-randomised worlds C-A and C-B: simulator A or B physics with a much wider randomisation envelope.
 
 These test whether training on a broader envelope helps transfer to the *other* physics. They contain no physics the base
-simulator lacks, apart from sensor offsets, dropped hours and a wider ETS loss on the A side. See docs/TRANSFER_V2.md.
+simulator lacks, apart from sensor offsets, dropped hours and a wider ETS loss on the A side. See docs/research/TRANSFER_V2.md.
 """
 from __future__ import annotations
 

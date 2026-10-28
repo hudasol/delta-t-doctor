@@ -1,4 +1,4 @@
-"""Replicate the simulator B results on B pools generated with recorded seeds. Predictions: docs/REPRODUCIBILITY.md.
+"""Replicate the simulator B results on B pools generated with recorded seeds. Predictions: docs/research/REPRODUCIBILITY.md.
 
 usage: python scripts/replicate_b.py [generate|evaluate|all]
 

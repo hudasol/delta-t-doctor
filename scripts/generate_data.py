@@ -25,8 +25,8 @@ if __name__ == "__main__":
     ap.add_argument("--stress-per", type=int, default=6)
     ap.add_argument("--jobs", type=int, default=2)
     ap.add_argument("--sim", default="A", choices=["A", "B", "CA", "CB", "D"],
-                    help="B = structurally different hydraulic simulator; D = dynamic world (docs/WORLD_D.md); stress sets are made for A only")
-    ap.add_argument("--temporal", action="store_true", help="also store the optional temporal feature block (docs/WORLD_D.md)")
+                    help="B = structurally different hydraulic simulator; D = dynamic world (docs/research/WORLD_D.md); stress sets are made for A only")
+    ap.add_argument("--temporal", action="store_true", help="also store the optional temporal feature block (docs/research/WORLD_D.md)")
     ap.add_argument("--no-stress", action="store_true", help="skip the stress sets")
     ap.add_argument("--seed", type=int, default=11)
     a = ap.parse_args()

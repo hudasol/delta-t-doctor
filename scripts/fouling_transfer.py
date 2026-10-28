@@ -1,4 +1,4 @@
-"""Why does fouling transfer worst from A to B? Tests H1 to H4 preregistered in docs/TRANSFER_V2.md (addendum). Writes
+"""Why does fouling transfer worst from A to B? Tests H1 to H4 preregistered in docs/research/TRANSFER_V2.md (addendum). Writes
 results/fouling_transfer.json.
 
 Only the fouling classifier is fitted (the product's calibrated booster, Diagnoser._calibrated, seed 0).

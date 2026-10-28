@@ -1,7 +1,7 @@
 """Fleet calibration: adapt the cause classifiers to a fleet using a few inspected, labelled buildings (docs/PILOT.md, docs/API.md).
 
 Why: across simulated physics the model transfers poorly (macro AUROC 0.68 to 0.77), and adding about 20 to 40 labelled buildings of the
-target physics lifts it to 0.80 to 0.84 in simulation (docs/TRANSFER_V2.md). This module turns that finding into a tool. It is not
+target physics lifts it to 0.80 to 0.84 in simulation (docs/research/TRANSFER_V2.md). This module turns that finding into a tool. It is not
 evidence that the same happens on real buildings.
 
 What it does, exactly as measured in scripts/transfer_fewshot.py:

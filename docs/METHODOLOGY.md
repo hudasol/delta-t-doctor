@@ -49,7 +49,7 @@ All results are in [results/metrics.md](../results/metrics.md) and are simulator
 ## Honest scope
 
 Simulator-only validation means the numbers measure self-consistency under a physical model I chose. The
-external check ([EXTERNAL_CHECK.md](EXTERNAL_CHECK.md)) was designed in advance, and it showed a real
+external check ([EXTERNAL_CHECK.md](research/EXTERNAL_CHECK.md)) was designed in advance, and it showed a real
 weakness, documented there. See [LIMITATIONS.md](LIMITATIONS.md).
 
 
@@ -57,7 +57,7 @@ weakness, documented there. See [LIMITATIONS.md](LIMITATIONS.md).
 
 A second generator, `sim/hydraulic.py`, models valves, differential pressure, a wet coil and a plate exchanger ETS so that fault
 signatures emerge instead of being injected. It exists to test generalisation, not to replace simulator A. Both are written by the same
-author. See [CROSS_SIMULATOR.md](CROSS_SIMULATOR.md).
+author. See [CROSS_SIMULATOR.md](research/CROSS_SIMULATOR.md).
 
 Each cause also has quantile gain models (10th, 50th, 90th percentile). Because the saving is a monotone function of the gain, its
 10th and 90th percentiles are the saving at those gain percentiles; its mean is taken over the gain distribution so that the

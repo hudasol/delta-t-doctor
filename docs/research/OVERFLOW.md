@@ -33,7 +33,7 @@ Held out buildings, first of five building grouped folds, one gradient-boosted d
 | Overflow vs fouling / passing valves / constant flow (single-fault windows) | 0.955 / 0.960 / 0.990 | 0.940 / 0.903 / 0.823 |
 | Ceiling with a simulated DP channel: in world | 0.998 | 0.995 |
 | Ceiling with a simulated DP channel: trained in the other world | 0.998 (B to A: 0.989) | |
-| Meter-only, trained in the other world (from `docs/TRANSFER_V2.md`) | 0.555 (A to B) | 0.532 (B to A) |
+| Meter-only, trained in the other world (from `docs/research/TRANSFER_V2.md`) | 0.555 (A to B) | 0.532 (B to A) |
 
 | # | Outcome | Verdict |
 |---|---|---|
@@ -49,7 +49,7 @@ Held out buildings, first of five building grouped folds, one gradient-boosted d
    The weakness is that the learned signature **does not carry across physics** (0.53 to 0.56, which is chance). The earlier wording, "overflow
    barely shows up in meter data", was too strong and is corrected in `docs/LIMITATIONS.md`.
 2. **Why the cap stays.** A pilot building is a third physics. Until the model has been calibrated on that fleet it is in the 0.53 to 0.56
-   regime for overflow, so "possible" is the right tier. The few shot curve (`docs/TRANSFER_V2.md`) shows overflow reaches 0.76 to 0.78 with
+   regime for overflow, so "possible" is the right tier. The few shot curve (`docs/research/TRANSFER_V2.md`) shows overflow reaches 0.76 to 0.78 with
    20 surveyed buildings and 0.83 to 0.86 with 40 to 50.
 3. **The DP ceiling is circular and I am not claiming it.** The DP channel in this test is generated from the fault label, so near-1.0 AUROC only
    shows that a measured loop pressure would be sufficient information, not what real DP data will do. It does justify one concrete ask in the pilot data

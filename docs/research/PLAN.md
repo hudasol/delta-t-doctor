@@ -52,13 +52,13 @@ hardware players rather than competing with their products, and it is the credib
 3. **FM and MEP contractors:** a faster first visit and a quantified business case for a retrofit.
 
 The first proposal is a **90-day pilot** on 10-20 buildings at one operator, with site inspections used as ground truth.
-See [docs/PILOT.md](docs/PILOT.md).
+See [docs/PILOT.md](../PILOT.md).
 
 ## 5. Where this stands (honest)
 
 Built and tested on a physics simulator. **Not yet validated on real UAE data.** A preregistered external check
 on the public LBNL chiller-plant data failed its first prediction: a fault free plant was flagged
-as faulty. Results: [docs/EXTERNAL_CHECK.md](docs/EXTERNAL_CHECK.md).
+as faulty. Results: [docs/research/EXTERNAL_CHECK.md](EXTERNAL_CHECK.md).
 
 The v0.2 follow-up did not fix it: the benchmark plant's flow does not follow load, which no simulated building does. The tool now reports "not reliable" for buildings that far from its training data. The first job of the pilot is to find out how often real ETS data passes that guard.
 

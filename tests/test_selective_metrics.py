@@ -1,4 +1,4 @@
-"""Risk coverage metric used in docs/SELECTIVE_PREDICTION.md must not depend on file order when scores tie."""
+"""Risk coverage metric used in docs/research/SELECTIVE_PREDICTION.md must not depend on file order when scores tie."""
 import importlib.util
 import os
 

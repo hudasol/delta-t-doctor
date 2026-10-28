@@ -1,4 +1,4 @@
-"""Few-shot adaptation curve. Predictions: docs/TRANSFER_V2.md. Writes results/transfer_fewshot.json."""
+"""Few-shot adaptation curve. Predictions: docs/research/TRANSFER_V2.md. Writes results/transfer_fewshot.json."""
 import json, os, sys, time
 import numpy as np
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))

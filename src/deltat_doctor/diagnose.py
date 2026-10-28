@@ -45,7 +45,7 @@ CHECKS = {
     ],
 }
 
-DOMAIN_MIN_DT_C = 3.0   # revisited after v0.2 training; see docs/EXTERNAL_CHECK.md
+DOMAIN_MIN_DT_C = 3.0   # revisited after v0.2 training; see docs/research/EXTERNAL_CHECK.md
 
 AMBIGUITY_NOTE = note("ambiguity")
 

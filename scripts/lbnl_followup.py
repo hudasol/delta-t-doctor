@@ -1,4 +1,4 @@
-"""v0.2 follow-up on the LBNL benchmark (predictions P4 and P5 in docs/EXTERNAL_CHECK.md, section 5).
+"""v0.2 follow-up on the LBNL benchmark (predictions P4 and P5 in docs/research/EXTERNAL_CHECK.md, section 5).
 
 Needs external/lbnl/ChillerPlant.csv (extracted by scripts/lbnl_check.py).
 Runs the fault-free year in blind mode, then in informed mode for a sweep of design delta-T values.
