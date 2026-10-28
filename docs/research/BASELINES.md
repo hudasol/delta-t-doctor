@@ -121,7 +121,7 @@ Ten of thirteen predictions held; B1, B2 and B3 failed.
 * What the shipped model adds over a generic ensemble is calibration (lowest ECE in every world, B5), the gain intervals, the abstention and the evidence statements. Those are product properties, not AUROC gains, and are described as such.
 * Hand written rules and a fitted single threshold are far behind (0.58 and 0.78 in A), and the plain delta T number alone reaches only 0.60 to 0.68. Cause level diagnosis needs the shape features.
 * A depth 3 tree reaches 0.91 in A, and logistic regression 0.915: much of the simulated signal is easy. This is a statement about the simulators, not about field data.
-* Zero shot, no model passes 0.77, and the healthy false alarm rate of every model on A+B to D is 0.94 to 1.00 except delta T only (0.20). No model, shipped or not, solves transfer to an unseen world; the shipped model has no special robustness (B9, B10).
+* Zero shot, no model passes 0.77, and the healthy false alarm rate of every model on A+B to D is 0.94 to 1.00 except the hand rules (0.30) and delta T only (0.20), which are also the least discriminating. No model, shipped or not, solves transfer to an unseen world; the shipped model has no special robustness (B9, B10).
 * The fitted stump rules on A are: fouling `flow_bin5 < 0.694`; passing valves `dt_night_minus_day < -0.0642`; constant flow `dt_hi_minus_mid > 0.867`; overflow `dt_period > 5.03`.
 
 Source: `scripts/baselines.py`, `results/baselines.json`, `results/baselines.log`. Protocol, hyperparameters and seeds are fixed as stated above.
