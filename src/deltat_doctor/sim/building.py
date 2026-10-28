@@ -13,6 +13,7 @@ return temperature, flow and energy. Four physical fault families are modelled:
 from __future__ import annotations
 
 from dataclasses import dataclass, field, replace
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -133,7 +134,7 @@ class PhysicsOut:
     unmet_kw: np.ndarray       # (T,)
     t_out: np.ndarray
     ts: pd.DatetimeIndex
-    cfg: BuildingConfig = field(repr=False, default=None)
+    cfg: Any = field(repr=False, default=None)
 
     @property
     def delta_t_series(self) -> np.ndarray:

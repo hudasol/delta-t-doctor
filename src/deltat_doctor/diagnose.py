@@ -282,7 +282,7 @@ def diagnose_frame(df: pd.DataFrame, terms: ContractTerms | None = None,
     """
     terms = terms or ContractTerms()
     informed = design_delta_t_c is not None
-    if informed and not (DESIGN_DT_RANGE[0] <= design_delta_t_c <= DESIGN_DT_RANGE[1]):
+    if design_delta_t_c is not None and not (DESIGN_DT_RANGE[0] <= design_delta_t_c <= DESIGN_DT_RANGE[1]):
         raise DataError(f"Design delta-T must be between {DESIGN_DT_RANGE[0]:.0f} and {DESIGN_DT_RANGE[1]:.0f} C "
                         f"(the range the model was trained on).")
     cal = dict(getattr(model, "calibration", None) or {})
@@ -340,7 +340,7 @@ def diagnose_frame(df: pd.DataFrame, terms: ContractTerms | None = None,
         f.expected_saving_aed_per_year = min(f.expected_saving_aed_per_year, annual_sur)
         if f.saving_high_aed_per_year is not None:
             f.saving_high_aed_per_year = min(f.saving_high_aed_per_year, annual_sur)
-            f.saving_low_aed_per_year = min(f.saving_low_aed_per_year, annual_sur)
+            f.saving_low_aed_per_year = min(f.saving_low_aed_per_year or 0.0, annual_sur)
     findings.sort(key=lambda f: (round(f.expected_saving_aed_per_year, 2), f.expected_dt_gain_c, f.probability), reverse=True)
     dt_all = float(h["heat_kw"].sum() / (CP_KJ_KG_K * max(h["flow_kgs"].sum(), 1e-9)))
 
@@ -355,7 +355,8 @@ def diagnose_frame(df: pd.DataFrame, terms: ContractTerms | None = None,
         notes.append(note("no_oat"))
     if len(findings) > 1 and findings[0].saving_low_aed_per_year is not None:
         a, b = findings[0], findings[1]
-        if b.saving_high_aed_per_year > a.saving_low_aed_per_year and b.expected_saving_aed_per_year > 0.5 * a.expected_saving_aed_per_year:
+        a_low = a.saving_low_aed_per_year
+        if a_low is not None and b.saving_high_aed_per_year is not None and b.saving_high_aed_per_year > a_low and b.expected_saving_aed_per_year > 0.5 * a.expected_saving_aed_per_year:
             notes.append(note("order_uncertain", a=a.label.split(' (')[0], b=b.label.split(' (')[0],
                               a_ar=CAUSE_SHORT_AR[a.cause], b_ar=CAUSE_SHORT_AR[b.cause]))
     top2 = {f.cause for f in findings[:2] if f.probability > 0.4}
@@ -369,7 +370,7 @@ def diagnose_frame(df: pd.DataFrame, terms: ContractTerms | None = None,
     out_of_range = ood_limit is not None and n_ood > ood_limit
     if out_of_range:
         notes.append(note("ood", n=f"{n_ood:.0f}", total=len(FEATURE_NAMES), limit=ood_limit))
-    elif g_flag:
+    elif g_flag and guard is not None:
         notes.append(note("openset", s=f"{g_score:.0f}", t=f"{guard.threshold:.0f}"))
     abstain = bool(out_of_range or g_flag)
     for f in findings:

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -80,7 +81,7 @@ class Sample:
     causes_injected: tuple
     cf_subtype: str                # 'three_way' | 'stuck_open' | 'mixed' | ''
     unmet_kwh: float
-    cfg: BuildingConfig
+    cfg: Any
     month: int
 
 

@@ -11,6 +11,7 @@ import os
 import threading
 import time
 import uuid
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -146,11 +147,13 @@ def _demo(name: str, seed: int = 7):
     """Returns (frame, true design delta-T of the simulated building)."""
     from .sim.scenarios import make_sample
     rng = np.random.default_rng(seed)
-    cfg, frames = None, []
+    cfg: Any = None
+    frames: list[pd.DataFrame] = []
     for m in (5, 6, 7, 8, 9, 10):
         s = make_sample(rng, 0, cfg=cfg, causes=DEMOS[name], month=m)
         cfg = s.cfg
         frames.append(s.frame)
+    assert cfg is not None
     design = float(np.average(cfg.dt_design, weights=cfg.q_design_kw))
     return pd.concat(frames, ignore_index=True), design
 
