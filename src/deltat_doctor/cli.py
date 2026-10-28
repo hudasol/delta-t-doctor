@@ -8,7 +8,7 @@ import sys
 
 import numpy as np
 
-from . import CAUSES
+from . import CAUSES, __version__
 from .penalty import ContractTerms
 
 
@@ -117,6 +117,7 @@ def cmd_serve(a):
 
 def main(argv=None):
     p = argparse.ArgumentParser(prog="deltat-doctor", description=__doc__)
+    p.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     sub = p.add_subparsers(dest="cmd", required=True)
 
     d = sub.add_parser("diagnose", help="diagnose a meter-export CSV")
