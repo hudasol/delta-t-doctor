@@ -95,4 +95,4 @@ def test_security_headers_and_bundled_fonts(models):
     r = c.get("/")
     assert r.headers["x-content-type-options"] == "nosniff" and "frame-ancestors 'none'" in r.headers["content-security-policy"]
     assert "googleapis" not in r.text and "http://" not in r.text.replace("http://www.w3.org", "")
-    assert c.get("/fonts/BricolageGrotesque-700.ttf").status_code == 200
+    assert c.get("/fonts/ibm-plex-sans-latin-600-normal.woff2").status_code == 200
