@@ -1,0 +1,1358 @@
+{
+  "models": [
+    "prior",
+    "rules_v1",
+    "delta_t_only",
+    "stumps",
+    "tree3",
+    "logistic",
+    "rf",
+    "hgb",
+    "shipped"
+  ],
+  "in_world": {
+    "A": {
+      "prior": {
+        "macro_auroc": 0.4777243420690647,
+        "any_fault_auroc": 0.48254009276666965,
+        "brier": 0.17039661875,
+        "ece": 0.002250000000000005,
+        "healthy_false_alarm": 1.0,
+        "top1_precision": 0.37392337392337394,
+        "gain_mae_when_present": 1.0729469652296313,
+        "top1_fix_gain_captured_blind": 0.5428703460682787,
+        "per_cause_auroc": {
+          "fouling": 0.4763157894736842,
+          "passing_valves": 0.48022139674023895,
+          "constant_flow": 0.4753711263399647,
+          "overflow": 0.47898905572237105
+        },
+        "macro_auroc_ci95": [
+          0.46813839770959387,
+          0.48696733890222255
+        ],
+        "lead_of_shipped_macro_auroc": 0.4886604691275658,
+        "lead_ci95": [
+          0.47788132029006214,
+          0.4986531329708305
+        ]
+      },
+      "rules_v1": {
+        "macro_auroc": 0.5809914406274486,
+        "any_fault_auroc": 0.6555921445694869,
+        "brier": 0.2665,
+        "ece": 0.2665,
+        "healthy_false_alarm": 0.47764849969381507,
+        "top1_precision": 0.41906741906741907,
+        "gain_mae_when_present": 1.518681607648393,
+        "top1_fix_gain_captured_blind": 0.3794297205021795,
+        "per_cause_auroc": {
+          "fouling": 0.6564254385964913,
+          "passing_valves": 0.4760981760419306,
+          "constant_flow": 0.6806097939263923,
+          "overflow": 0.5108323539449799
+        },
+        "macro_auroc_ci95": [
+          0.5722604712129732,
+          0.5893089973463232
+        ],
+        "lead_of_shipped_macro_auroc": 0.3855616560900087,
+        "lead_ci95": [
+          0.3763843216398701,
+          0.3953547795940249
+        ]
+      },
+      "delta_t_only": {
+        "macro_auroc": 0.624555987759871,
+        "any_fault_auroc": 0.6938041518568157,
+        "brier": 0.15923297722813662,
+        "ece": 0.012004720187175971,
+        "healthy_false_alarm": 0.68156766687079,
+        "top1_precision": 0.4303534303534304,
+        "gain_mae_when_present": 0.9919632939419831,
+        "top1_fix_gain_captured_blind": 0.5683359531502956,
+        "per_cause_auroc": {
+          "fouling": 0.6058666666666667,
+          "passing_valves": 0.5226087977699625,
+          "constant_flow": 0.7810463407120164,
+          "overflow": 0.5887021458908384
+        },
+        "macro_auroc_ci95": [
+          0.613187488984084,
+          0.6326469275988104
+        ],
+        "lead_of_shipped_macro_auroc": 0.34220884875641855,
+        "lead_ci95": [
+          0.3340841229415715,
+          0.35118255901064793
+        ]
+      },
+      "stumps": {
+        "macro_auroc": 0.7751606199860361,
+        "any_fault_auroc": 0.8340434908101779,
+        "brier": 0.11670987034047722,
+        "ece": 0.006360399070806954,
+        "healthy_false_alarm": 0.18432333129210043,
+        "top1_precision": 0.7980397980397981,
+        "gain_mae_when_present": 0.8145663932105295,
+        "top1_fix_gain_captured_blind": 0.8518686374027342,
+        "per_cause_auroc": {
+          "fouling": 0.8097843201754384,
+          "passing_valves": 0.7694130081401315,
+          "constant_flow": 0.9224414475068468,
+          "overflow": 0.5990037041217278
+        },
+        "macro_auroc_ci95": [
+          0.7683716305382077,
+          0.7825702194732816
+        ],
+        "lead_of_shipped_macro_auroc": 0.1911718913394256,
+        "lead_ci95": [
+          0.18368171155317692,
+          0.1974594153076247
+        ]
+      },
+      "tree3": {
+        "macro_auroc": 0.909838153890943,
+        "any_fault_auroc": 0.963621282972171,
+        "brier": 0.07420261044432455,
+        "ece": 0.009468486274214882,
+        "healthy_false_alarm": 0.12859767299448868,
+        "top1_precision": 0.8868428868428868,
+        "gain_mae_when_present": 0.573367914377499,
+        "top1_fix_gain_captured_blind": 0.908006651416832,
+        "per_cause_auroc": {
+          "fouling": 0.9215110745614035,
+          "passing_valves": 0.9145765833699032,
+          "constant_flow": 0.9601816931458906,
+          "overflow": 0.8430832644865747
+        },
+        "macro_auroc_ci95": [
+          0.9040678135742047,
+          0.9151423686417597
+        ],
+        "lead_of_shipped_macro_auroc": 0.05655541534614562,
+        "lead_ci95": [
+          0.05248057372239868,
+          0.060603317301841576
+        ]
+      },
+      "logistic": {
+        "macro_auroc": 0.9146610404815054,
+        "any_fault_auroc": 0.9668027145063275,
+        "brier": 0.07056750779150556,
+        "ece": 0.016372761184619666,
+        "healthy_false_alarm": 0.07960808328230251,
+        "top1_precision": 0.9230769230769231,
+        "gain_mae_when_present": 0.49900799961736375,
+        "top1_fix_gain_captured_blind": 0.9063319926178018,
+        "per_cause_auroc": {
+          "fouling": 0.9757142543859649,
+          "passing_valves": 0.9228315542891755,
+          "constant_flow": 0.9939644397281567,
+          "overflow": 0.7661339135227245
+        },
+        "macro_auroc_ci95": [
+          0.9082146214368972,
+          0.9200468340158321
+        ],
+        "lead_of_shipped_macro_auroc": 0.051792688711253074,
+        "lead_ci95": [
+          0.04696463229716794,
+          0.056140591589494034
+        ]
+      },
+      "rf": {
+        "macro_auroc": 0.9627254867824853,
+        "any_fault_auroc": 0.9888556685862259,
+        "brier": 0.05071597259569383,
+        "ece": 0.01764964350546039,
+        "healthy_false_alarm": 0.07654623392529088,
+        "top1_precision": 0.9423819423819424,
+        "gain_mae_when_present": 0.38531150161249855,
+        "top1_fix_gain_captured_blind": 0.9628472031252329,
+        "per_cause_auroc": {
+          "fouling": 0.9839944078947369,
+          "passing_valves": 0.9614162716096692,
+          "constant_flow": 0.9951422731473727,
+          "overflow": 0.9103489944781622
+        },
+        "macro_auroc_ci95": [
+          0.9583475461602622,
+          0.965771390203708
+        ],
+        "lead_of_shipped_macro_auroc": 0.0036859309879966494,
+        "lead_ci95": [
+          0.0023772621912363763,
+          0.004915486520002957
+        ]
+      },
+      "hgb": {
+        "macro_auroc": 0.966593769213141,
+        "any_fault_auroc": 0.9900764071002895,
+        "brier": 0.047448292234067796,
+        "ece": 0.009913961851870295,
+        "healthy_false_alarm": 0.07103490508266994,
+        "top1_precision": 0.9489159489159489,
+        "gain_mae_when_present": 0.3839431263378294,
+        "top1_fix_gain_captured_blind": 0.968575249468469,
+        "per_cause_auroc": {
+          "fouling": 0.9883399122807017,
+          "passing_valves": 0.9638793257968614,
+          "constant_flow": 0.9957192469764342,
+          "overflow": 0.9184365917985664
+        },
+        "macro_auroc_ci95": [
+          0.9631843349986947,
+          0.9693079845824168
+        ],
+        "lead_of_shipped_macro_auroc": -0.0002214713608358676,
+        "lead_ci95": [
+          -0.0008673256908804049,
+          0.0006475313161121183
+        ]
+      },
+      "shipped": {
+        "macro_auroc": 0.9663550660984493,
+        "any_fault_auroc": 0.9898948058776597,
+        "brier": 0.047015779776377845,
+        "ece": 0.005157914159795587,
+        "healthy_false_alarm": 0.07593386405388855,
+        "top1_precision": 0.9492129492129492,
+        "gain_mae_when_present": 0.37973125363780424,
+        "top1_fix_gain_captured_blind": 0.9704182777757061,
+        "per_cause_auroc": {
+          "fouling": 0.9876700657894737,
+          "passing_valves": 0.9636199788616178,
+          "constant_flow": 0.9954872896964896,
+          "overflow": 0.9186429300462161
+        },
+        "macro_auroc_ci95": [
+          0.962958984049756,
+          0.9691631892543425
+        ]
+      },
+      "_n_windows": 5000
+    },
+    "B": {
+      "prior": {
+        "macro_auroc": 0.4508874371466433,
+        "any_fault_auroc": 0.4715128849412727,
+        "brier": 0.14012548611111114,
+        "ece": 0.003083333333333328,
+        "healthy_false_alarm": 1.0,
+        "top1_precision": 0.43922018348623854,
+        "gain_mae_when_present": 1.548410796538682,
+        "top1_fix_gain_captured_blind": 0.6581811273500976,
+        "per_cause_auroc": {
+          "fouling": 0.4590698626282264,
+          "passing_valves": 0.41485775224465926,
+          "constant_flow": 0.46353529946635313,
+          "overflow": 0.4660868342473345
+        },
+        "macro_auroc_ci95": [
+          0.42861976632806364,
+          0.47757130699302
+        ],
+        "lead_of_shipped_macro_auroc": 0.43111696742617334,
+        "lead_ci95": [
+          0.40156853341731286,
+          0.45712142944651474
+        ]
+      },
+      "rules_v1": {
+        "macro_auroc": 0.6090115859401436,
+        "any_fault_auroc": 0.5604949453631742,
+        "brier": 0.26683333333333337,
+        "ece": 0.2668333333333333,
+        "healthy_false_alarm": 0.7643312101910829,
+        "top1_precision": 0.4197247706422018,
+        "gain_mae_when_present": 1.4469354365530356,
+        "top1_fix_gain_captured_blind": 0.3231000514161672,
+        "per_cause_auroc": {
+          "fouling": 0.49363877448347016,
+          "passing_valves": 0.7852953317967596,
+          "constant_flow": 0.6163130447791197,
+          "overflow": 0.540799192701225
+        },
+        "macro_auroc_ci95": [
+          0.5908598143676002,
+          0.6252843402960364
+        ],
+        "lead_of_shipped_macro_auroc": 0.27513808471738377,
+        "lead_ci95": [
+          0.25560816250118606,
+          0.29491474544518276
+        ]
+      },
+      "delta_t_only": {
+        "macro_auroc": 0.60421143587193,
+        "any_fault_auroc": 0.7823547887570853,
+        "brier": 0.1246962045891552,
+        "ece": 0.012653504611438769,
+        "healthy_false_alarm": 0.37579617834394907,
+        "top1_precision": 0.49655963302752293,
+        "gain_mae_when_present": 1.2444774260751028,
+        "top1_fix_gain_captured_blind": 0.6776765416654471,
+        "per_cause_auroc": {
+          "fouling": 0.46830898842870905,
+          "passing_valves": 0.5379700024080636,
+          "constant_flow": 0.8459787148998039,
+          "overflow": 0.5645880377511435
+        },
+        "macro_auroc_ci95": [
+          0.5820434022889807,
+          0.6314788450933373
+        ],
+        "lead_of_shipped_macro_auroc": 0.27724407885098407,
+        "lead_ci95": [
+          0.2486445813643017,
+          0.30421200453179437
+        ]
+      },
+      "stumps": {
+        "macro_auroc": 0.7223197009514614,
+        "any_fault_auroc": 0.7386845892011922,
+        "brier": 0.1209732955564081,
+        "ece": 0.01011369465582635,
+        "healthy_false_alarm": 0.22929936305732485,
+        "top1_precision": 0.5837155963302753,
+        "gain_mae_when_present": 1.3448968605834737,
+        "top1_fix_gain_captured_blind": 0.640707937973998,
+        "per_cause_auroc": {
+          "fouling": 0.5823178964183287,
+          "passing_valves": 0.8821596890157901,
+          "constant_flow": 0.7543062240101353,
+          "overflow": 0.6704949943615914
+        },
+        "macro_auroc_ci95": [
+          0.7017591409635074,
+          0.7416832241869289
+        ],
+        "lead_of_shipped_macro_auroc": 0.16103589653257863,
+        "lead_ci95": [
+          0.1425350747791536,
+          0.18011907747363748
+        ]
+      },
+      "tree3": {
+        "macro_auroc": 0.8146455804932744,
+        "any_fault_auroc": 0.8693546207561504,
+        "brier": 0.09368045058113031,
+        "ece": 0.02591173497047636,
+        "healthy_false_alarm": 0.08917197452229299,
+        "top1_precision": 0.768348623853211,
+        "gain_mae_when_present": 0.9679179078245873,
+        "top1_fix_gain_captured_blind": 0.8159276019681023,
+        "per_cause_auroc": {
+          "fouling": 0.6183037300430051,
+          "passing_valves": 0.9202586948295434,
+          "constant_flow": 0.9064306434383408,
+          "overflow": 0.8135892536622084
+        },
+        "macro_auroc_ci95": [
+          0.7985137283492985,
+          0.8321318041326913
+        ],
+        "lead_of_shipped_macro_auroc": 0.06874157593171552,
+        "lead_ci95": [
+          0.05656499994728045,
+          0.08182147008368476
+        ]
+      },
+      "logistic": {
+        "macro_auroc": 0.8405283999692696,
+        "any_fault_auroc": 0.9254550634020919,
+        "brier": 0.09236773420745185,
+        "ece": 0.011415442547795645,
+        "healthy_false_alarm": 0.09554140127388536,
+        "top1_precision": 0.7362385321100917,
+        "gain_mae_when_present": 0.860390409040836,
+        "top1_fix_gain_captured_blind": 0.786744190294577,
+        "per_cause_auroc": {
+          "fouling": 0.6344284987450933,
+          "passing_valves": 0.9516151226392375,
+          "constant_flow": 0.9638882590676724,
+          "overflow": 0.8121817194250754
+        },
+        "macro_auroc_ci95": [
+          0.8231472844236911,
+          0.8539898057306893
+        ],
+        "lead_of_shipped_macro_auroc": 0.04323706273188172,
+        "lead_ci95": [
+          0.03020822109320845,
+          0.05561798761511503
+        ]
+      },
+      "rf": {
+        "macro_auroc": 0.8874283347995806,
+        "any_fault_auroc": 0.9342294600596037,
+        "brier": 0.07749674965214942,
+        "ece": 0.017851550451464415,
+        "healthy_false_alarm": 0.08439490445859872,
+        "top1_precision": 0.8268348623853211,
+        "gain_mae_when_present": 0.7475074359574893,
+        "top1_fix_gain_captured_blind": 0.857731451404738,
+        "per_cause_auroc": {
+          "fouling": 0.6822115917559881,
+          "passing_valves": 0.9821889297877464,
+          "constant_flow": 0.9696407993249356,
+          "overflow": 0.9156720183296525
+        },
+        "macro_auroc_ci95": [
+          0.8753169117076457,
+          0.8989773675507177
+        ],
+        "lead_of_shipped_macro_auroc": -0.004041538853102388,
+        "lead_ci95": [
+          -0.011102647741536669,
+          0.0028921888455429915
+        ]
+      },
+      "hgb": {
+        "macro_auroc": 0.8890320067978352,
+        "any_fault_auroc": 0.9361815578799744,
+        "brier": 0.08107175991071774,
+        "ece": 0.04242087355643848,
+        "healthy_false_alarm": 0.1035031847133758,
+        "top1_precision": 0.8096330275229358,
+        "gain_mae_when_present": 0.7327691874231985,
+        "top1_fix_gain_captured_blind": 0.8532073997999076,
+        "per_cause_auroc": {
+          "fouling": 0.680517538848101,
+          "passing_valves": 0.9850012040317865,
+          "constant_flow": 0.9695028879575326,
+          "overflow": 0.921106396353921
+        },
+        "macro_auroc_ci95": [
+          0.8767796986654635,
+          0.8989473631168553
+        ],
+        "lead_of_shipped_macro_auroc": -0.005238604876474557,
+        "lead_ci95": [
+          -0.011777541930576571,
+          8.57968725247466e-05
+        ]
+      },
+      "shipped": {
+        "macro_auroc": 0.8835710604271116,
+        "any_fault_auroc": 0.9347133757961783,
+        "brier": 0.07638522686389902,
+        "ece": 0.009488724162481388,
+        "healthy_false_alarm": 0.07165605095541401,
+        "top1_precision": 0.8142201834862385,
+        "gain_mae_when_present": 0.7447770385240652,
+        "top1_fix_gain_captured_blind": 0.8521842315537468,
+        "per_cause_auroc": {
+          "fouling": 0.6752150963990007,
+          "passing_valves": 0.9650271767174653,
+          "constant_flow": 0.9698944159921087,
+          "overflow": 0.9241475525998715
+        },
+        "macro_auroc_ci95": [
+          0.8678940885491162,
+          0.8964953987059262
+        ]
+      },
+      "_n_windows": 1500
+    },
+    "D": {
+      "prior": {
+        "macro_auroc": 0.4622692574455882,
+        "any_fault_auroc": 0.47869919439260844,
+        "brier": 0.15637062499999999,
+        "ece": 0.0,
+        "healthy_false_alarm": 1.0,
+        "top1_precision": 0.45895953757225433,
+        "gain_mae_when_present": 2.0971267133298173,
+        "top1_fix_gain_captured_blind": 0.5650857071474947,
+        "per_cause_auroc": {
+          "fouling": 0.45752367598329263,
+          "passing_valves": 0.4558930239837611,
+          "constant_flow": 0.47506672618991086,
+          "overflow": 0.4605936036253885
+        },
+        "macro_auroc_ci95": [
+          0.43941777688740147,
+          0.48135387406745106
+        ],
+        "lead_of_shipped_macro_auroc": 0.4324055862082399,
+        "lead_ci95": [
+          0.41245511766247017,
+          0.45289017928501435
+        ]
+      },
+      "rules_v1": {
+        "macro_auroc": 0.5802373779114786,
+        "any_fault_auroc": 0.6931182012653042,
+        "brier": 0.21016666666666667,
+        "ece": 0.21016666666666667,
+        "healthy_false_alarm": 0.30393700787401573,
+        "top1_precision": 0.5202312138728323,
+        "gain_mae_when_present": 2.181741098278026,
+        "top1_fix_gain_captured_blind": 0.6487941532729322,
+        "per_cause_auroc": {
+          "fouling": 0.6261661006962921,
+          "passing_valves": 0.5024401117376726,
+          "constant_flow": 0.6480514052868039,
+          "overflow": 0.5442918939251458
+        },
+        "macro_auroc_ci95": [
+          0.5670247477668712,
+          0.5950347781507722
+        ],
+        "lead_of_shipped_macro_auroc": 0.3138756209978627,
+        "lead_ci95": [
+          0.29769184466934484,
+          0.33083956005352316
+        ]
+      },
+      "delta_t_only": {
+        "macro_auroc": 0.6788365240624167,
+        "any_fault_auroc": 0.8533211961221611,
+        "brier": 0.13039743077248445,
+        "ece": 0.013109862769267207,
+        "healthy_false_alarm": 0.32125984251968503,
+        "top1_precision": 0.5179190751445086,
+        "gain_mae_when_present": 1.844284277057096,
+        "top1_fix_gain_captured_blind": 0.5688797262170101,
+        "per_cause_auroc": {
+          "fouling": 0.8838318211609738,
+          "passing_valves": 0.45032273975461345,
+          "constant_flow": 0.7454051538264264,
+          "overflow": 0.6357863815076529
+        },
+        "macro_auroc_ci95": [
+          0.6616031598858284,
+          0.6983505139231919
+        ],
+        "lead_of_shipped_macro_auroc": 0.21535913674501334,
+        "lead_ci95": [
+          0.19667246931096108,
+          0.23492579618145557
+        ]
+      },
+      "stumps": {
+        "macro_auroc": 0.7586410721802288,
+        "any_fault_auroc": 0.8117755222793683,
+        "brier": 0.11139983304429747,
+        "ece": 0.007511320040180222,
+        "healthy_false_alarm": 0.11653543307086614,
+        "top1_precision": 0.7144508670520231,
+        "gain_mae_when_present": 1.650394824211708,
+        "top1_fix_gain_captured_blind": 0.7568741676823253,
+        "per_cause_auroc": {
+          "fouling": 0.8269066959585833,
+          "passing_valves": 0.7450047663990211,
+          "constant_flow": 0.8574422260426857,
+          "overflow": 0.6052106003206247
+        },
+        "macro_auroc_ci95": [
+          0.7410150403024389,
+          0.7771436166713955
+        ],
+        "lead_of_shipped_macro_auroc": 0.13614660986314553,
+        "lead_ci95": [
+          0.12159498917620297,
+          0.15179385804915255
+        ]
+      },
+      "tree3": {
+        "macro_auroc": 0.8238426147047089,
+        "any_fault_auroc": 0.908245414409904,
+        "brier": 0.0942504136282017,
+        "ece": 0.028627543769716296,
+        "healthy_false_alarm": 0.09133858267716535,
+        "top1_precision": 0.8393063583815029,
+        "gain_mae_when_present": 1.341041942633177,
+        "top1_fix_gain_captured_blind": 0.9117128542771633,
+        "per_cause_auroc": {
+          "fouling": 0.9096772941211398,
+          "passing_valves": 0.843956158614377,
+          "constant_flow": 0.9233551163077858,
+          "overflow": 0.6183818897755329
+        },
+        "macro_auroc_ci95": [
+          0.8101421638460709,
+          0.8376864999851986
+        ],
+        "lead_of_shipped_macro_auroc": 0.0713831509490502,
+        "lead_ci95": [
+          0.059853690731501305,
+          0.08332390750332963
+        ]
+      },
+      "logistic": {
+        "macro_auroc": 0.8696564847612016,
+        "any_fault_auroc": 0.9461289882117336,
+        "brier": 0.08115052323640184,
+        "ece": 0.010423922616936364,
+        "healthy_false_alarm": 0.11023622047244094,
+        "top1_precision": 0.8335260115606936,
+        "gain_mae_when_present": 1.0970917801252997,
+        "top1_fix_gain_captured_blind": 0.9180019144729042,
+        "per_cause_auroc": {
+          "fouling": 0.9682135508608306,
+          "passing_valves": 0.8629980412708499,
+          "constant_flow": 0.96368053114997,
+          "overflow": 0.6837338157631556
+        },
+        "macro_auroc_ci95": [
+          0.8559361261862342,
+          0.8815300172735568
+        ],
+        "lead_of_shipped_macro_auroc": 0.024895860835659388,
+        "lead_ci95": [
+          0.01404484833134442,
+          0.0355034345841197
+        ]
+      },
+      "rf": {
+        "macro_auroc": 0.8981478195985123,
+        "any_fault_auroc": 0.959128851668108,
+        "brier": 0.07510371944928468,
+        "ece": 0.016948998377031458,
+        "healthy_false_alarm": 0.09763779527559055,
+        "top1_precision": 0.861271676300578,
+        "gain_mae_when_present": 1.000791385005486,
+        "top1_fix_gain_captured_blind": 0.9457093930344682,
+        "per_cause_auroc": {
+          "fouling": 0.9627361603686762,
+          "passing_valves": 0.9342711203646178,
+          "constant_flow": 0.971492956943798,
+          "overflow": 0.7240910407169575
+        },
+        "macro_auroc_ci95": [
+          0.8865841650796558,
+          0.9091766895824194
+        ],
+        "lead_of_shipped_macro_auroc": -0.0035607883849616386,
+        "lead_ci95": [
+          -0.00796383786802871,
+          0.0008938688214520604
+        ]
+      },
+      "hgb": {
+        "macro_auroc": 0.8916545977081642,
+        "any_fault_auroc": 0.9576641937098902,
+        "brier": 0.07558707782382629,
+        "ece": 0.042541294954307786,
+        "healthy_false_alarm": 0.11338582677165354,
+        "top1_precision": 0.8901734104046243,
+        "gain_mae_when_present": 0.9692552106203774,
+        "top1_fix_gain_captured_blind": 0.9461370171512484,
+        "per_cause_auroc": {
+          "fouling": 0.9723949567358087,
+          "passing_valves": 0.9279206643553979,
+          "constant_flow": 0.9746369240413749,
+          "overflow": 0.6916658457000755
+        },
+        "macro_auroc_ci95": [
+          0.8804158737077529,
+          0.9020913574076751
+        ],
+        "lead_of_shipped_macro_auroc": 0.00315042016816356,
+        "lead_ci95": [
+          -0.0005642872952101668,
+          0.007331494915692754
+        ]
+      },
+      "shipped": {
+        "macro_auroc": 0.8948382385046213,
+        "any_fault_auroc": 0.9587738382413181,
+        "brier": 0.07276887719971238,
+        "ece": 0.009438663480312996,
+        "healthy_false_alarm": 0.07559055118110236,
+        "top1_precision": 0.8809248554913295,
+        "gain_mae_when_present": 0.9719383507037871,
+        "top1_fix_gain_captured_blind": 0.952217712111927,
+        "per_cause_auroc": {
+          "fouling": 0.9680034529140814,
+          "passing_valves": 0.9338703634319969,
+          "constant_flow": 0.9739839097273012,
+          "overflow": 0.7034952279451057
+        },
+        "macro_auroc_ci95": [
+          0.8848267372885968,
+          0.9044228671540321
+        ]
+      },
+      "_n_windows": 1500
+    }
+  },
+  "zero_shot": {
+    "A_to_B": {
+      "prior": {
+        "macro_auroc": 0.5,
+        "any_fault_auroc": 0.5,
+        "brier": 0.14598301666666666,
+        "ece": 0.05285000000000004,
+        "healthy_false_alarm": 1.0,
+        "top1_precision": 0.43922018348623854,
+        "gain_mae_when_present": 1.6218987975836472,
+        "top1_fix_gain_captured_blind": 0.6581811273500976,
+        "per_cause_auroc": {
+          "fouling": 0.5,
+          "passing_valves": 0.5,
+          "constant_flow": 0.5,
+          "overflow": 0.5
+        },
+        "macro_auroc_ci95": [
+          0.5,
+          0.5
+        ],
+        "lead_of_shipped_macro_auroc": 0.18179921855913023,
+        "lead_ci95": [
+          0.15494027007063976,
+          0.20980638088484863
+        ]
+      },
+      "rules_v1": {
+        "macro_auroc": 0.6090115859401436,
+        "any_fault_auroc": 0.5604949453631742,
+        "brier": 0.26683333333333337,
+        "ece": 0.2668333333333333,
+        "healthy_false_alarm": 0.7643312101910829,
+        "top1_precision": 0.4197247706422018,
+        "gain_mae_when_present": 1.4469354365530356,
+        "top1_fix_gain_captured_blind": 0.3231000514161672,
+        "per_cause_auroc": {
+          "fouling": 0.49363877448347016,
+          "passing_valves": 0.7852953317967596,
+          "constant_flow": 0.6163130447791197,
+          "overflow": 0.540799192701225
+        },
+        "macro_auroc_ci95": [
+          0.5908598143676002,
+          0.6252843402960364
+        ],
+        "lead_of_shipped_macro_auroc": 0.07355690938268673,
+        "lead_ci95": [
+          0.04166269744400515,
+          0.10630261405690065
+        ]
+      },
+      "delta_t_only": {
+        "macro_auroc": 0.5565668112476686,
+        "any_fault_auroc": 0.7847341933033367,
+        "brier": 0.13455880876661475,
+        "ece": 0.0577663972364543,
+        "healthy_false_alarm": 0.5780254777070064,
+        "top1_precision": 0.4713302752293578,
+        "gain_mae_when_present": 1.4943518311004205,
+        "top1_fix_gain_captured_blind": 0.656504405405676,
+        "per_cause_auroc": {
+          "fouling": 0.5390811752634166,
+          "passing_valves": 0.4201296914238536,
+          "constant_flow": 0.8464228362524574,
+          "overflow": 0.42063354205094694
+        },
+        "macro_auroc_ci95": [
+          0.5297131428623366,
+          0.5821853799945543
+        ],
+        "lead_of_shipped_macro_auroc": 0.12584495487476935,
+        "lead_ci95": [
+          0.10137693953333923,
+          0.14652094013587497
+        ]
+      },
+      "stumps": {
+        "macro_auroc": 0.6030682484190154,
+        "any_fault_auroc": 0.5066214281540349,
+        "brier": 0.1609725705361421,
+        "ece": 0.13292145634940458,
+        "healthy_false_alarm": 0.964968152866242,
+        "top1_precision": 0.35206422018348627,
+        "gain_mae_when_present": 1.5189466084002918,
+        "top1_fix_gain_captured_blind": 0.5315132557056117,
+        "per_cause_auroc": {
+          "fouling": 0.5541684786779566,
+          "passing_valves": 0.6699576868829338,
+          "constant_flow": 0.6910832119791217,
+          "overflow": 0.49706361613604966
+        },
+        "macro_auroc_ci95": [
+          0.587723835156988,
+          0.6168644957700489
+        ],
+        "lead_of_shipped_macro_auroc": 0.07944797026811043,
+        "lead_ci95": [
+          0.05193798545336874,
+          0.10526052802642662
+        ]
+      },
+      "tree3": {
+        "macro_auroc": 0.7005147259775409,
+        "any_fault_auroc": 0.5637764418862853,
+        "brier": 0.17725294590373347,
+        "ece": 0.14769347609874356,
+        "healthy_false_alarm": 0.7722929936305732,
+        "top1_precision": 0.555045871559633,
+        "gain_mae_when_present": 1.3219672054708949,
+        "top1_fix_gain_captured_blind": 0.6802264725347502,
+        "per_cause_auroc": {
+          "fouling": 0.5674594038411798,
+          "passing_valves": 0.8727252399463346,
+          "constant_flow": 0.8253679779154813,
+          "overflow": 0.5365062822071681
+        },
+        "macro_auroc_ci95": [
+          0.6791194968732688,
+          0.7185494354918976
+        ],
+        "lead_of_shipped_macro_auroc": -0.018333465824335513,
+        "lead_ci95": [
+          -0.04654896551359806,
+          0.005470762504805476
+        ]
+      },
+      "logistic": {
+        "macro_auroc": 0.657678653990539,
+        "any_fault_auroc": 0.7417040407877051,
+        "brier": 0.18591838825842746,
+        "ece": 0.1620539725459222,
+        "healthy_false_alarm": 0.5843949044585988,
+        "top1_precision": 0.46559633027522934,
+        "gain_mae_when_present": 1.3386037273205813,
+        "top1_fix_gain_captured_blind": 0.4082444635322825,
+        "per_cause_auroc": {
+          "fouling": 0.5616325440070037,
+          "passing_valves": 0.7077642849771234,
+          "constant_flow": 0.7619977045938511,
+          "overflow": 0.5993200823841782
+        },
+        "macro_auroc_ci95": [
+          0.624386042143713,
+          0.6918853861026072
+        ],
+        "lead_of_shipped_macro_auroc": 0.025710030568042264,
+        "lead_ci95": [
+          0.010619861663952226,
+          0.04204944860000476
+        ]
+      },
+      "rf": {
+        "macro_auroc": 0.7016666663073248,
+        "any_fault_auroc": 0.6532542876760358,
+        "brier": 0.16676056365461261,
+        "ece": 0.13806407617849648,
+        "healthy_false_alarm": 0.9140127388535032,
+        "top1_precision": 0.5607798165137615,
+        "gain_mae_when_present": 1.3034211654138108,
+        "top1_fix_gain_captured_blind": 0.6356410726241943,
+        "per_cause_auroc": {
+          "fouling": 0.62916727067043,
+          "passing_valves": 0.7971980460284152,
+          "constant_flow": 0.9082866031962713,
+          "overflow": 0.4720147453341826
+        },
+        "macro_auroc_ci95": [
+          0.6750456921854094,
+          0.7255464673630464
+        ],
+        "lead_of_shipped_macro_auroc": -0.018704209499969867,
+        "lead_ci95": [
+          -0.029427610297818242,
+          -0.007992405490582865
+        ]
+      },
+      "hgb": {
+        "macro_auroc": 0.6721410852255714,
+        "any_fault_auroc": 0.6962543095892011,
+        "brier": 0.1993763173186347,
+        "ece": 0.17822197350035904,
+        "healthy_false_alarm": 0.8646496815286624,
+        "top1_precision": 0.5504587155963303,
+        "gain_mae_when_present": 1.3831684805796034,
+        "top1_fix_gain_captured_blind": 0.6319953913942475,
+        "per_cause_auroc": {
+          "fouling": 0.6257763224840046,
+          "passing_valves": 0.7235887027417524,
+          "constant_flow": 0.8258670300670157,
+          "overflow": 0.5133322856095133
+        },
+        "macro_auroc_ci95": [
+          0.6438137005010542,
+          0.6981090493557328
+        ],
+        "lead_of_shipped_macro_auroc": 0.01117436283403888,
+        "lead_ci95": [
+          0.005534377065211574,
+          0.01666495312662016
+        ]
+      },
+      "shipped": {
+        "macro_auroc": 0.6831666591794772,
+        "any_fault_auroc": 0.7039220913925086,
+        "brier": 0.1888756881615688,
+        "ece": 0.15901187692314908,
+        "healthy_false_alarm": 0.8773885350318471,
+        "top1_precision": 0.5401376146788991,
+        "gain_mae_when_present": 1.371228195450747,
+        "top1_fix_gain_captured_blind": 0.6199838099574669,
+        "per_cause_auroc": {
+          "fouling": 0.632931990597438,
+          "passing_valves": 0.7403763459355328,
+          "constant_flow": 0.8576778063210155,
+          "overflow": 0.5016804938639228
+        },
+        "macro_auroc_ci95": [
+          0.6549402700706398,
+          0.7098063808848486
+        ]
+      }
+    },
+    "B_to_A": {
+      "prior": {
+        "macro_auroc": 0.5,
+        "any_fault_auroc": 0.5,
+        "brier": 0.17640935555555556,
+        "ece": 0.05461666666666669,
+        "healthy_false_alarm": 1.0,
+        "top1_precision": 0.37392337392337394,
+        "gain_mae_when_present": 1.0537883746516554,
+        "top1_fix_gain_captured_blind": 0.5428703460682787,
+        "per_cause_auroc": {
+          "fouling": 0.5,
+          "passing_valves": 0.5,
+          "constant_flow": 0.5,
+          "overflow": 0.5
+        },
+        "macro_auroc_ci95": [
+          0.5,
+          0.5
+        ],
+        "lead_of_shipped_macro_auroc": 0.2700286041124285,
+        "lead_ci95": [
+          0.2600470486268548,
+          0.27845623628318594
+        ]
+      },
+      "rules_v1": {
+        "macro_auroc": 0.5809914406274486,
+        "any_fault_auroc": 0.6555921445694869,
+        "brier": 0.2665,
+        "ece": 0.2665,
+        "healthy_false_alarm": 0.47764849969381507,
+        "top1_precision": 0.41906741906741907,
+        "gain_mae_when_present": 1.518681607648393,
+        "top1_fix_gain_captured_blind": 0.3794297205021795,
+        "per_cause_auroc": {
+          "fouling": 0.6564254385964913,
+          "passing_valves": 0.4760981760419306,
+          "constant_flow": 0.6806097939263923,
+          "overflow": 0.5108323539449799
+        },
+        "macro_auroc_ci95": [
+          0.5722604712129732,
+          0.5893089973463232
+        ],
+        "lead_of_shipped_macro_auroc": 0.18941308183888503,
+        "lead_ci95": [
+          0.17500398235083303,
+          0.20207047837073774
+        ]
+      },
+      "delta_t_only": {
+        "macro_auroc": 0.566473355367446,
+        "any_fault_auroc": 0.6941986366358687,
+        "brier": 0.16916147672056847,
+        "ece": 0.06850507180208201,
+        "healthy_false_alarm": 0.5535823637477036,
+        "top1_precision": 0.41995841995842,
+        "gain_mae_when_present": 0.9549697510127731,
+        "top1_fix_gain_captured_blind": 0.5676197607234862,
+        "per_cause_auroc": {
+          "fouling": 0.6077978070175438,
+          "passing_valves": 0.4678386313206545,
+          "constant_flow": 0.7817455034789346,
+          "overflow": 0.4085114796526514
+        },
+        "macro_auroc_ci95": [
+          0.5562477537803212,
+          0.5770959883285338
+        ],
+        "lead_of_shipped_macro_auroc": 0.20353426565519264,
+        "lead_ci95": [
+          0.18922556230696422,
+          0.21636172986863633
+        ]
+      },
+      "stumps": {
+        "macro_auroc": 0.611582520978562,
+        "any_fault_auroc": 0.6755584578609686,
+        "brier": 0.17215699152219216,
+        "ece": 0.08473439937420389,
+        "healthy_false_alarm": 0.43355786895284754,
+        "top1_precision": 0.5129195129195129,
+        "gain_mae_when_present": 0.988575419945679,
+        "top1_fix_gain_captured_blind": 0.5141700920128545,
+        "per_cause_auroc": {
+          "fouling": 0.6196491228070176,
+          "passing_valves": 0.6753929452194498,
+          "constant_flow": 0.69087047993819,
+          "overflow": 0.46041753594959095
+        },
+        "macro_auroc_ci95": [
+          0.6024628631950371,
+          0.6207356185940796
+        ],
+        "lead_of_shipped_macro_auroc": 0.15855157837455935,
+        "lead_ci95": [
+          0.1494893464011984,
+          0.16666789361998546
+        ]
+      },
+      "tree3": {
+        "macro_auroc": 0.662383589338033,
+        "any_fault_auroc": 0.8091334775351922,
+        "brier": 0.14704696209520257,
+        "ece": 0.1012310884929446,
+        "healthy_false_alarm": 0.23515003061849357,
+        "top1_precision": 0.5473715473715474,
+        "gain_mae_when_present": 1.1299285017021423,
+        "top1_fix_gain_captured_blind": 0.641937089676503,
+        "per_cause_auroc": {
+          "fouling": 0.799565350877193,
+          "passing_valves": 0.5055982100364049,
+          "constant_flow": 0.8990707695822371,
+          "overflow": 0.44530002685629677
+        },
+        "macro_auroc_ci95": [
+          0.6557739432162718,
+          0.6691198338279022
+        ],
+        "lead_of_shipped_macro_auroc": 0.10737262160063218,
+        "lead_ci95": [
+          0.09781722419412334,
+          0.11638556361730787
+        ]
+      },
+      "logistic": {
+        "macro_auroc": 0.7487914335493808,
+        "any_fault_auroc": 0.8341070557849491,
+        "brier": 0.1317193746780583,
+        "ece": 0.07728801009658053,
+        "healthy_false_alarm": 0.20208205756276792,
+        "top1_precision": 0.713988713988714,
+        "gain_mae_when_present": 0.9179127165492322,
+        "top1_fix_gain_captured_blind": 0.7043000747962561,
+        "per_cause_auroc": {
+          "fouling": 0.7092991228070176,
+          "passing_valves": 0.7164487517847098,
+          "constant_flow": 0.9831290092249992,
+          "overflow": 0.5862888503807964
+        },
+        "macro_auroc_ci95": [
+          0.7379143191831186,
+          0.7611503960156452
+        ],
+        "lead_of_shipped_macro_auroc": 0.020963741340844996,
+        "lead_ci95": [
+          0.012241906362802623,
+          0.030664223902947575
+        ]
+      },
+      "rf": {
+        "macro_auroc": 0.7500831003099994,
+        "any_fault_auroc": 0.8639792292578575,
+        "brier": 0.13546174883637632,
+        "ece": 0.05796536438822023,
+        "healthy_false_alarm": 0.31169626454378446,
+        "top1_precision": 0.596079596079596,
+        "gain_mae_when_present": 0.9124081991037365,
+        "top1_fix_gain_captured_blind": 0.7081255944861934,
+        "per_cause_auroc": {
+          "fouling": 0.830373245614035,
+          "passing_valves": 0.6748617661056548,
+          "constant_flow": 0.9643389833243416,
+          "overflow": 0.5307584061959658
+        },
+        "macro_auroc_ci95": [
+          0.738508393175302,
+          0.7605789911892746
+        ],
+        "lead_of_shipped_macro_auroc": 0.019997249829747356,
+        "lead_ci95": [
+          0.014951281615063958,
+          0.024766033679349726
+        ]
+      },
+      "hgb": {
+        "macro_auroc": 0.7689991208388787,
+        "any_fault_auroc": 0.8625055948999611,
+        "brier": 0.13901193853289417,
+        "ece": 0.1050379440297399,
+        "healthy_false_alarm": 0.2676056338028169,
+        "top1_precision": 0.5871695871695871,
+        "gain_mae_when_present": 1.005332170078751,
+        "top1_fix_gain_captured_blind": 0.6873363162623034,
+        "per_cause_auroc": {
+          "fouling": 0.889642543859649,
+          "passing_valves": 0.6760921188446822,
+          "constant_flow": 0.9692757985859205,
+          "overflow": 0.5409860220652628
+        },
+        "macro_auroc_ci95": [
+          0.7586170369171521,
+          0.7785312976169918
+        ],
+        "lead_of_shipped_macro_auroc": 0.0007190953384991172,
+        "lead_ci95": [
+          -0.0032149166636534464,
+          0.004951537729713925
+        ]
+      },
+      "shipped": {
+        "macro_auroc": 0.7697934978075052,
+        "any_fault_auroc": 0.8696199614754422,
+        "brier": 0.1348166395569027,
+        "ece": 0.07213584181639066,
+        "healthy_false_alarm": 0.24862216778934476,
+        "top1_precision": 0.5836055836055836,
+        "gain_mae_when_present": 1.028917157430687,
+        "top1_fix_gain_captured_blind": 0.700218859966949,
+        "per_cause_auroc": {
+          "fouling": 0.889360855263158,
+          "passing_valves": 0.6784477504929198,
+          "constant_flow": 0.9661072727577692,
+          "overflow": 0.5452581127161737
+        },
+        "macro_auroc_ci95": [
+          0.7600470486268548,
+          0.7784562362831859
+        ]
+      }
+    },
+    "AB_to_D": {
+      "prior": {
+        "macro_auroc": 0.5,
+        "any_fault_auroc": 0.5,
+        "brier": 0.1574384970414201,
+        "ece": 0.025064102564102603,
+        "healthy_false_alarm": 1.0,
+        "top1_precision": 0.4323699421965318,
+        "gain_mae_when_present": 2.384367387951845,
+        "top1_fix_gain_captured_blind": 0.4163133431908931,
+        "per_cause_auroc": {
+          "fouling": 0.5,
+          "passing_valves": 0.5,
+          "constant_flow": 0.5,
+          "overflow": 0.5
+        },
+        "macro_auroc_ci95": [
+          0.5,
+          0.5
+        ],
+        "lead_of_shipped_macro_auroc": 0.2060496804590656,
+        "lead_ci95": [
+          0.18776573144012587,
+          0.22558271376560862
+        ]
+      },
+      "rules_v1": {
+        "macro_auroc": 0.5802373779114786,
+        "any_fault_auroc": 0.6931182012653042,
+        "brier": 0.21016666666666667,
+        "ece": 0.21016666666666667,
+        "healthy_false_alarm": 0.30393700787401573,
+        "top1_precision": 0.5202312138728323,
+        "gain_mae_when_present": 2.181741098278026,
+        "top1_fix_gain_captured_blind": 0.6487941532729322,
+        "per_cause_auroc": {
+          "fouling": 0.6261661006962921,
+          "passing_valves": 0.5024401117376726,
+          "constant_flow": 0.6480514052868039,
+          "overflow": 0.5442918939251458
+        },
+        "macro_auroc_ci95": [
+          0.5670247477668712,
+          0.5950347781507722
+        ],
+        "lead_of_shipped_macro_auroc": 0.12512389434651602,
+        "lead_ci95": [
+          0.10571578279128856,
+          0.14376834328510166
+        ]
+      },
+      "delta_t_only": {
+        "macro_auroc": 0.623253923076043,
+        "any_fault_auroc": 0.8557407491693596,
+        "brier": 0.15177322526446269,
+        "ece": 0.05173266838583327,
+        "healthy_false_alarm": 0.2031496062992126,
+        "top1_precision": 0.44508670520231214,
+        "gain_mae_when_present": 2.396656374618122,
+        "top1_fix_gain_captured_blind": 0.3847644094171066,
+        "per_cause_auroc": {
+          "fouling": 0.8859259496084642,
+          "passing_valves": 0.5012449549682003,
+          "constant_flow": 0.748192931298145,
+          "overflow": 0.35765185642936254
+        },
+        "macro_auroc_ci95": [
+          0.603740561971138,
+          0.6374587288068547
+        ],
+        "lead_of_shipped_macro_auroc": 0.08334542238289497,
+        "lead_ci95": [
+          0.057353454297159226,
+          0.11477017497924087
+        ]
+      },
+      "stumps": {
+        "macro_auroc": 0.62330497901923,
+        "any_fault_auroc": 0.4601156069364162,
+        "brier": 0.1771067493809922,
+        "ece": 0.14103672147827162,
+        "healthy_false_alarm": 1.0,
+        "top1_precision": 0.6184971098265896,
+        "gain_mae_when_present": 2.106400563759058,
+        "top1_fix_gain_captured_blind": 0.7357704372676794,
+        "per_cause_auroc": {
+          "fouling": 0.44707358680584897,
+          "passing_valves": 0.6949291205638105,
+          "constant_flow": 0.7946376839125767,
+          "overflow": 0.5565795247946838
+        },
+        "macro_auroc_ci95": [
+          0.6084669761869484,
+          0.6431440882804841
+        ],
+        "lead_of_shipped_macro_auroc": 0.08223352648810048,
+        "lead_ci95": [
+          0.0676721623078496,
+          0.09973346359930434
+        ]
+      },
+      "tree3": {
+        "macro_auroc": 0.6833158375880093,
+        "any_fault_auroc": 0.583263392653953,
+        "brier": 0.20078778888141985,
+        "ece": 0.17028076562372244,
+        "healthy_false_alarm": 0.9417322834645669,
+        "top1_precision": 0.5826589595375723,
+        "gain_mae_when_present": 2.0522363127500136,
+        "top1_fix_gain_captured_blind": 0.6826311180585343,
+        "per_cause_auroc": {
+          "fouling": 0.6128043280177029,
+          "passing_valves": 0.8010988802519314,
+          "constant_flow": 0.74920332253683,
+          "overflow": 0.5701568195455726
+        },
+        "macro_auroc_ci95": [
+          0.665846694720037,
+          0.7063295877499548
+        ],
+        "lead_of_shipped_macro_auroc": 0.021004568476342245,
+        "lead_ci95": [
+          0.010142845082848698,
+          0.03218036485869344
+        ]
+      },
+      "logistic": {
+        "macro_auroc": 0.694466242270328,
+        "any_fault_auroc": 0.4941113285694779,
+        "brier": 0.26009857807338294,
+        "ece": 0.22978071249688606,
+        "healthy_false_alarm": 0.9574803149606299,
+        "top1_precision": 0.5676300578034682,
+        "gain_mae_when_present": 2.040461230934192,
+        "top1_fix_gain_captured_blind": 0.7236646595735504,
+        "per_cause_auroc": {
+          "fouling": 0.49787960930916597,
+          "passing_valves": 0.8065316265988779,
+          "constant_flow": 0.8881493336879399,
+          "overflow": 0.5853043994853285
+        },
+        "macro_auroc_ci95": [
+          0.6786838711324137,
+          0.7113454961507579
+        ],
+        "lead_of_shipped_macro_auroc": 0.010979427130049903,
+        "lead_ci95": [
+          -0.004059448103684948,
+          0.024248764906192592
+        ]
+      },
+      "rf": {
+        "macro_auroc": 0.6880995583860544,
+        "any_fault_auroc": 0.7349205771243913,
+        "brier": 0.1958886263298671,
+        "ece": 0.1540610987451804,
+        "healthy_false_alarm": 0.984251968503937,
+        "top1_precision": 0.6057803468208093,
+        "gain_mae_when_present": 2.0503873996454045,
+        "top1_fix_gain_captured_blind": 0.7495522176371961,
+        "per_cause_auroc": {
+          "fouling": 0.5756409700130855,
+          "passing_valves": 0.8416322426737364,
+          "constant_flow": 0.8316754685080879,
+          "overflow": 0.5034495523493079
+        },
+        "macro_auroc_ci95": [
+          0.6708970328878054,
+          0.711002086453513
+        ],
+        "lead_of_shipped_macro_auroc": 0.017251449739182346,
+        "lead_ci95": [
+          0.009809615850904913,
+          0.025164169773387663
+        ]
+      },
+      "hgb": {
+        "macro_auroc": 0.7065264187883382,
+        "any_fault_auroc": 0.5637431159255382,
+        "brier": 0.24969728116917694,
+        "ece": 0.24026899854158862,
+        "healthy_false_alarm": 0.9795275590551181,
+        "top1_precision": 0.5526011560693641,
+        "gain_mae_when_present": 2.082631570855445,
+        "top1_fix_gain_captured_blind": 0.6986726507552916,
+        "per_cause_auroc": {
+          "fouling": 0.5767348495401823,
+          "passing_valves": 0.8398442502051211,
+          "constant_flow": 0.8487571356655048,
+          "overflow": 0.5607694397425449
+        },
+        "macro_auroc_ci95": [
+          0.6889922562083258,
+          0.7266006039412473
+        ],
+        "lead_of_shipped_macro_auroc": -0.0014769205594239699,
+        "lead_ci95": [
+          -0.005745688869684476,
+          0.0029089978205276293
+        ]
+      },
+      "shipped": {
+        "macro_auroc": 0.7052789956405556,
+        "any_fault_auroc": 0.647739292704019,
+        "brier": 0.24420921274783697,
+        "ece": 0.22327806245599993,
+        "healthy_false_alarm": 0.9811023622047244,
+        "top1_precision": 0.5491329479768786,
+        "gain_mae_when_present": 2.063622582407719,
+        "top1_fix_gain_captured_blind": 0.6980863442556475,
+        "per_cause_auroc": {
+          "fouling": 0.5766480699534815,
+          "passing_valves": 0.8329294146103172,
+          "constant_flow": 0.8647120563064561,
+          "overflow": 0.5468264416919675
+        },
+        "macro_auroc_ci95": [
+          0.6877657314401259,
+          0.7255827137656086
+        ]
+      }
+    }
+  },
+  "stump_rules_fit_on_A": [
+    "fouling: flow_bin5 < 0.694",
+    "passing_valves: dt_night_minus_day < -0.0642",
+    "constant_flow: dt_hi_minus_mid > 0.867",
+    "overflow: dt_period > 5.03"
+  ]
+}
