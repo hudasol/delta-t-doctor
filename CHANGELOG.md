@@ -2,6 +2,17 @@
 
 All accuracy figures are simulator results unless stated. Tags exist from v1.1.1 onward; earlier versions were not tagged.
 
+## v1.4.0
+
+Interface, typing and documentation pass following an engineering review (`docs/research/ENGINEERING_REVIEW.md`). Model and simulator behaviour are unchanged.
+
+- **Dashboard:** IBM Plex Sans and Plex Mono replace the previous type, pearl and sakura palette in light and dark, readings set in a monospace face, and a new plant schematic that shades each part of the energy transfer station by the probability of the cause that acts there. Repeated caveats removed from the result view. Screenshots regenerated.
+- **Typing:** `mypy` clean on `src` and run in CI; `py.typed` added; real `None` handling gaps fixed in `diagnose.py` and `api.py`.
+- **Tests:** end to end CLI tests (`tests/test_cli.py`); `deltat-doctor --version`.
+- **Tooling:** pre commit config (ruff and the link checker); CI also runs the link checker.
+- **README:** opens with what the tool does; one status line replaces the caveat block.
+- A mistake in commit cbd360e emptied `evaluate.py`; fd177d6 restores it. No release was cut in between.
+
 ## v1.3.0
 
 Baselines and repository layout. All figures are simulation results. The bundled models are unchanged.
