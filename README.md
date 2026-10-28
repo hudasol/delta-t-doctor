@@ -4,13 +4,11 @@
 
 ![The diagnosis screen for a simulated building with fouled coils](docs/img/ui_fouled.png)
 
-> **Status: a research prototype, validated in simulation only.** Trained and tested on physics simulators.
-> It has **not** been validated on real UAE building data and no field accuracy is claimed. In the external check 3 of 5 predictions
-> failed and 1 was not supported, and models trained on one simulator score 0.68 to 0.77 macro AUROC on the other (0.67 to 0.76 on four regenerated B pools; see [Results](#results) and
-> [Limitations](docs/LIMITATIONS.md)). Treat its output as a ranked inspection list.
+Meter data in, ranked causes and dirham figures out. Four causes are scored per building: fouled coils, passing valves, constant flow coils and over flow at part load. Each comes with a probability, an expected delta T recovery, a saving range under the contract rule, and what to check on site. Open source, runs locally, nothing is stored.
 
-Product plan, market research and roadmap: [plan.md](docs/research/PLAN.md). Draft pilot protocol: [docs/PILOT.md](docs/PILOT.md), with a blind
-[inspection form](docs/INSPECTION_FORM.md). Reproducibility of the data: [docs/research/REPRODUCIBILITY.md](docs/research/REPRODUCIBILITY.md).
+Status: validated in simulation. Field validation needs a pilot ([docs/PILOT.md](docs/PILOT.md)); known limits are in [docs/LIMITATIONS.md](docs/LIMITATIONS.md).
+
+Documentation: [methodology](docs/METHODOLOGY.md), [model card](docs/MODEL_CARD.md), [API](docs/API.md), [roadmap](docs/ROADMAP.md), [research log](docs/research/PLAN.md).
 
 ## The problem
 
