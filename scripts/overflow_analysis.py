@@ -1,4 +1,4 @@
-"""Overflow identifiability. Predictions: docs/OVERFLOW.md. Writes results/overflow_analysis.json."""
+"""Overflow identifiability. Predictions: docs/research/OVERFLOW.md. Writes results/overflow_analysis.json."""
 import json, os, sys
 import numpy as np
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))

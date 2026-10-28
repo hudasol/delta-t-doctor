@@ -1,8 +1,8 @@
-"""Fetch the small real data samples used by docs/REAL_DATA_CONTACT.md into external/ (gitignored). Never executed, only read.
+"""Fetch the small real data samples used by docs/research/REAL_DATA_CONTACT.md into external/ (gitignored). Never executed, only read.
 
 usage: python scripts/fetch_real_data.py [--dk-meters 40]
 
-Sources (licences and checksums are recorded in docs/REAL_DATA_SEARCH.md):
+Sources (licences and checksums are recorded in docs/research/REAL_DATA_SEARCH.md):
 
 * DK: Schaffer, Tvedebrink and Marszal-Pomianowska (2022), "Three years of hourly data from 3021 smart heat meters installed in Danish
   residential buildings", Zenodo record 6563114, CC BY 4.0. The archive is 3.3 GB, so only the members needed are read with HTTP range

@@ -6,19 +6,19 @@ All accuracy figures are simulator results unless stated. Tags exist from v1.1.1
 
 Follow up to v1.2.0: closes the gaps it left open. All figures are simulation results. The bundled models are unchanged.
 
-- **When does the system know it is probably wrong?** (`docs/SELECTIVE_PREDICTION.md`, preregistered.) In world, the model's decision margin
+- **When does the system know it is probably wrong?** (`docs/research/SELECTIVE_PREDICTION.md`, preregistered.) In world, the model's decision margin
   finds wrong rankings well (AUROC 0.905 in A, 0.733 in B). On world D no label free signal exceeds 0.61 and the model's entropy is below chance
   (0.457): it is confidently wrong. A combination fitted on A and B gives 0.513 on D, so no `--abstain-on uncertainty` flag is shipped. 2 of 10
   predictions held. **Correction:** the guard is below chance as an error signal in world (0.40, 0.44) and weak on D (0.583); README,
   LIMITATIONS, MODEL_CARD, ASSURANCE_CASE and the Edge proposal now say so.
 - **Pilot dry run** (`scripts/pilot_dry_run.py`): synthetic fleet to manifest, `evaluate_real.py`, `calibrate`, rescoring; every output is
   labelled SYNTHETIC. `evaluate_real.py` gains an optional `--model` flag. New `docs/INSPECTION_FORM.md` and `docs/ARABIC_REVIEW_BRIEF.md`.
-- **Reproducible simulator B data** (`docs/REPRODUCIBILITY.md`, preregistered): three new B pools with recorded seeds and generator identity
+- **Reproducible simulator B data** (`docs/research/REPRODUCIBILITY.md`, preregistered): three new B pools with recorded seeds and generator identity
   (`results/data_b_r2101` to `_r2103`). The committed pool's figures reproduce to within 0.001 with the same code; on the regenerated pools A to B is
   0.670 to 0.697 and **B to A 0.741 to 0.757, below the committed 0.770**, so the quoted range "0.68 to 0.77" now carries "0.67 to 0.76 on
   four regenerated B pools" (README, MODEL_CARD, LIMITATIONS, PROPOSAL, EDGE_PROPOSAL). 4 of 5 predictions held (in world B on seed 2101, 0.908, was
   above the allowed range). The committed pool is not an outlier by the preregistered rule, so the bundled model is not retrained.
-- **Cut experiments finished** (`docs/WORLD_D.md`, follow up, preregistered): few shot on world D at k = 5, 10, 70 gives 0.762, 0.798 and
+- **Cut experiments finished** (`docs/research/WORLD_D.md`, follow up, preregistered): few shot on world D at k = 5, 10, 70 gives 0.762, 0.798 and
   0.869 (healthy false alarms 50%, 35%, 16%; overflow at most 0.646); the temporal block in world A and B changes overflow by +0.002 and +0.004;
   across all tests it stays below the preregistered +0.02 except once (+0.020 with A held out). 5 of 6 predictions held (E5 failed in B:
   fouling +0.013, passing valves -0.010).
@@ -34,7 +34,7 @@ Follow up to v1.2.0: closes the gaps it left open. All figures are simulation re
 New evidence and new product capability. All accuracy figures are simulation results; the only real data used have no labels. The bundled
 models are unchanged (not retrained). Predictions were committed before every experiment; failures are listed.
 
-- **World D, a third physics** (`src/deltat_doctor/sim/world_d.py`, `docs/WORLD_D.md`): time stepped, closed loop (zone thermal mass,
+- **World D, a third physics** (`src/deltat_doctor/sim/world_d.py`, `docs/research/WORLD_D.md`): time stepped, closed loop (zone thermal mass,
   discharge air PI cascade with actuator lag and deadband, pump curve with a DP set point, plate exchanger ETS). Zero shot macro AUROC 0.705,
   98% healthy false alarm; guards withhold 92% of D buildings. Few shot: 20 D buildings give 0.825 and 40 give 0.850, healthy false alarms 99% to 21%; overflow stays near 0.61. 13 predictions: 9 held, 3 failed (D6, D7, D10), 1 not run (D11).
 - **Correction: the guard is a novelty detector, not an error detector.** On world D the windows it lets through score 0.618, lower than the
@@ -45,9 +45,9 @@ models are unchanged (not retrained). Predictions were committed before every ex
 - **Fleet calibration** (`deltat-doctor calibrate`, `diagnose --model`): refuses below 10 inspected buildings, marks 10 to 19 as weak in the
   card and every report, keeps a holdout report, verifies the calibrated file's sha256, never replaces the default model. Simulation check on
   a world D fleet: held out macro AUROC 0.782 to 0.833, overflow worse (`results/calibrate_check.json`).
-- **Real data contact** (`docs/REAL_DATA_CONTACT.md`): 40 Danish smart heat meters and 5 Nis substations (CC BY 4.0) all refused at parsing
+- **Real data contact** (`docs/research/REAL_DATA_CONTACT.md`): 40 Danish smart heat meters and 5 Nis substations (CC BY 4.0) all refused at parsing
   with a plain message; no crash. Fixed a silent issue: UTC timestamps shifted the hour of day features without warning; a note now says so.
-- **Why fouling transfers badly** (`docs/TRANSFER_V2.md` addendum): B's fouling signature is weak (in world 0.675); H1 and H4 held, H2 and H3
+- **Why fouling transfers badly** (`docs/research/TRANSFER_V2.md` addendum): B's fouling signature is weak (in world 0.675); H1 and H4 held, H2 and H3
   failed.
 - **Assurance:** generated `requirements.lock` with every published hash (replaces the hand written 12 line lock, which left transitive
   dependencies open); two stage Docker build whose install step runs with networking disabled; CycloneDX SBOM; `scripts/reproduce.py`;
@@ -70,9 +70,9 @@ models are unchanged (not retrained). Predictions were committed before every ex
 Round 7: turning the six open limitations into measured results. Predictions were written before each experiment; failures are recorded.
 
 - **Chunked uploads capped in the app.** `BodyLimit` ASGI middleware counts bytes as they arrive and answers 413 past 26 MB even without Content-Length (`tests/test_upload_cap.py`). A proxy limit is still advised (`docs/DEPLOYMENT.md`).
-- **Cross simulator transfer.** New domain randomised worlds (`sim/worlds.py`, `--sim CA|CB`) and four fixes compared (`scripts/transfer_v2.py`, `docs/TRANSFER_V2.md`): none closes the gap (best 0.715 / 0.784). Few shot adaptation curve (`scripts/transfer_fewshot.py`): about 20 surveyed buildings lift the weak direction to 0.80, 40 to 0.84; healthy false alarms 82% to 24%. Two of five predictions failed.
+- **Cross simulator transfer.** New domain randomised worlds (`sim/worlds.py`, `--sim CA|CB`) and four fixes compared (`scripts/transfer_v2.py`, `docs/research/TRANSFER_V2.md`): none closes the gap (best 0.715 / 0.784). Few shot adaptation curve (`scripts/transfer_fewshot.py`): about 20 surveyed buildings lift the weak direction to 0.80, 40 to 0.84; healthy false alarms 82% to 24%. Two of five predictions failed.
 - **Open set guard.** Six detectors compared in both directions (`scripts/openset_v2.py`); shipped guard is now Mahalanobis plus nearest neighbour (windows flagged: A to B 64%, B to A 29%, was 71% and 25%; in world 5.5% to 6%). Asymmetry is partly structural and is documented, not removed. Models retrained.
-- **Overflow.** `docs/OVERFLOW.md`: found at about 0.91 AUROC within one physics, chance across physics. The earlier "barely shows up" wording is corrected; the "possible" cap stays. Two of five predictions failed. DP ceiling test is circular and labelled so.
+- **Overflow.** `docs/research/OVERFLOW.md`: found at about 0.91 AUROC within one physics, chance across physics. The earlier "barely shows up" wording is corrected; the "possible" cap stays. Two of five predictions failed. DP ceiling test is circular and labelled so.
 - **Arabic.** Terminology normalised to UAE operator usage; `docs/i18n_glossary.csv` and `docs/i18n_review_sheet.csv` (178 strings) prepared for the native-speaker review, which has not happened.
 - **Real data.** `scripts/evaluate_real.py` scores the tool against site-inspection labels (agreement, AUROC, calibration, false alarms, confidently-wrong count, bootstrap intervals, refuses under 10 buildings). `docs/PILOT.md` now has a data-request pack and the dataset search record. No real-data accuracy is claimed.
 
@@ -114,7 +114,7 @@ Measured before and after are in `results/metrics.md`. Changes:
 * Docs: corrected the claim that the two valve faults overlap (measured confusion is 2 to 5%; overflow is the hard cause).
 
 ## Engineering round 3 (second simulator and uncertainty; shipped in v1.1.0)
-* **Second simulator** (`sim/hydraulic.py`) with different hydraulics, psychrometrics, ETS and sensor effects, and a cross simulator experiment with predictions written first ([docs/CROSS_SIMULATOR.md](docs/CROSS_SIMULATOR.md)). Result: A to B macro AUROC 0.683, B to A 0.770, 88% of B's healthy windows falsely flagged by the A-trained model; 7 of 8 predictions held, one failed. The shipped model is now trained on both simulators.
+* **Second simulator** (`sim/hydraulic.py`) with different hydraulics, psychrometrics, ETS and sensor effects, and a cross simulator experiment with predictions written first ([docs/research/CROSS_SIMULATOR.md](docs/research/CROSS_SIMULATOR.md)). Result: A to B macro AUROC 0.683, B to A 0.770, 88% of B's healthy windows falsely flagged by the A-trained model; 7 of 8 predictions held, one failed. The shipped model is now trained on both simulators.
 * **Healthy baseline realism:** simulator A's healthy part load ceiling may sit below design (it was always above). Effect on A: macro AUROC 0.967 to 0.966; informed-mode gain over blind +0.012 to +0.005; healthy false alarms at design 5-7 C 8% to 13%.
 * **Uncertainty:** quantile gain models and conformal margins; findings carry 10-90 ranges for delta T gain and AED saving; the mean saving no longer applies the tariff hinge after averaging; the report notes when the top two fixes' ranges overlap. Coverage of the true gain on held out buildings: 82% to 85% where it matters.
 * **Evaluation:** 4-seed replication, identifiability (nearest neighbour) analysis, guard fire rates, `scripts/cross_simulator.py`, `scripts/uncertainty_eval.py`, `scripts/identifiability.py`.
@@ -143,7 +143,7 @@ Portfolio mode: one file with many buildings, ranked by saving. `/api/portfolio`
 
 ## v0.2.0
 Design-delta T aware diagnosis. Training range widened from 9-13 C to 5-12 C design delta T. Optional informed model
-that takes the design delta T. Out of range guard (reports "not reliable" for buildings unlike the training data). Follow-up check on the LBNL benchmark: predictions P4 and P5 were written first and both failed, see docs/EXTERNAL_CHECK.md section 6.
+that takes the design delta T. Out of range guard (reports "not reliable" for buildings unlike the training data). Follow-up check on the LBNL benchmark: predictions P4 and P5 were written first and both failed, see docs/research/EXTERNAL_CHECK.md section 6.
 
 ## v0.1.0
 Prototype: simulator, four-cause classifier, penalty calculator, web app, CLI, tests, preregistered external check

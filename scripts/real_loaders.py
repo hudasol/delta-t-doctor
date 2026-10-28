@@ -1,4 +1,4 @@
-"""Loaders for the real data used in docs/REAL_DATA_CONTACT.md. They read data, never execute anything from it.
+"""Loaders for the real data used in docs/research/REAL_DATA_CONTACT.md. They read data, never execute anything from it.
 
 dk_*  : Danish smart heat meters (Zenodo 6563114). Hourly cumulative registers: energy_heat_kwh, volume_flow_m3,
         inlet_flow_energy_m3xC (volume times inlet temperature) and back_flow_energy_m3xC (volume times return temperature).

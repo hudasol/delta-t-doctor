@@ -5,21 +5,21 @@ Read this before trusting any number from the tool.
 1. **Not validated on real UAE building data.** The model is trained and scored on a physics simulator I
    wrote. Results show how well it recovers faults *that the simulator can produce*. They do not show
    how often it is right on a real building. The only outside check (LBNL simulated plant data, see
-   [EXTERNAL_CHECK.md](EXTERNAL_CHECK.md)) has no building-side labels; 3 of its 5 predictions failed, 1 was not supported and 1 passed only
-   on a technicality. The only contact with real meter data (district heating, no labels, [REAL_DATA_CONTACT.md](REAL_DATA_CONTACT.md))
+   [EXTERNAL_CHECK.md](research/EXTERNAL_CHECK.md)) has no building-side labels; 3 of its 5 predictions failed, 1 was not supported and 1 passed only
+   on a technicality. The only contact with real meter data (district heating, no labels, [REAL_DATA_CONTACT.md](research/REAL_DATA_CONTACT.md))
    measures refusal and abstention, not accuracy.
 2. **Across structurally different simulators it fails, and the fixes I tried do not close the gap.** Trained on one simulator and tested on a second one with different
    hydraulics, macro AUROC is 0.68 (A to B) and 0.77 (B to A; 0.67 to 0.70 and 0.74 to 0.76 on four regenerated B pools), and the A-trained model flags 88% of B's healthy windows. The shipped
-   model is trained on both, which helps on those two worlds and says nothing about a third. See [CROSS_SIMULATOR.md](CROSS_SIMULATOR.md).
+   model is trained on both, which helps on those two worlds and says nothing about a third. See [CROSS_SIMULATOR.md](research/CROSS_SIMULATOR.md).
    Domain randomised training worlds, invariant feature selection and target batch standardisation were tested: best 0.715 and 0.784, not a fix
-   ([TRANSFER_V2.md](TRANSFER_V2.md)). What does work is calibrating on surveyed target buildings: about 20 lift the weak direction to 0.800 and
+   ([TRANSFER_V2.md](research/TRANSFER_V2.md)). What does work is calibrating on surveyed target buildings: about 20 lift the weak direction to 0.800 and
    40 to 0.836 (the preregistered target of 0.84 was missed narrowly; simulator to simulator; real fleets may differ). On a third, dynamic
-   simulator (world D, [WORLD_D.md](WORLD_D.md)) the shipped model scores 0.705 zero shot and calls 98% of healthy windows faulty.
+   simulator (world D, [WORLD_D.md](research/WORLD_D.md)) the shipped model scores 0.705 zero shot and calls 98% of healthy windows faulty.
 3. **Only variable flow building loops of the kind simulated.** On the LBNL plant (flow barely follows load, and
    delta T is about 2.6 C with no fault) the model reports a fault with near certainty, even when told the design
    delta T. The tool now counts how many of its 42 measurements fall outside the training range and says "not
    reliable" when too many do. That guard was built after seeing this failure, so it is untested on real ETS data. Since v1.1 a second, joint-distribution guard also runs (item 11).
-   See [EXTERNAL_CHECK.md](EXTERNAL_CHECK.md) sections 4 and 6.
+   See [EXTERNAL_CHECK.md](research/EXTERNAL_CHECK.md) sections 4 and 6.
 4. **Four causes only.** Fouling, passing valves, constant flow valves and excess pressure. Control
    problems, sensor errors, bad set-points, pump staging and the plant side are not modelled.
    A fifth cause in a real building will be forced into the closest of the four.
@@ -27,10 +27,10 @@ Read this before trusting any number from the tool.
    buildings with exactly one fault, passing valves are called constant flow in 3% of cases and the reverse in
    4% (`results/error_analysis.json`). The weak spot is overflow: its recall at p>=0.5 is 0.28, 0.45, 0.67 and 0.80 for true gains of
    0.2 to 0.4, 0.4 to 0.8, 0.8 to 1.6 and above 1.6 C, because it shares a high low load flow signature with the valve faults. Within one physics it is found at about 0.92 AUROC;
-   the real problem is transfer, where it falls to 0.53 to 0.56 (chance; 0.547 on world D), so it stays capped at "possible" ([OVERFLOW.md](OVERFLOW.md)).
+   the real problem is transfer, where it falls to 0.53 to 0.56 (chance; 0.547 on world D), so it stays capped at "possible" ([OVERFLOW.md](research/OVERFLOW.md)).
    World D can produce valve hunting, but at a period of about ten minutes the hourly meter averages it out, and hourly temporal features stayed
    below the preregistered +0.02 for overflow except once (in world A +0.002, B +0.004, D +0.010; leave one world out +0.005, +0.016 and +0.020
-   with A held out) while lowering other causes ([WORLD_D.md](WORLD_D.md)). Weak faults
+   with A held out) while lowering other causes ([WORLD_D.md](research/WORLD_D.md)). Weak faults
    (true gain 0.2-0.4 C) are missed about half the time or more. Telling these apart on site needs a valve
    position or differential-pressure reading.
 6. **The tariff is a parameter, not a fact.** The 10% per degC below 8.9 C surcharge comes from one operator's
@@ -52,7 +52,7 @@ Read this before trusting any number from the tool.
     (`results/world_d.json`), so "hourly or 2 hourly is enough" holds for the parser, not for the guard. **The guard detects unfamiliar
     buildings; it does not pick out the model's mistakes**: on world D the windows it lets through score 0.618 macro AUROC, lower than the 0.756
     of the windows it flags. As a per window error signal it is below chance in world (AUROC 0.40 in A, 0.44 in B) and weak on world D (0.583)
-    ([SELECTIVE_PREDICTION.md](SELECTIVE_PREDICTION.md)). On real chilled water buildings the rates are unknown.
+    ([SELECTIVE_PREDICTION.md](research/SELECTIVE_PREDICTION.md)). On real chilled water buildings the rates are unknown.
 12. **Evidence is a physics consistency flag, not proof.** The features and directions are chosen from simulated single cause
     windows. When two faults are present they can mask each other (the mixed demo shows fouling as "unconfirmed" for this reason).
 13. **Trend is confounded by season.** The test uses delta T at 60-100% load, which is roughly load matched, but a half year file
@@ -64,7 +64,7 @@ Read this before trusting any number from the tool.
     training percentiles match to 4e-15; `results/regeneration_check.json`) but not to the same file hash. The seed used for the committed
     simulator B pool was not recorded, so that pool cannot be regenerated from the repository; it is committed as is. Three new B pools with recorded seeds, plus the seed 11
     pool from v1.2.0, reproduce the B results within the preregistered tolerances except one in world figure (0.908 against 0.884); B to A is 0.741 to 0.757 on
-    them, below the committed 0.770 ([REPRODUCIBILITY.md](REPRODUCIBILITY.md), `results/replication_b.json`).
+    them, below the committed 0.770 ([REPRODUCIBILITY.md](research/REPRODUCIBILITY.md), `results/replication_b.json`).
 17. **Fleet calibration is measured in simulation only**, on 12 held out buildings of a pretend fleet (`results/calibrate_check.json`): macro
     AUROC rose from 0.782 to 0.833 but overflow fell (0.81 to 0.66) and abstention stayed at 58%. Small holdouts give noisy figures.
 18. **The system cannot tell when it is wrong on an unfamiliar fleet.** In world, the model's decision margin is a good error signal (0.905 in A,

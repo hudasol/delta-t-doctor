@@ -1,4 +1,4 @@
-"""World D evaluation, in the order preregistered in docs/WORLD_D.md. Writes results/world_d.json (updated after every stage).
+"""World D evaluation, in the order preregistered in docs/research/WORLD_D.md. Writes results/world_d.json (updated after every stage).
 
 usage: python scripts/world_d_eval.py [zeroshot|guard|fewshot|temporal|all]
 

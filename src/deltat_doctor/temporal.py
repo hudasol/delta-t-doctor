@@ -1,4 +1,4 @@
-"""Optional temporal features from the hourly flow series (an experiment; see docs/WORLD_D.md, section T2.4).
+"""Optional temporal features from the hourly flow series (an experiment; see docs/research/WORLD_D.md, section T2.4).
 
 The 42 shape features in features.py describe how flow and delta-T depend on load, but not how flow moves from one hour to the next.
 A valve that hunts, or a loop that is pushed by excess pressure, could leave a trace in that hour to hour movement. These features

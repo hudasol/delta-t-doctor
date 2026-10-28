@@ -4,7 +4,7 @@ Status: **predictions written 2026-10-11, before any of the code below was run.*
 
 ## The question
 
-Trained on simulator A and tested on simulator B the model scores 0.683 macro AUROC; B to A is 0.770 (`docs/CROSS_SIMULATOR.md`).
+Trained on simulator A and tested on simulator B the model scores 0.683 macro AUROC; B to A is 0.770 (`docs/research/CROSS_SIMULATOR.md`).
 Shipping a model trained on both closes the gap for those two worlds only, and says nothing about a third, which is the position a real
 building is in. This round tests four candidate fixes with a protocol that never trains on the world it is tested on.
 
@@ -133,7 +133,7 @@ Reading, plainly:
 Status: **hypotheses and predictions written 2026-10-16, before `scripts/fouling_transfer.py` was written or run.**
 
 The few shot table above shows fouling as the cause that adapts worst in A to B (0.66 at 40 target buildings, the others 0.83 to 0.96).
-One fact was already known before this addendum and must not be counted as a test: `docs/OVERFLOW.md` reports that inside world B alone,
+One fact was already known before this addendum and must not be counted as a test: `docs/research/OVERFLOW.md` reports that inside world B alone,
 fouling is the weakest cause (0.700 AUROC on one building grouped fold). So part of the answer may be that fouling is simply hard to see in B,
 whatever the training world.
 

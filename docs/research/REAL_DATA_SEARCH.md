@@ -26,10 +26,10 @@ reproduces the download and writes `external/fetch_manifest.json` with the sha25
 | Chalmers district cooling study, 37 connected buildings (research.chalmers.se 521437) | A real district cooling ETS dataset, but I found no public data release. |
 | Shandong district heating anomaly dataset (arXiv 2408.14499) | Stated as confidential. |
 | Building Data Genome 2 and similar meter collections | Energy only, no flow or supply and return temperature. |
-| LBNL FDD chiller plant (already used in `docs/EXTERNAL_CHECK.md`) | Simulated plant data, plant side, no building labels. Kept as the existing external check. |
+| LBNL FDD chiller plant (already used in `docs/research/EXTERNAL_CHECK.md`) | Simulated plant data, plant side, no building labels. Kept as the existing external check. |
 
 ## What this means
 
 No open, real district cooling ETS dataset with flow and supply and return temperature was found. The two usable real datasets are
-district heating, so the tool should refuse or abstain on them; that is what `docs/REAL_DATA_CONTACT.md` measures. Real district cooling
+district heating, so the tool should refuse or abstain on them; that is what `docs/research/REAL_DATA_CONTACT.md` measures. Real district cooling
 data remain something only a pilot partner can supply (`docs/PILOT.md`).

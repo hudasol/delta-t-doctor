@@ -1,4 +1,4 @@
-"""Cross-simulator generalisation: train on one simulator, test on the other. Predictions: docs/CROSS_SIMULATOR.md.
+"""Cross-simulator generalisation: train on one simulator, test on the other. Predictions: docs/research/CROSS_SIMULATOR.md.
 
 Writes results/cross_simulator.json and results/cross_simulator.md.
 """
@@ -67,7 +67,7 @@ def row(name, d):
     m = d["model"] if "model" in d else d
     pc = m["per_cause_auroc"]
     return f"| {name} | {m['macro_auroc']:.3f} | {m['any_fault_auroc']:.3f} | " + " | ".join(f"{pc[c]:.3f}" for c in CAUSES) + " |"
-md = ["# Cross-simulator results\n", "Simulator A: 5000 windows. Simulator B: structurally different (see docs/CROSS_SIMULATOR.md).\n",
+md = ["# Cross-simulator results\n", "Simulator A: 5000 windows. Simulator B: structurally different (see docs/research/CROSS_SIMULATOR.md).\n",
       "| setting | macro AUROC | any-fault AUROC | " + " | ".join(CAUSES) + " |", "|---|---|---|" + "---|" * len(CAUSES),
       row("within A (grouped CV)", res["within_A"]), row("within B (grouped CV)", res["within_B"]),
       row("train A, test B", res["A_to_B"]), row("train B, test A", res["B_to_A"]),

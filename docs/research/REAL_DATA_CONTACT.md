@@ -57,4 +57,4 @@ The timestamps are not converted, because the local zone of an upload is not kno
 ## What this does not show
 
 No accuracy, no false alarm rate on real chilled water buildings, and nothing about UAE buildings. Those need a pilot partner's ETS data and
-blind inspections ([PILOT.md](PILOT.md)).
+blind inspections ([PILOT.md](../PILOT.md)).

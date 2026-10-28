@@ -54,7 +54,7 @@ card = {
     "training_data_sha256": {p: sha(p) for p in paths},
     "sha256": {os.path.basename(out): sha(out), "diagnoser_informed.joblib": sha(informed_path)},
 }
-try:   # worst-world AUROC per cause from the cross-simulator test (used to cap tiers; see docs/CROSS_SIMULATOR.md)
+try:   # worst-world AUROC per cause from the cross-simulator test (used to cap tiers; see docs/research/CROSS_SIMULATOR.md)
     xs = json.load(open("results/cross_simulator.json"))
     card["worst_world_auroc"] = {c: round(min(xs["A_to_B"]["model"]["per_cause_auroc"][c], xs["B_to_A"]["model"]["per_cause_auroc"][c]), 3)
                                  for c in CAUSES}

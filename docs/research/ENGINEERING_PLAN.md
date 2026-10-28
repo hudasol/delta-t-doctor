@@ -1,7 +1,7 @@
 # Engineering plan: limitations, root causes, architecture and upgrade rounds
 
 Written 2026-10-10 against v1.0.0. Evidence for every claim below is in `results/` (run `scripts/error_analysis.py`,
-`scripts/evaluate.py`, `scripts/lbnl_followup.py`) or `docs/EXTERNAL_CHECK.md`.
+`scripts/evaluate.py`, `scripts/lbnl_followup.py`) or `docs/research/EXTERNAL_CHECK.md`.
 
 ## 1. Limitations register
 

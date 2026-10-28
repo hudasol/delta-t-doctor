@@ -9,8 +9,8 @@
 > failed and 1 was not supported, and models trained on one simulator score 0.68 to 0.77 macro AUROC on the other (0.67 to 0.76 on four regenerated B pools; see [Results](#results) and
 > [Limitations](docs/LIMITATIONS.md)). Treat its output as a ranked inspection list.
 
-Product plan, market research and roadmap: [plan.md](plan.md). Draft pilot protocol: [docs/PILOT.md](docs/PILOT.md), with a blind
-[inspection form](docs/INSPECTION_FORM.md). Reproducibility of the data: [docs/REPRODUCIBILITY.md](docs/REPRODUCIBILITY.md).
+Product plan, market research and roadmap: [plan.md](docs/research/PLAN.md). Draft pilot protocol: [docs/PILOT.md](docs/PILOT.md), with a blind
+[inspection form](docs/INSPECTION_FORM.md). Reproducibility of the data: [docs/research/REPRODUCIBILITY.md](docs/research/REPRODUCIBILITY.md).
 
 ## The problem
 
@@ -74,7 +74,7 @@ seeds (smaller 2,000-window sets) gives 0.959 +/- 0.003. A feature ablation show
 single average delta T feature scores 0.64 ([results/ablation.json](results/ablation.json)).
 
 **Those numbers are all inside one simulator, and they are the optimistic ones.** I wrote a second, structurally different simulator
-(valves and pressure, a humidity-driven wet coil, a plate exchanger ETS; [docs/CROSS_SIMULATOR.md](docs/CROSS_SIMULATOR.md)) and wrote
+(valves and pressure, a humidity-driven wet coil, a plate exchanger ETS; [docs/research/CROSS_SIMULATOR.md](docs/research/CROSS_SIMULATOR.md)) and wrote
 predictions before running it. A model trained on the first and tested on the second scores **0.68** macro AUROC and flags 88% of
 healthy buildings as faulty; the reverse direction scores 0.77. One prediction failed (any fault AUROC fell to 0.70, I expected 0.80).
 The shipped model is trained on both simulators, which closes the gap for those two worlds and proves nothing about a real building.
@@ -83,7 +83,7 @@ Expect the unseen-world numbers until the pilot shows otherwise.
 Savings carry ranges: each cause has 10th/50th/90th percentile gains from quantile boosting, and the report shows an AED range next to the point estimate. A conformal margin is fitted but came out 0.0 on simulated data, so the ranges are the raw quantiles. Coverage of the true gain on held out simulated buildings is 82% to 85% among windows where a cause is predicted active, but only 55% to 76% among windows where the cause is truly present (`results/uncertainty.json`), so treat the lower end as optimistic.
 
 **External check (LBNL chiller plant benchmark, CC-BY; simulated plant data from a different team).** I wrote predictions before running it
-and again before the follow-up ([docs/EXTERNAL_CHECK.md](docs/EXTERNAL_CHECK.md)). Outcome:
+and again before the follow-up ([docs/research/EXTERNAL_CHECK.md](docs/research/EXTERNAL_CHECK.md)). Outcome:
 
 * **It failed.** A fault free plant was flagged as faulty with near certainty, in v0.1 and again in v0.2, even when
   told its design delta T. My first explanation (low design delta T) was only part of it: the plant's flow barely
@@ -109,18 +109,18 @@ inside one simulator but at chance (0.53 to 0.56) across simulators (`results/ov
 
 **v1.2.0: a third physics, real data contact, fleet calibration, assurance.** All simulation unless stated.
 
-* **World D** ([docs/WORLD_D.md](docs/WORLD_D.md)), a time stepped closed loop simulator written to test the claims above, with predictions
+* **World D** ([docs/research/WORLD_D.md](docs/research/WORLD_D.md)), a time stepped closed loop simulator written to test the claims above, with predictions
   committed first. The shipped model scores **0.705** macro AUROC on it zero shot and calls 98% of healthy windows faulty; the guards withhold
   the ranking for 92% of D buildings. **But the windows the guard lets through score lower (0.618) than those it flags (0.756)**: the guard
   detects unfamiliar buildings, it does not pick out the model's mistakes. Hourly temporal features stayed below the preregistered +0.02 help
   threshold for overflow in every test but one (+0.020 with simulator A held out) and lowered other causes, so they are not shipped.
-* **When does it know it is probably wrong?** ([docs/SELECTIVE_PREDICTION.md](docs/SELECTIVE_PREDICTION.md), v1.2.1, simulation.) Inside a
+* **When does it know it is probably wrong?** ([docs/research/SELECTIVE_PREDICTION.md](docs/research/SELECTIVE_PREDICTION.md), v1.2.1, simulation.) Inside a
   familiar simulator, its own decision margin finds wrong rankings well (AUROC 0.905 in A, 0.733 in B; keeping the more confident half cuts the
   error rate from 7.0% to 0.3% in A). On the unseen world D, **no label free signal works**: the best reaches 0.608, the model's entropy is below
   chance (0.457) because it is confidently wrong, and as an error signal the guard is below chance in world (0.40, 0.44) and weak on D (0.583).
   No extra abstention flag is shipped. Calibration on inspected buildings is the only adaptation measured to raise accuracy on an unfamiliar
   fleet (few shot on world D: 0.71 to 0.83 with 20 buildings); whether it also restores error detection has not been tested.
-* **Real data contact** ([docs/REAL_DATA_CONTACT.md](docs/REAL_DATA_CONTACT.md)): two openly licensed real district heating datasets (no labels).
+* **Real data contact** ([docs/research/REAL_DATA_CONTACT.md](docs/research/REAL_DATA_CONTACT.md)): two openly licensed real district heating datasets (no labels).
   The product refused all 45 buildings at parsing with a plain message and did not crash; one silent issue (UTC timestamps) was fixed.
 * **Fleet calibration** (`deltat-doctor calibrate`, [docs/API.md](docs/API.md)): adapts the cause classifiers to a fleet from 10 or more
   inspected buildings, refuses below 10, marks 10 to 19 as weak, keeps a holdout report and never replaces the default model.

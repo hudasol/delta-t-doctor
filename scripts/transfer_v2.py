@@ -1,5 +1,5 @@
 """Transfer v2: do wider randomisation, invariant features or target-batch standardisation close the cross-physics gap?
-Predictions: docs/TRANSFER_V2.md (written before this ran). Writes results/transfer_v2.json and .md.
+Predictions: docs/research/TRANSFER_V2.md (written before this ran). Writes results/transfer_v2.json and .md.
 
 T1: train A (+C-A), test B.   T2: train B (+C-B), test A.   Never trains on the test physics.
 Dropped features are zeroed (not removed) so the model's column layout is unchanged.

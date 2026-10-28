@@ -52,7 +52,7 @@ If time runs short: T7 first, then T6 cut to the assurance case table, then T5 c
 
 ### T1 real data contact (05:30 to 06:40, analysis finished later)
 
-* Two openly licensed real datasets were opened, licences read and checksums verified (`docs/REAL_DATA_SEARCH.md`): Danish smart heat
+* Two openly licensed real datasets were opened, licences read and checksums verified (`docs/research/REAL_DATA_SEARCH.md`): Danish smart heat
   meters (Zenodo 6563114, CC BY 4.0; 40 meters read by HTTP range requests because the archive is 3.3 GB and the link ran at about 100 KB/s)
   and the XAI4HEAT Nis substations (Mendeley, CC BY 4.0, sha256 matched). Dryad hydronic data (CC0) was not reachable without an account
   token; OpenEI chilled water records returned "No data found". No real district cooling ETS data was found.
@@ -61,7 +61,7 @@ If time runs short: T7 first, then T6 cut to the assurance case table, then T5 c
 
 * Design and 13 predictions committed before any D data existed (b457e83). A pre-commit mechanism check found that my first controller
   (PI on zone temperature) could not hunt; it was replaced by a discharge air cascade before the commit, and the check and its hourly
-  result are written into `docs/WORLD_D.md`.
+  result are written into `docs/research/WORLD_D.md`.
 * Zero shot on D (`scripts/world_d_eval.py zeroshot`, `results/world_d.json`): macro AUROC 0.705 [0.685, 0.724], any fault 0.648, healthy
   false alarm 98%, overflow 0.547, fouling 0.577.
 * Regenerating the simulator A pool on this Windows machine gave a file whose sha256 differs from the one in the model card (fa77ca41...
@@ -110,8 +110,8 @@ If time runs short: T7 first, then T6 cut to the assurance case table, then T5 c
 
 | Set | Held | Failed | Not run |
 |---|---|---|---|
-| World D (D1 to D13, `docs/WORLD_D.md`) | D1, D2, D3, D4, D5, D8, D9, D12, D13 | D6 (guard flags 14% of new B buildings), D7 (guard passes the windows the model handles worse), D10 (hourly temporal features add 0.010 to overflow inside D) | D11 (machine load) |
-| Fouling transfer (H1 to H4, `docs/TRANSFER_V2.md`) | H1, H4 | H2, H3 | none |
+| World D (D1 to D13, `docs/research/WORLD_D.md`) | D1, D2, D3, D4, D5, D8, D9, D12, D13 | D6 (guard flags 14% of new B buildings), D7 (guard passes the windows the model handles worse), D10 (hourly temporal features add 0.010 to overflow inside D) | D11 (machine load) |
+| Fouling transfer (H1 to H4, `docs/research/TRANSFER_V2.md`) | H1, H4 | H2, H3 | none |
 | Temporal block shipping rule (preregistered) | | fails part (b): not shipped | |
 
 **Claims added:** world D zero shot 0.705 and few shot 0.825 / 0.850; guard withholds 92% of unseen world buildings; fleet calibration

@@ -13,7 +13,7 @@ simulator B pool was not recorded, so that pool is committed rather than regener
 office, hotel, residential, mall; coil-level physics with injected faults) and B (1,500 windows; seven building classes with
 humidity-driven load, equal-percentage valves, 3-way mixing and a plate exchanger ETS, where faults emerge from the hydraulics).
 Design delta T 4.7-12.8 C. Each label comes from a counterfactual re-simulation with the cause removed. No real data.
-See [CROSS_SIMULATOR.md](CROSS_SIMULATOR.md).
+See [CROSS_SIMULATOR.md](research/CROSS_SIMULATOR.md).
 
 **Uncertainty.** Besides the expected gain, each cause has a 10th, 50th and 90th percentile of recoverable delta T (quantile
 boosting, with a conformal margin fitted on held out buildings; it came out 0.0 for every cause, so the intervals are the raw quantiles). Savings in AED are computed from those percentiles, so
@@ -25,8 +25,8 @@ do not include error in scaling a partial year to a full year.
 **Evaluation.** On held out simulated buildings from simulator A, for models trained and tested on A only (not the shipped A + B model): macro AUROC 0.966 (blind, 95% interval 0.963 to 0.969) and
 0.971 (informed); across 4 regenerated datasets the spread is 0.959 +/- 0.003. Calibration, stress, leave one building type out and
 held out-season results are in [results/metrics.md](../results/metrics.md). Across simulators the picture is much weaker: trained on A
-and tested on B it scores 0.683, trained on B and tested on A 0.770 ([CROSS_SIMULATOR.md](CROSS_SIMULATOR.md)); on four regenerated B
-pools (three with recorded seeds and generator identity, one with seed 11) these are 0.670 to 0.697 and 0.741 to 0.757 ([REPRODUCIBILITY.md](REPRODUCIBILITY.md)). Reproduce with
+and tested on B it scores 0.683, trained on B and tested on A 0.770 ([CROSS_SIMULATOR.md](research/CROSS_SIMULATOR.md)); on four regenerated B
+pools (three with recorded seeds and generator identity, one with seed 11) these are 0.670 to 0.697 and 0.741 to 0.757 ([REPRODUCIBILITY.md](research/REPRODUCIBILITY.md)). Reproduce with
 `python scripts/evaluate.py` and `python scripts/cross_simulator.py`.
 
 **Intended use.** Ranking what to inspect first in a variable flow building loop fed by district cooling, with the owner
@@ -37,7 +37,7 @@ ranking has safety consequences, or buildings the tool marks "not reliable".
 
 **Known failures.**
 * On the LBNL chiller-plant benchmark (a different kind of system) it reports a fault with near certainty, in blind
-  and informed modes. See [EXTERNAL_CHECK.md](EXTERNAL_CHECK.md).
+  and informed modes. See [EXTERNAL_CHECK.md](research/EXTERNAL_CHECK.md).
 * Overflow is the weakest cause (AUROC 0.92 in simulation, chance level across simulators). Weak faults (true gain 0.2 to 0.4 C) are
   missed often: recall at p >= 0.5 for gains of 0.2 to 0.4 C is 0.28 (overflow), 0.41 (passing valves), 0.57 (fouling) and 0.69
   (constant flow) (`results/error_analysis.json`).
@@ -58,10 +58,10 @@ for a model trained only on A, it fired for 36%, which is too few: most of B's w
 **World D and fleet calibration (v1.2.0).** On a third, time stepped simulator the shipped model was never trained on, macro AUROC is
 0.705 [0.685, 0.724], any fault 0.648, and 98% of healthy windows are called faulty; the combined guards withhold the ranking for 92% of
 those buildings, but the windows they let through score lower (0.618) than the ones they flag (0.756) (`results/world_d.json`,
-[WORLD_D.md](WORLD_D.md)). New buildings from the training worlds are flagged at 0% (A) and 14% (B) of buildings. A fleet calibrated model
+[WORLD_D.md](research/WORLD_D.md)). New buildings from the training worlds are flagged at 0% (A) and 14% (B) of buildings. A fleet calibrated model
 (`deltat-doctor calibrate`) is a separate file with its own card; the bundled model described here is unchanged.
 
-**Knowing when it is wrong (v1.2.1).** Measured per window in [SELECTIVE_PREDICTION.md](SELECTIVE_PREDICTION.md): the decision margin (distance
+**Knowing when it is wrong (v1.2.1).** Measured per window in [SELECTIVE_PREDICTION.md](research/SELECTIVE_PREDICTION.md): the decision margin (distance
 of `p_any` or the top cause probability to 0.5) ranks wrong decisions first at AUROC 0.905 in simulator A and 0.733 in B, but no label free
 signal exceeds 0.61 on world D, where the model's entropy is below chance (0.457). As an error signal the open set guard is below chance in world
 (0.40 and 0.44) and weak on D (0.583). The model's probabilities are therefore not a reliability measure on an unfamiliar fleet.

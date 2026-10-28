@@ -120,9 +120,9 @@ time, `n_jobs=1`, never touch processes I did not start.
 
 | Set | Held | Failed | Not run |
 |---|---|---|---|
-| Selective prediction Q1 to Q10 (`docs/SELECTIVE_PREDICTION.md`) | Q1, Q3 | Q2, Q4, Q5, Q6, Q7, Q8, Q9, Q10 (shipping rule) | none |
-| B replication R1 to R5 (`docs/REPRODUCIBILITY.md`) | R2, R3 (by 0.0007), R4, R5 | R1 (in world B 0.908 on seed 2101) | none |
-| World D follow up E1 to E5 and D11 (`docs/WORLD_D.md`) | E1, E2, E3, E4, D11 | E5 (fouling +0.013, passing valves -0.010 in B) | none |
+| Selective prediction Q1 to Q10 (`docs/research/SELECTIVE_PREDICTION.md`) | Q1, Q3 | Q2, Q4, Q5, Q6, Q7, Q8, Q9, Q10 (shipping rule) | none |
+| B replication R1 to R5 (`docs/research/REPRODUCIBILITY.md`) | R2, R3 (by 0.0007), R4, R5 | R1 (in world B 0.908 on seed 2101) | none |
+| World D follow up E1 to E5 and D11 (`docs/research/WORLD_D.md`) | E1, E2, E3, E4, D11 | E5 (fouling +0.013, passing valves -0.010 in B) | none |
 
 **Claims added:** a measured answer to "when does the system know it is wrong" (in world yes, from its decision margin; on an unseen physics
 no); regenerable B pools with recorded seeds; few shot on D at 5, 10, 70 buildings; temporal comparison in all three worlds; a pilot dry run

@@ -37,13 +37,13 @@ the partner needs to supply, and how the result will be scored.
 
 ### Search for public real data (no ETS-level labelled set found)
 
-The full record (every candidate opened, with licence, reason and checksums) is now [REAL_DATA_SEARCH.md](REAL_DATA_SEARCH.md), and the
-first contact of the pipeline with real, unlabelled district heating meter data is in [REAL_DATA_CONTACT.md](REAL_DATA_CONTACT.md). The
+The full record (every candidate opened, with licence, reason and checksums) is now [REAL_DATA_SEARCH.md](research/REAL_DATA_SEARCH.md), and the
+first contact of the pipeline with real, unlabelled district heating meter data is in [REAL_DATA_CONTACT.md](research/REAL_DATA_CONTACT.md). The
 table below is the v1.1.1 summary and is kept for history.
 
 | Candidate | What it is | Why it does not settle the question |
 |---|---|---|
-| LBNL building-side plant data (already used, `docs/EXTERNAL_CHECK.md`) | Simulated plant data (EnergyPlus and Modelica, different team), no building-side fault labels | Gave a failed prediction; useful for the guard, not for accuracy |
+| LBNL building-side plant data (already used, `docs/research/EXTERNAL_CHECK.md`) | Simulated plant data (EnergyPlus and Modelica, different team), no building-side fault labels | Gave a failed prediction; useful for the guard, not for accuracy |
 | Vanderbilt ESB chiller dataset (reported) | Real campus chiller data | Plant side, not building ETS; I have not verified labels |
 | LBNL FDD datasets | Mostly simulated or lab AHU/RTU faults | Different equipment and fault classes |
 | Recent labelled AHU datasets (Scientific Data, 2025) | Air-handler faults | Existence and labels not confirmed by me; AHU, not ETS |
@@ -80,7 +80,7 @@ calibrated model is used only with `--model`.
 
 ### What the pilot also tells us
 
-* **Fleet calibration.** The few shot curve (`docs/TRANSFER_V2.md`) says about 20 to 40 labelled buildings from the target fleet are what move
+* **Fleet calibration.** The few shot curve (`docs/research/TRANSFER_V2.md`) says about 20 to 40 labelled buildings from the target fleet are what move
   cross-physics performance from 0.69 to 0.80 (20 buildings) and 0.836 (40) in simulation. A 10 to 20 building pilot is therefore a calibration set as well as a test; keep a
   held out half for scoring.
 * **Guard behaviour.** Even unlabelled real files show how often the tool abstains. Report that rate before accuracy.

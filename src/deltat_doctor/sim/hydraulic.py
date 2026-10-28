@@ -1,4 +1,4 @@
-"""Simulator B: a structurally different generator, used to test generalisation (see docs/CROSS_SIMULATOR.md).
+"""Simulator B: a structurally different generator, used to test generalisation (see docs/research/CROSS_SIMULATOR.md).
 
 Where simulator A injects each fault as an explicit flow with a fixed heat signature, here the faults act on a small
 hydraulic and psychrometric model and their meter signatures *emerge*:

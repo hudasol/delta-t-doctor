@@ -1,4 +1,4 @@
-"""World D: a third, dynamic physics, written to test the transfer and guard claims (see docs/WORLD_D.md).
+"""World D: a third, dynamic physics, written to test the transfer and guard claims (see docs/research/WORLD_D.md).
 
 Simulators A and B are quasi-steady: every hour is solved on its own. World D is time stepped (5 minute steps, aggregated to the
 hourly meter) and closed loop, so its meter signatures come out of control dynamics rather than from a fault formula:
