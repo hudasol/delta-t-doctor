@@ -2,6 +2,16 @@
 
 All accuracy figures are simulator results unless stated. Tags exist from v1.1.1 onward; earlier versions were not tagged.
 
+## v1.3.0
+
+Baselines and repository layout. All figures are simulation results. The bundled models are unchanged.
+
+- **Baseline suite** (`docs/research/BASELINES.md`, preregistered; `scripts/baselines.py`, `results/baselines.json`). Eight reference models on the same 42 features (prior, hand written rules, delta T only, fitted thresholds, depth 3 tree, logistic regression, random forest, plain gradient boosting) in worlds A, B and D and in zero shot transfer. 10 of 13 predictions held. **The three that failed claimed an AUROC lead for the shipped model over generic ensembles; there is none** (A: 0.966 against 0.967 for plain boosting). The shipped model has the lowest calibration error in every world. No model transfers reliably to an unseen world.
+- `src/deltat_doctor/baselines.py` and new metrics in `evaluate.py` (expected calibration error, top 1 precision, healthy false alarm rate), with tests.
+- Research logs moved to `docs/research/`, release notes to `docs/releases/`, links rewritten and checked by `scripts/check_links.py` and a test. Test files renamed from round based names.
+- Added CONTRIBUTING, SECURITY pointer, CITATION, editorconfig, dependabot, issue and pull request templates; README gains a baseline table.
+- Git author for new commits set to the repository owner. Earlier commits are unchanged.
+
 ## v1.2.1
 
 Follow up to v1.2.0: closes the gaps it left open. All figures are simulation results. The bundled models are unchanged.
