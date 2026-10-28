@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import warnings
 from dataclasses import dataclass
+from typing import Any
 
 import joblib
 import numpy as np
@@ -49,12 +50,14 @@ class Prediction:
 class Diagnoser:
     """Four calibrated one-vs-rest classifiers, an any-fault detector and four gain regressors."""
 
+    calibration: dict | None = None   # set by fleet calibration (calibrate.py)
+
     def __init__(self, seed: int = 0):
         self.seed = seed
-        self.clf = {}
-        self.reg = {}
-        self.any_clf = None
-        self.regq = {}
+        self.clf: dict[str, Any] = {}
+        self.reg: dict[str, Any] = {}
+        self.any_clf: Any = None
+        self.regq: dict[str, Any] = {}
         self.q_margin = {c: {"active": 0.0, "inactive": 0.0} for c in CAUSES}
         self.feature_names = list(FEATURE_NAMES)
         self.trained_on = 0
@@ -176,8 +179,8 @@ class LogisticBaseline:
 
     def __init__(self, seed: int = 0):
         self.seed = seed
-        self.clf = {}
-        self.reg = {}
+        self.clf: dict[str, Any] = {}
+        self.reg: dict[str, Any] = {}
 
     def fit(self, X, Y, G):
         from sklearn.linear_model import Ridge

@@ -3,6 +3,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from typing import Any, Callable
+
 import numpy as np
 import pandas as pd
 from joblib import Parallel, delayed
@@ -86,7 +88,8 @@ def _one(seed: int, building_id: int, kwargs: dict, new_building_per_sample: boo
     if sim in ("CA", "CB"):
         s = make_sample_world(sim[1], rng, building_id, kwargs.pop("cfg"))
         return sample_to_row(s, post, temporal)
-    maker = {"B": make_sample_b, "D": make_sample_d}.get(sim, make_sample)
+    makers: dict[str, Callable[..., Any]] = {"B": make_sample_b, "D": make_sample_d}
+    maker = makers.get(sim, make_sample)
     s = maker(rng, building_id, **kwargs)
     return sample_to_row(s, post, temporal)
 

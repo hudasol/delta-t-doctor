@@ -324,6 +324,6 @@ def render_report(d: dict, building_name: str = "Building", lang: str = "en") ->
     ]
     out.append(f'<h2>{e(t["h_prov"])}</h2><p class="sub">{e(t["prov_note"])}</p><dl class="prov">'
                + "".join(f'<dt>{e(str(k))}</dt><dd class="mono" dir="ltr" style="text-align:start">{e(str(v))}</dd>' for k, v in rows) + "</dl>")
-    disc = d.get("disclaimer_ar") if ar and d.get("disclaimer_ar") else d.get("disclaimer", "")
+    disc = str(d.get("disclaimer_ar") if ar and d.get("disclaimer_ar") else d.get("disclaimer", ""))
     out.append(f'<p class="foot">{e(disc)}</p></main></body></html>')
     return "".join(out)

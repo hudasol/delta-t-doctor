@@ -3,6 +3,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field, asdict
 
+from typing import Any
+
 import pandas as pd
 
 from . import CAUSES, CAUSE_LABELS
@@ -129,13 +131,13 @@ def diagnose_portfolio(df: pd.DataFrame, terms: ContractTerms | None = None,
     ok.sort(key=lambda r: r.top_cause_saving_aed or 0.0, reverse=True)
     skipped = [r for r in rows if r.status != "ok"]
 
-    by_cause = []
+    by_cause: list[dict[str, Any]] = []
     for c in CAUSES:
         sav = sum(f["expected_saving_aed_per_year"] for r in ok for f in r.findings if f["cause"] == c)
         tops = sum(1 for r in ok if r.top_cause == c)
         by_cause.append({"cause": c, "label": CAUSE_LABELS[c], "label_ar": CAUSE_LABELS_AR[c], "buildings_where_top": tops,
                          "expected_saving_aed_per_year": float(sav)})
-    by_cause.sort(key=lambda d: d["expected_saving_aed_per_year"], reverse=True)
+    by_cause.sort(key=lambda d: float(d["expected_saving_aed_per_year"]), reverse=True)
 
     notes = list(design_notes)
     if n_null:
