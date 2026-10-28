@@ -23,7 +23,7 @@ vary.
 
 The owner sees the surcharge on a bill but not the cause. Typical causes are fouled coils, leaking valves on
 idle air handlers, 3-way valves that pass full flow, and excess differential pressure. Finding which one applies
-is a consultant led site survey. I found no self serve tool that does this from meter data.
+is a consultant led site survey. No self serve tool that does this from meter data was found.
 
 ## What it does
 
@@ -127,6 +127,23 @@ inside one simulator but at chance (0.53 to 0.56) across simulators (`results/ov
 * **Assurance** ([docs/ASSURANCE_CASE.md](docs/ASSURANCE_CASE.md), [docs/SECURITY.md](docs/SECURITY.md)): hashed lock file, Docker install
   stage with networking disabled, SBOM, a test that runs a diagnosis with network sockets disabled, `scripts/reproduce.py`.
 
+## Baselines
+
+Macro AUROC for eight models on the same 42 features, in three simulated worlds (grouped 5 fold CV, columns A, B, D) and zero shot transfer between them. Protocol, fixed hyperparameters and the thirteen preregistered predictions: [docs/research/BASELINES.md](docs/research/BASELINES.md).
+
+| Model | A | B | D | A to B | B to A | A+B to D |
+|---|---|---|---|---|---|---|
+| Hand written rules | 0.581 | 0.609 | 0.580 | 0.609 | 0.581 | 0.580 |
+| Delta T only | 0.625 | 0.604 | 0.679 | 0.557 | 0.566 | 0.623 |
+| Fitted thresholds | 0.775 | 0.722 | 0.759 | 0.603 | 0.612 | 0.623 |
+| Depth 3 tree | 0.910 | 0.815 | 0.824 | 0.701 | 0.662 | 0.683 |
+| Logistic regression | 0.915 | 0.841 | 0.870 | 0.658 | 0.749 | 0.694 |
+| Random forest | 0.963 | 0.887 | 0.898 | 0.702 | 0.750 | 0.688 |
+| Plain gradient boosting | 0.967 | 0.889 | 0.892 | 0.672 | 0.769 | 0.707 |
+| **delta-t-doctor** | **0.966** | **0.884** | **0.895** | **0.683** | **0.770** | **0.705** |
+
+A plain gradient boosting model matches the shipped model on discrimination (three preregistered predictions of a lead failed). The shipped model has the lowest calibration error in every world and adds gain intervals, abstention and evidence statements. No model, shipped or baseline, transfers reliably to an unseen world. Simulation only.
+
 ## Quick start
 
 Python 3.11 or newer. One command per line (works in Windows PowerShell 5 as well as bash):
@@ -162,9 +179,11 @@ The external check needs the LBNL zip placed under `external/`: `python scripts/
 
 ```
 src/deltat_doctor/   sim/ (simulator), features, models, penalty, diagnose, io, api, cli, web/
-scripts/             generate_data, train, evaluate, lbnl_check
+scripts/             generate_data, train, evaluate, baselines, lbnl_check
 tests/               unit and API tests
-docs/                METHODOLOGY, LIMITATIONS, EXTERNAL_CHECK, MODEL_CARD, PILOT, API, SECURITY, DEPLOYMENT
+docs/                METHODOLOGY, LIMITATIONS, MODEL_CARD, PILOT, API, SECURITY, DEPLOYMENT
+docs/research/       preregistered experiments, logs and results (BASELINES, WORLD_D, EXTERNAL_CHECK, ...)
+docs/releases/       release notes
 results/             metrics.md/json, figures, logs
 ```
 
